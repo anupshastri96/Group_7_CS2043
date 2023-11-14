@@ -1,6 +1,6 @@
 package inc.vareli.crusman.data;
 
-import inc.vareli.crusman.Ship.RoomType;
+import inc.vareli.crusman.data.Ship.RoomType;
 
 import java.util.Map;
 import java.util.EnumMap;

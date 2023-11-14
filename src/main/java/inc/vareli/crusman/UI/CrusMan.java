@@ -1,9 +1,7 @@
-package inc.vareli.crusman;
+package inc.vareli.crusman.UI;
 
 public class CrusMan {
 	public static void main(String[] args) {
-			Ship ship;
-			Trip trip;
 			//this is the class that launches the GUI for the user to
 			//interface with the system.
 			//in the end this will be in a different package from the other 
