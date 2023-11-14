@@ -1,4 +1,4 @@
-package inc.vareli.crusman;
+package inc.vareli.crusman.data;
 
 public class Ship {
 	private long ID;
