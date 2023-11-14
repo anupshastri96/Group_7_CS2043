@@ -1,7 +1,5 @@
 package inc.vareli.crusman.UI;
 
-import inc.vareli.crusman.data.*;
-
 public class CrusMan {
 	public static void main(String[] args) {
 			//this is the class that launches the GUI for the user to
