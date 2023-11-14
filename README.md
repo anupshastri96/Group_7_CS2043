@@ -1,5 +1,5 @@
 # Group_7_CS2043
-We are making a cruise management system called CrusMan
+Investigating GUI options
 
 Sebastien
 Arhaan
