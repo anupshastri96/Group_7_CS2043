@@ -1,4 +1,6 @@
-package inc.vareli.crusman;
+package inc.vareli.crusman.UI;
+
+import inc.vareli.crusman.data.*;
 
 public class CrusMan {
 	public static void main(String[] args) {
