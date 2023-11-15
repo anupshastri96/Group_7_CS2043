@@ -1,24 +1,37 @@
 package inc.vareli.crusman.data;
 
+import java.sql.Connection;
+import java.util.Map;
+import java.util.Iterator;
+
 public class Ship {
 	private long ID;
 	private Room[] rooms;
 
-	public Ship(long ID, int inRooms, int outRooms, int balRooms, int suites) {
+	public Ship(Connection conn, long ID) {
+		//sql stuff
+		//
+	}
+
+	public static Ship fetch(Connection conn, long ID) {
+		//see: comments in Trip.java
+		//
+		return null;
+	}
+
+	public Ship(long ID, Map<RoomType,Integer> roomCounts) {
+		int size = roomCounts.values().stream().mapToInt(t->t).sum();
 		this.ID = ID;
-		rooms = new Room[inRooms+outRooms+balRooms+suites];
-		for (int i = 0; i < rooms.length; i++) {
-			if (i <= inRooms) {// TODO: this can definitely be cleaned up
-							   // with some kinda map or something. This is 
-							   // CRINGE
-				rooms[i] = new Room(RoomType.INTERIOR);
-			} else if (i <= outRooms) {
-				rooms[i] = new Room(RoomType.OUTSIDE);
-			} else if (i <= balRooms) {
-				rooms[i] = new Room(RoomType.BALCONY);
-			} else if (i <= suites) {
-				rooms[i] = new Room(RoomType.SUITE);
+		this.rooms = new Room[size];
+
+		Iterator<RoomType> iter = roomCounts.keySet().iterator();
+		int prev = 0;
+		for (RoomType currentType = iter.next(); iter.hasNext(); currentType = iter.next()) {
+			int i;
+			for (i = prev; i <  prev + roomCounts.get(currentType); i++) {
+				rooms[i] = new Room(currentType);
 			}
+			prev = i;
 		}
 	}
 
