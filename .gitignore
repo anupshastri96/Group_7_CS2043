@@ -3,3 +3,4 @@
 *.jar
 *.lst
 *Test.xml
+targets/
