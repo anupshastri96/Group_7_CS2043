@@ -1,5 +1,6 @@
 package inc.vareli.crusman.databases;
 
+import inc.vareli.crusman.databases.Ship.RoomType;
 import inc.vareli.crusman.databases.Trip.TripBuilder;
 
 import java.util.Map;
@@ -10,8 +11,7 @@ public class CMConnection{
 	private Connection connector;
 	
 	public CMConnection(String URL, String loginID, String loginPass) throws SQLException {
-		connector = DriverManager.getConnection
-				(URL, loginID, loginPass);
+
 	}
 
 	public Ship createShip(Map<RoomType,Integer> roomCounts) { //these methods are what will be used to both create

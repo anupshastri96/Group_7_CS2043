@@ -1,5 +1,6 @@
 package inc.vareli.crusman;
 
+import inc.vareli.crusman.databases.CMConnection;
 import inc.vareli.crusman.databases.Ship;
 import inc.vareli.crusman.databases.Ship.RoomType;
 
@@ -16,6 +17,14 @@ public class AppTest {
 
 	@Test
 	public void shipTest() {
+		CMConnection conn = null;
+		try {
+			conn = new CMConnection(null, null, null);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return;
+		}
+
 		EnumMap<RoomType,Integer> roomCounts = new EnumMap<RoomType,Integer>(RoomType.class);
 		roomCounts.put(RoomType.INTERIOR, 1);
 		roomCounts.put(RoomType.OUTSIDE, 1);
@@ -23,7 +32,7 @@ public class AppTest {
 		roomCounts.put(RoomType.SUITE, 2);
 
 		//making the room should work
-		Ship s = new Ship(1l, roomCounts);
+		Ship s = conn.createShip(roomCounts);
 
 		assertTrue(s.addPerson(RoomType.INTERIOR, 2));
 		assertTrue(s.addPerson(RoomType.INTERIOR, 2));
