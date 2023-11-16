@@ -1,7 +1,7 @@
 package inc.vareli.crusman;
 
-import inc.vareli.crusman.data.Ship;
-import inc.vareli.crusman.data.Ship.RoomType;
+import inc.vareli.crusman.databases.Ship;
+import inc.vareli.crusman.databases.Ship.RoomType;
 
 import static org.junit.Assert.assertTrue;
 

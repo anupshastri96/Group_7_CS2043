@@ -1,7 +1,5 @@
 package inc.vareli.crusman.databases;
 
-import inc.vareli.crusman.data.*;
-
 import java.sql.*;
 
 public abstract class CMConnection implements Connection {
