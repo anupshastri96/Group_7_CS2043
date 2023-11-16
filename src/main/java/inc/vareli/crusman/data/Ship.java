@@ -6,7 +6,7 @@ import java.util.Iterator;
 
 public class Ship {
 	private long ID;
-	private Room[] rooms;
+	private  Room[] rooms;
 
 	public Ship(Connection conn, long ID) {
 		//sql stuff
@@ -27,13 +27,14 @@ public class Ship {
 
 		Iterator<RoomType> iter = roomCounts.keySet().iterator();
 		int prev = 0;
-		for (RoomType currentType = iter.next(); iter.hasNext(); currentType = iter.next()) {
+		do {
+			RoomType currentType = iter.next();
 			int i;
 			for (i = prev; i <  prev + roomCounts.get(currentType); i++) {
 				rooms[i] = new Room(currentType);
 			}
 			prev = i;
-		}
+		} while (iter.hasNext());
 	}
 
 	public boolean addPerson(RoomType roomType, int maxOccupancy) {
@@ -54,13 +55,13 @@ public class Ship {
 			this.type = type;
 			count = 0;
 		}
+
 	}
 
 	public enum RoomType {
 		INTERIOR,
 		OUTSIDE,
 		BALCONY,
-		SUITE,
-		TEST;
+		SUITE;
 	}
 }

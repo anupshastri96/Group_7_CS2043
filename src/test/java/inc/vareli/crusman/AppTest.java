@@ -21,12 +21,10 @@ public class AppTest {
 		roomCounts.put(RoomType.OUTSIDE, 1);
 		roomCounts.put(RoomType.BALCONY, 1);
 		roomCounts.put(RoomType.SUITE, 2);
-		roomCounts.put(RoomType.TEST, 1);
 
 		//making the room should work
 		Ship s = new Ship(1l, roomCounts);
 
-		//adding people should work
 		assertTrue(s.addPerson(RoomType.INTERIOR, 2));
 		assertTrue(s.addPerson(RoomType.INTERIOR, 2));
 
@@ -41,13 +39,11 @@ public class AppTest {
 		assertTrue(!s.addPerson(RoomType.OUTSIDE, 1));
 
 		//and if it works out of order
-		assertTrue(s.addPerson(RoomType.TEST, 1));//THIS FAILS?
-												  //for some reason, the
-												  //last key always fails
-												  //maybe OB1?
-		assertTrue(s.addPerson(RoomType.BALCONY, 2));
 		assertTrue(s.addPerson(RoomType.BALCONY, 2));
 		assertTrue(s.addPerson(RoomType.SUITE, 1));
+		//seeing if multiple rooms works
+		assertTrue(s.addPerson(RoomType.SUITE, 1));
+		assertTrue(!s.addPerson(RoomType.SUITE, 1));
 	}
 
 }
