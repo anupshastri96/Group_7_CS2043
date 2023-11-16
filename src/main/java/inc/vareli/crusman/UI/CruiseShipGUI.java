@@ -2,6 +2,7 @@
  Rough GUI template/layout for Cruise ship application
  @author Mart Cesar Palamine        CS2043
  */
+package inc.vareli.crusman.UI;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -18,13 +19,18 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 
-public class cruiseShipGUI extends Application {
+/**
+ Rough GUI template/layout for Cruise ship application
+
+ @author Mart Cesar Palamine
+ CS2043 
+*/
+public class CruiseShipGUI extends Application {
     private Text shipInfoBox1;
     private Text shipInfoBox2;
     private Text shipInfoBox3;
 
-    public void start (Stage primaryStage) {
-
+    public void start(Stage primaryStage) {
         BorderPane root = new BorderPane();
         AnchorPane anchorPane = new AnchorPane();
         VBox vbox = new VBox(85);
