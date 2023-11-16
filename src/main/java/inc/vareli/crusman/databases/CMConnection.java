@@ -1,19 +1,32 @@
 package inc.vareli.crusman.databases;
 
+import inc.vareli.crusman.databases.Trip.TripBuilder;
+
+import java.util.Map;
 import java.util.Scanner;
 import java.sql.*;
 
 public class CMConnection{
 	private Connection connector;
 	
-	public CMConnection(String loginID, String loginPass) throws SQLException {
+	public CMConnection(String URL, String loginID, String loginPass) throws SQLException {
 		connector = DriverManager.getConnection
-				("jdbc:mysql://cs1103.cs.unb.ca:3306/dbname",
-				 loginID,
-				 loginPass);
+				(URL, loginID, loginPass);
+	}
+
+	public Ship createShip(Map<RoomType,Integer> roomCounts) { //these methods are what will be used to both create
+								//new ships and trips and to write them to the db
+								//this ensures all data will be saved in the db and not lost
+								//they are not implemented because that is arhaan's job
+		long ID = 0;//this should come from some database operation
+		return new Ship(ID, roomCounts);
+	}
+
+	public Trip createTrip(TripBuilder temp) {
+		return temp.build();
 	}
 	
-	public void addShip(long shipID, int interior, int outside, int balcony, int suites) throws SQLException{
+	private void addShip(long shipID, int interior, int outside, int balcony, int suites) throws SQLException{
 		String insert = "insert into Ship values (?,?,?,?,?)";
 		PreparedStatement insertStatement = connector.prepareStatement(insert);
 		insertStatement.setLong(1, shipID);
@@ -25,7 +38,7 @@ public class CMConnection{
 		int affectedRows = insertStatement.executeUpdate();
 	}
 	
-	public void addTrip(long tripID, long shipID, String startPort, String endPort, String visitingPorts,
+	private void addTrip(long tripID, long shipID, String startPort, String endPort, String visitingPorts,
 						Date startDate, Date endDate, double roomCost, double drinkCost, double mealCost, int totalRooms) throws SQLException{
 		String insert = "insert into Trip values (?,?,?,?,?,?,?,?,?,?,?)";
 		PreparedStatement insertStatement = connector.prepareStatement(insert);
