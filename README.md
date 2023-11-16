@@ -1,5 +1,5 @@
 # Group_7_CS2043
-We are making a cruise management system called CrusMan
+A program for managing a cruise line company's ticket sales.
 
 Sebastien
 Arhaan

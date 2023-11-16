@@ -24,6 +24,11 @@
       <version>4.11</version>
       <scope>test</scope>
     </dependency>
+	<dependency>
+		<groupId>org.openjfx</groupId>
+		<artifactId>javafx-controls</artifactId>
+		<version>21.0.1</version>
+	</dependency>
   </dependencies>
 
   <build>
@@ -85,10 +90,18 @@
 					<LANG>en_US</LANG>
 				</environmentVariables>
 				<!-- Mart, change this for your GUI -->
-			   <mainClass>inc.vareli.crusman.UI.App</mainClass>
+			   <mainClass>inc.vareli.crusman.UI.CrusMan</mainClass>
 			</configuration>
-		</plugin>
-      </plugins>
+	 	</plugin>
+			<plugin>
+				<groupId>org.openjfx</groupId>
+				<artifactId>javafx-maven-plugin</artifactId>
+				<version>0.0.8</version>
+				<configuration>
+					<mainClass>inc.vareli.crusman.UI.CruiseShipGUI</mainClass>
+				</configuration>
+			</plugin>
+		</plugins>
     </pluginManagement>
   </build>
 </project>
