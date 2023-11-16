@@ -1,12 +1,4 @@
-/**
- Rough GUI template/layout for Cruise ship application
-
- @author Mart Cesar Palamine
- CS2043 
-
- cruiseShipGUI.java
- 
- */
+package inc.vareli.crusman.UI;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -22,18 +14,21 @@ import java.text.NumberFormat;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.BorderPane;
 
-public class cruiseShipGUI extends Application {
+/**
+ Rough GUI template/layout for Cruise ship application
+
+ @author Mart Cesar Palamine
+ CS2043 
+*/
+public class CruiseShipGUI extends Application {
     private Text shipInfoBox1;
     private Text shipInfoBox2;
     private Text shipInfoBox3;
 
-    public void start (Stage primaryStage) {
-
+    public void start(Stage primaryStage) {
         BorderPane root = new BorderPane();
         VBox vbox = new VBox(85);
         VBox vbox2 = new VBox(50);
-
-        
 
         //vbox.setAlignment(Pos.BASELINE_RIGHT);
        // vbox2.setAlignment(Pos.CENTER);
@@ -58,8 +53,6 @@ public class cruiseShipGUI extends Application {
         prev.setPrefWidth(75);
         prev.setOnAction(this::prevAction);
 
-        
-
         shipInfoBox1 = new Text("Ship info here");
         shipInfoBox2 = new Text("Ship info here");
         shipInfoBox3 = new Text("Ship info here");
@@ -80,14 +73,11 @@ public class cruiseShipGUI extends Application {
             pane.setVgap(50);
         */
 
-        Scene scene = new Scene (root, 500, 500);
+        Scene scene = new Scene(root, 500, 500);
 
         primaryStage.setScene(scene);
         primaryStage.setTitle("Cruise Ship Application");
         primaryStage.show(); 
-
-        
-
     }
 
         public void bookAction (ActionEvent event) {
