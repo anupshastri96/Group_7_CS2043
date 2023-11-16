@@ -20,6 +20,7 @@ public class Ship {
 	}
 
 	public Ship(long ID, Map<RoomType,Integer> roomCounts) {
+
 		int size = roomCounts.values().stream().mapToInt(t->t).sum();
 		this.ID = ID;
 		this.rooms = new Room[size];
@@ -37,7 +38,7 @@ public class Ship {
 
 	public boolean addPerson(RoomType roomType, int maxOccupancy) {
 		for (Room r : rooms) {
-			if (r.type == roomType && r.count < maxOccupancy) {
+			if (r != null && r.type == roomType && r.count < maxOccupancy) {
 				r.count++;
 				return true;
 			}
@@ -59,6 +60,7 @@ public class Ship {
 		INTERIOR,
 		OUTSIDE,
 		BALCONY,
-		SUITE;
+		SUITE,
+		TEST;
 	}
 }
