@@ -1,13 +1,14 @@
 package inc.vareli.crusman.data;
 
 import inc.vareli.crusman.data.Ship.RoomType;
+import inc.vareli.crusman.databases.CMConnection;
 
 import java.util.Map;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Period;
 
@@ -23,7 +24,7 @@ public class Trip {
 	public Trip(long ID, Ship ship, double mealCost, double drinkCost,
 			    LocalDate startArrival, LocalDate startDeparture,
 				String startLocation, LocalDate destArrival,
-				LocalDate destDeparture, String destLocation) {
+				LocalDate destDeparture, String destLocation) throws SQLException {
 		this.ID = ID;
 		this.ship = ship;
 		this.mealCost = mealCost;
@@ -32,6 +33,10 @@ public class Trip {
 		Port[] tmpPorts = {new Port(startArrival, startDeparture, startLocation),
 			               new Port(destArrival, destDeparture, destLocation)};
 		ports = new ArrayList<Port>(Arrays.asList(tmpPorts));
+		
+		CMConnection newTrip = new CMConnection("exampleID", "examplePWD");
+		newTrip.addTrip(ID, ship.getID(), startLocation, destLocation, ports, startDeparture, destArrival,
+						roomCosts, drinkCost, mealCost, ship.getNumRooms());
 	}
 
 	public Trip addPort(LocalDate arrival, LocalDate departure, String location) {

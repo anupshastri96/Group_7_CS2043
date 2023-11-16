@@ -1,10 +1,14 @@
 package inc.vareli.crusman.data;
 
+import java.sql.SQLException;
+
+import inc.vareli.crusman.databases.CMConnection;
+
 public class Ship {
 	private long ID;
 	private Room[] rooms;
 
-	public Ship(long ID, int inRooms, int outRooms, int balRooms, int suites) {
+	public Ship(long ID, int inRooms, int outRooms, int balRooms, int suites) throws SQLException {
 		this.ID = ID;
 		rooms = new Room[inRooms+outRooms+balRooms+suites];
 		for (int i = 0; i < rooms.length; i++) {
@@ -20,6 +24,9 @@ public class Ship {
 				rooms[i] = new Room(RoomType.SUITE);
 			}
 		}
+		
+		CMConnection newShip = new CMConnection("exampleID", "examplePWD");
+		newShip.addShip(ID, inRooms, outRooms, balRooms, suites);
 	}
 
 	public boolean addPerson(RoomType roomType, int maxOccupancy) {
@@ -47,5 +54,13 @@ public class Ship {
 		OUTSIDE,
 		BALCONY,
 		SUITE;
+	}
+	
+	public long getID() {
+		return ID;
+	}
+	
+	public int getNumRooms() {
+		return rooms.length;
 	}
 }
