@@ -54,5 +54,4 @@ public class CMConnection{
 		insertStatement.setDouble(10, mealCost);
 		insertStatement.setInt(11, totalRooms);
 	}
-	
 }
