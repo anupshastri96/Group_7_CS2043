@@ -108,9 +108,9 @@ public class CruiseShipGUI extends Application {
             vbox3.getChildren().addAll(customerName, printTicket, returnButton);
 
             ComboBox cb1 = new ComboBox();
-              ComboBox cb2 = new ComboBox();
-               ComboBox cb3 = new ComboBox();
-                ComboBox cb4 = new ComboBox();
+            ComboBox cb2 = new ComboBox();
+            ComboBox cb3 = new ComboBox();
+            ComboBox cb4 = new ComboBox();
 
             ObservableList<String> mealList = cb1.getItems();
             mealList.add("single plan");
