@@ -4,26 +4,42 @@ import inc.vareli.crusman.databases.Ship.RoomType;
 import inc.vareli.crusman.databases.Trip.TripBuilder;
 
 import java.util.Map;
-import java.util.Scanner;
 import java.sql.*;
 
 public class CMConnection{
 	private Connection connector;
 	
-	public CMConnection(String URL, String loginID, String loginPass) throws SQLException {
-
+	public CMConnection(String URL, String loginID, String loginPass) {//throws IllegalArgumentException 
+		//try {
+		//	this.connector = DriverManager.getConnection(URL, loginID, loginPass);
+		//catch (SQLException sqle) {
+		//	throw new IllegalArgumentException(sqle, sqle.getMessage());
+		//}
 	}
 
-	public Ship createShip(Map<RoomType,Integer> roomCounts) { //these methods are what will be used to both create
-								//new ships and trips and to write them to the db
-								//this ensures all data will be saved in the db and not lost
-								//they are not implemented because that is arhaan's job
+	//these methods are what will be used to both create
+	//new ships and trips and to write them to the db
+	//this ensures all data will be saved in the db and not lost
+	//they are not implemented because that is arhaan's job
+	public Ship createShip(Map<RoomType,Integer> roomCounts) { 
 		long ID = 0;//this should come from some database operation
+		//try {
+		//	some database operation storing this Ship to the db
+		//} catch (SQLException sqle) {
+		//	throw new IllegalArgumentException(sqle, "Invalid inputs for createShip()");
+		//}
 		return new Ship(ID, roomCounts);
 	}
 
 	public Trip createTrip(TripBuilder temp) {
-		return temp.build();
+		Trip toReturn = temp.build();
+		//try {
+		// some database operation using toReturn's data
+		//} catch (SQLException sqle) {
+		// throw new 
+		//	IllegalStateException(sqle, "TripBuilder in createTrip() is not complete.");
+		//}
+		return toReturn;
 	}
 	
 	private void addShip(long shipID, int interior, int outside, int balcony, int suites) throws SQLException{
