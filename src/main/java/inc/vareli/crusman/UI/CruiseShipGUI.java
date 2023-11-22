@@ -49,15 +49,15 @@ public class CruiseShipGUI extends Application {
 
         Button butt1 = new Button("BOOK");
         butt1.setPrefWidth(75);
-        butt1.setOnAction(this::bookAction);
+        butt1.setOnAction(this::bookAction1);
 
         Button butt2 = new Button("BOOK");
         butt2.setPrefWidth(75);
-        butt2.setOnAction(this::bookAction);
+        butt2.setOnAction(this::bookAction2);
 
         Button butt3 = new Button("BOOK");
         butt3.setPrefWidth(75);
-        butt3.setOnAction(this::bookAction);
+        butt3.setOnAction(this::bookAction3);
 
         Button next = new Button("NEXT");
         next.setPrefWidth(75);
@@ -87,7 +87,24 @@ public class CruiseShipGUI extends Application {
         stage.show(); 
 
     }
-        public void bookAction (ActionEvent event) {
+
+    public void bookAction1 (ActionEvent event) {
+                switchToScene2();
+        }
+
+    public void bookAction2 (ActionEvent event) {
+                switchToScene2();
+        }
+
+    public void bookAction3 (ActionEvent event) {
+                switchToScene2();
+        }
+
+    /**
+     * @param void 
+     *  - creates and switches scene2 whenever any of the 'Book' Button is pressed.
+     */
+        public void switchToScene2() {
 
             Label mealLabel = new Label("Meal Plan");
             Label roomLabel = new Label("Room Plan");
@@ -146,7 +163,11 @@ public class CruiseShipGUI extends Application {
             stage.show();
 
         }
-        //switches scene
+
+        /**
+         * @param void scene - scene
+         * used to return back to the 1st scene
+         */
         public void switchScenes(Scene scene) {
                 stage.setScene(scene);
         }
