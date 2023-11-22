@@ -83,6 +83,7 @@ public class CruiseShipGUI extends Application {
 
         stage.setScene(scene);
         stage.setTitle("Cruise Ship Application");
+        stage.setResizable(false);
         stage.show(); 
 
     }
@@ -101,6 +102,7 @@ public class CruiseShipGUI extends Application {
 
             Button printTicket = new Button("PRINT TICKET");
             printTicket.setPrefWidth(300);
+            printTicket.setOnAction(this::ticketAction);
 
             HBox hbox3 = new HBox(30);
             HBox hbox4 = new HBox(70);
@@ -149,6 +151,7 @@ public class CruiseShipGUI extends Application {
                 stage.setScene(scene);
         }
         
+        public void ticketAction (ActionEvent event) {}
         public void nextAction (ActionEvent event) {}
         public void prevAction (ActionEvent event) {}
 }
