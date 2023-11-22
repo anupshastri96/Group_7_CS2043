@@ -6,7 +6,7 @@ import java.util.Iterator;
 public class Ship {
 
 	private final long ID;
-	private  Room[] rooms;
+	private Room[] rooms;
 
 	/**
 	 * A constructor. Creates a Ship with the specified ID and room counts
