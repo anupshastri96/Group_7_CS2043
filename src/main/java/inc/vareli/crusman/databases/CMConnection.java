@@ -6,7 +6,7 @@ import inc.vareli.crusman.databases.Trip.TripBuilder;
 import java.util.Map;
 import java.sql.*;
 
-public class CMConnection{
+public class CMConnection {
 	private Connection connector;
 	
 	public CMConnection(String URL, String loginID, String loginPass) {//throws IllegalArgumentException 
