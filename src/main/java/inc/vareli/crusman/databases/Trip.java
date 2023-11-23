@@ -78,7 +78,7 @@ public class Trip {
 		NumberFormat nf = NumberFormat.getCurrencyInstance();
 		StringBuilder builder = new StringBuilder();
 		builder.append(this.SHIP.toString());
-		for (CostType cost : COSTS) {
+		for (CostType cost : COSTS.keySet()) {
 			builder.append(cost.toString() + ": " + nf.format(COSTS.get(cost)));
 		}
 		return builder.toString();
