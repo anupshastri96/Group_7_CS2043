@@ -5,6 +5,8 @@
 
 package inc.vareli.crusman.UI;
 
+import inc.vareli.crusman.databases.*;
+
 import javafx.collections.ObservableList;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -15,13 +17,13 @@ import javafx.scene.control.Button;
 import javafx.scene.text.Text;
 import javafx.geometry.Pos;
 import javafx.event.ActionEvent; 
-import java.text.NumberFormat;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.control.ComboBox;
+import java.util.List;
 
 
 /**
@@ -35,29 +37,89 @@ public class CruiseShipGUI extends Application {
     private Text shipInfoBox1;
     private Text shipInfoBox2;
     private Text shipInfoBox3;
+    private Scene popUpBoxScene;
     private Scene scene;
     private Scene scene2;
     private Stage stage;
 
+    private TextField urlField;
+    private TextField idField;
+    private TextField passField;
+    private Label lblError;
+
+    /* 
+    List<Trip> trips = conn.queryTrips();
+    user selection stuff -> Trip trip = trips.asfigoslfh 
+    */
+
     public void start (Stage primaryStage) {
 
-        BorderPane root = new BorderPane();
         stage = primaryStage;
+        VBox vboxPopup = new VBox(20);
+        Button submitButt = new Button("Submit");
+        submitButt.setPrefWidth(75);
+        //submitButt.setOnAction(e -> switchToSceneOne());
+        submitButt.setOnAction(this::submitAction);
+
+        lblError = new Label("Error Label");
+        urlField = new TextField("Enter URL");
+        idField = new TextField("Enter ID");
+        passField = new TextField("Enter Password");
+
+        vboxPopup.getChildren().addAll(urlField, idField, passField, submitButt, lblError);
+    
+        FlowPane fpanePopup = new FlowPane(vboxPopup);
+        fpanePopup.setAlignment(Pos.CENTER);
+        fpanePopup.setHgap(20);
+		fpanePopup.setVgap(50);
+
+        popUpBoxScene = new Scene (fpanePopup, 300, 500);
+            stage.setScene(popUpBoxScene);
+            stage.setTitle("Enter Info");
+            stage.show();
+
+    }
+    
+      
+
+    public void submitAction (ActionEvent event) {
+        String url = urlField.getText();
+        String ID = idField.getText();
+        String pass = passField.getText();
+        CMConnection conn = null; 
+        while (true) {
+            try {
+                conn = new CMConnection(url, ID, pass);
+                break;
+            } catch (IllegalArgumentException iae) {
+                lblError.setText(iae.getMessage());
+            }
+        }
+
+        switchToSceneOne();
+    }
+    
+    
+                            
+    public void switchToSceneOne() {
+
+        BorderPane root = new BorderPane();
+        
         VBox vbox = new VBox(85);
         VBox vbox2 = new VBox(95);
         HBox hbox = new HBox(350);
 
         Button butt1 = new Button("BOOK");
         butt1.setPrefWidth(75);
-        butt1.setOnAction(this::bookAction1);
+        butt1.setOnAction(this::bookFirstAction);
 
         Button butt2 = new Button("BOOK");
         butt2.setPrefWidth(75);
-        butt2.setOnAction(this::bookAction2);
+        butt2.setOnAction(this::bookSecondAction);
 
         Button butt3 = new Button("BOOK");
         butt3.setPrefWidth(75);
-        butt3.setOnAction(this::bookAction3);
+        butt3.setOnAction(this::bookThirdAction);
 
         Button next = new Button("NEXT");
         next.setPrefWidth(75);
@@ -88,23 +150,7 @@ public class CruiseShipGUI extends Application {
 
     }
 
-    public void bookAction1 (ActionEvent event) {
-                switchToScene2();
-        }
-
-    public void bookAction2 (ActionEvent event) {
-                switchToScene2();
-        }
-
-    public void bookAction3 (ActionEvent event) {
-                switchToScene2();
-        }
-
-    /**
-     * @param void 
-     *  - creates and switches scene2 whenever any of the 'Book' Button is pressed.
-     */
-        public void switchToScene2() {
+    public void switchToSceneTwo() {
 
             Label mealLabel = new Label("Meal Plan");
             Label roomLabel = new Label("Room Plan");
@@ -115,7 +161,7 @@ public class CruiseShipGUI extends Application {
 
              Button returnButton = new Button("RETURN");
             returnButton.setPrefWidth(300);
-            returnButton.setOnAction(e -> switchScenes(scene));
+            returnButton.setOnAction(e -> switchToSceneOne());
 
             Button printTicket = new Button("PRINT TICKET");
             printTicket.setPrefWidth(300);
@@ -137,10 +183,6 @@ public class CruiseShipGUI extends Application {
             mealList.add("family plan");
 
             ObservableList<String> roomList = cb2.getItems();
-            roomList.add("balcony");
-            roomList.add("Outside View");
-            roomList.add("Suite");
-
             ObservableList<String> boardingList = cb3.getItems();
             boardingList.add("board port 1");
             boardingList.add("board port 2");
@@ -163,13 +205,15 @@ public class CruiseShipGUI extends Application {
             stage.show();
 
         }
-
-        /**
-         * @param void scene - scene
-         * used to return back to the 1st scene
-         */
-        public void switchScenes(Scene scene) {
-                stage.setScene(scene);
+        
+        public void bookFirstAction (ActionEvent event) {
+            switchToSceneTwo();
+        }
+        public void bookSecondAction (ActionEvent event) {
+            switchToSceneTwo();
+        }
+        public void bookThirdAction (ActionEvent event) {
+            switchToSceneTwo();
         }
         
         public void ticketAction (ActionEvent event) {}
