@@ -95,10 +95,10 @@ public class CruiseShipGUI extends Application {
         HBox hbox = new HBox(350);
 
 	Button[] bookingButtons = new Button[3];
-	for (Button butt : bookingButtons) {
-		butt = new Button("BOOK");
-		butt.setPrefWidth(75);
-		butt.setOnAction(this::switchToBookingScene);
+	for (int i = 0; i < bookingButtons.length; i++) {
+		bookingButtongs[i] = new Button("BOOK");
+		bookingButtongs[i].setPrefWidth(75);
+		bookingButtongs[i].setOnAction(this::switchToBookingScene);
 	}
 
         Button next = new Button("NEXT");
@@ -112,8 +112,8 @@ public class CruiseShipGUI extends Application {
 	tripListings = new Text[3];
 
 	//TODO - make this get the trips from the database
-	for (Text tripInfo : tripListings) {
-		tripInfo = new Text("Trip info here.");
+	for (int i = 0; i < tripListings.length; i++) {
+		tripListings[i] = new Text("Trip info here.");
 	}
 
 	//HOMEWORK: name this better ffs
@@ -123,18 +123,8 @@ public class CruiseShipGUI extends Application {
 
 	//this too
         hbox.getChildren().addAll(next, prev);
-
-	for (int i = 0; i < tripListings.length; i++) {
-		tripListings[i] = new Text("Text.");
-		vbox2.getChildren().addAll(tripListings[i]);
-	}
-
-	for (int i = 0; i < bookingButtons.length; i++) {
-		bookingButtons[i] = new Button("BOOK");
-		bookingButtons[i].setPrefWidth(75);
-		bookingButtons[i].setOnAction(this::switchToBookingScene);
-		vbox.getChildren().addAll(bookingButtons[i]);
-	}
+	vbox2.getChildren().addAll(tripListings);
+	vbox.getChildren().addAll(bookingButtons);
 
         browsingScene = new Scene(root, 500, 500);
 
