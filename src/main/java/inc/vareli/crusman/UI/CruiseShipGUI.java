@@ -65,10 +65,10 @@ public class CruiseShipGUI extends Application {
         fpanePopup.setHgap(20);
 	fpanePopup.setVgap(50);
 
-        stage = new Scene (fpanePopup, 300, 500);
-    	stagwe.setScene(loginScene);
+        loginScene = new Scene(fpanePopup, 300, 500);
+    	stage.setScene(loginScene);
     	stage.setTitle("Enter Info");
-	stage.setResizeable(false);
+	stage.setResizable(false);
     	stage.show();
     }
     
@@ -88,7 +88,7 @@ public class CruiseShipGUI extends Application {
     
     
                             
-    public void switchToBrowseScene() {
+    public void switchToBrowseScene(ActionEvent event) {
         BorderPane root = new BorderPane();
         VBox vbox = new VBox(85);
         VBox vbox2 = new VBox(95);
@@ -121,7 +121,7 @@ public class CruiseShipGUI extends Application {
         
 	//this too
         hbox.getChildren().addAll(next, prev);
-        vbox2.getChildren().addAll(shipInfoBox1, shipInfoBox2, shipInfoBox3);
+        vbox2.getChildren().addAll(tripListings);
         vbox.getChildren().addAll(bookingButtons);
 
         browsingScene = new Scene(root, 500, 500);
@@ -130,7 +130,7 @@ public class CruiseShipGUI extends Application {
         stage.setTitle("Crus, Man!");
     }
 
-    public void switchToBookingScene() {
+    public void switchToBookingScene(ActionEvent event) {
             Label mealLabel = new Label("Meal Plan");
             Label roomLabel = new Label("Room Plan");
             
@@ -176,8 +176,8 @@ public class CruiseShipGUI extends Application {
 				pane.setHgap(50);
 				pane.setVgap(60);
 
-            scene2 = new Scene (pane, 700, 500);
-            stage.setScene(scene2);
+            bookingScene = new Scene (pane, 700, 500);
+            stage.setScene(bookingScene);
             stage.setTitle("Print ticket");
         }
 
