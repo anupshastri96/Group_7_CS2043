@@ -120,6 +120,8 @@ public class CruiseShipGUI extends Application {
         root.setCenter(vbox2);
         root.setRight(vbox);
         root.setBottom(hbox);
+
+	tripListings[0] = new Text("Trip info here.");
         
 	//this too
         hbox.getChildren().addAll(next, prev);
