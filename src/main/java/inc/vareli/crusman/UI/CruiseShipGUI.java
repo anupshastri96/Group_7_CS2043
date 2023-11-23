@@ -122,6 +122,7 @@ public class CruiseShipGUI extends Application {
         root.setBottom(hbox);
 
 	tripListings[0] = new Text("Trip info here.");
+	bookingButtons[0] = new Button("Fart");
         
 	//this too
         hbox.getChildren().addAll(next, prev);
