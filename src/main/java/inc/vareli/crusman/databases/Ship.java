@@ -66,6 +66,22 @@ public class Ship {
 		return builder.toString();
 	}
 
+	/**
+	 * A method to get the total occupancy of all the rooms of roomType on
+	 * this Ship
+	 * @param roomType - the type of the room we want to find the total occupancy of
+	 * @return the total occupancy of all rooms of type roomType
+	 */
+	public int getTotalOccupancy(RoomType roomType) {
+		int sum = 0;
+		for (Room r : rooms) {
+			if (r.type == roomType) {
+				sum += r.count;
+			}
+		}
+		return sum;
+	}
+
 	private static class Room {
 		public RoomType type;
 		public int count;
@@ -74,7 +90,6 @@ public class Ship {
 			this.type = type;
 			count = 0;
 		}
-
 	}
 
 	/**
