@@ -51,9 +51,6 @@ public class Ship {
 		return false;
 	}
 
-
-
-
 	/**
 	 * A method to get the total occupancy of all the rooms of roomType on
 	 * this Ship
