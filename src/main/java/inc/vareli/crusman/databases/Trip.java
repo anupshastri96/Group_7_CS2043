@@ -79,8 +79,10 @@ public class Trip {
 		StringBuilder builder = new StringBuilder();
 		builder.append(this.SHIP.toString());
 		for (CostType cost : COSTS.keySet()) {
-			builder.append(cost.toString() + ": " + nf.format(COSTS.get(cost)));
+			builder.append(cost.toString() + ": " + nf.format(COSTS.get(cost)) + "\n");
 		}
+		builder.append(this.PORTS[0].location + ", " + this.PORTS[0].departure + "\n");
+		builder.append(this.PORTS[this.PORTS.length].location + ", " + this.PORTS[this.PORTS.length].arrival + "\n");
 		return builder.toString();
 	}
 
