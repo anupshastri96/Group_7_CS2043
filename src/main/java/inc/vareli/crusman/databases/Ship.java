@@ -6,7 +6,7 @@ import java.util.Iterator;
 public class Ship {
 
 	private final long ID;
-	private  Room[] rooms;
+	private Room[] rooms;
 
 	/**
 	 * A constructor. Creates a Ship with the specified ID and room counts
@@ -51,7 +51,38 @@ public class Ship {
 		return false;
 	}
 
-	private static class Room {
+	/**
+	 * A method to get the total occupancy of all the rooms of roomType on
+	 * this Ship
+	 * @param roomType - the type of the room we want to find the total occupancy of
+	 * @return the total occupancy of all rooms of type roomType
+	 */
+	public int getTotalOccupancy(RoomType roomType) {
+		int sum = 0;
+		for (Room r : rooms) {
+			if (r.type == roomType) {
+				sum += r.count;
+			}
+		}
+		return sum;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		for (RoomType type : RoomType.values()) {
+			int typeCount = 0;
+			for (Room r : rooms) {
+				if (r.type == type) {
+					typeCount++;
+				}
+			}
+			builder.append(typeCount + " " + type + " rooms.\n");
+		}
+		return builder.toString();
+	}
+
+	protected static class Room {
 		public RoomType type;
 		public int count;
 
@@ -59,16 +90,25 @@ public class Ship {
 			this.type = type;
 			count = 0;
 		}
-
 	}
 
 	/**
 	 * An enum of the possible types of rooms. Rooms are a type of cost as well.
 	 */
 	public enum RoomType implements CostType {
-		INTERIOR,
-		OUTSIDE,
-		BALCONY,
-		SUITE;
+		INTERIOR("Interior"),
+		OUTSIDE("Outside"),
+		BALCONY("Balcony"),
+		SUITE("Suite");
+
+		private String name;
+
+		private RoomType(String name) {
+			this.name = name;
+		}
+
+		public String toString() {
+			return name;
+		}
 	}
 }

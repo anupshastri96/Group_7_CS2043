@@ -1,9 +1,7 @@
-/**
-  GUI template/layout for Cruise ship application
- @author Mart Cesar Palamine        CS2043
- */
-
 package inc.vareli.crusman.UI;
+
+import inc.vareli.crusman.databases.*;
+import inc.vareli.crusman.databases.Ship.RoomType;
 
 import javafx.collections.ObservableList;
 import javafx.application.Application;
@@ -15,140 +13,178 @@ import javafx.scene.control.Button;
 import javafx.scene.text.Text;
 import javafx.geometry.Pos;
 import javafx.event.ActionEvent; 
-import java.text.NumberFormat;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.control.ComboBox;
-
+import java.util.List;
 
 /**
- Rough GUI template/layout for Cruise ship application
-
- @author Mart Cesar Palamine
- CS2043 
-*/
-
+ * The main entry point to CrusMan, where users will interact with the data and buy tickets etc
+ *
+ * @author Mart Palamine
+ */
 public class CruiseShipGUI extends Application {
-    private Text shipInfoBox1;
-    private Text shipInfoBox2;
-    private Text shipInfoBox3;
-    private Scene scene;
-    private Scene scene2;
+    private Text[] tripListings;
+    private Scene loginScene;
+    private Scene browsingScene;
+    private Scene bookingScene;
+    private Scene createShipScene;
     private Stage stage;
 
-    public void start (Stage primaryStage) {
+    private TextField loginURLField;
+    private TextField loginIDField;
+    private TextField loginPassField;
+    private Label loginError;
 
+    private CMConnection conn;
+
+    /* 
+    List<Trip> trips = conn.queryTrips();
+    user selection stuff -> Trip trip = trips.asfigoslfh 
+    */
+
+    public void start(Stage stage) {
+	this.stage = stage;
+        VBox loginFields = new VBox(20);
+        Button submit = new Button("Submit");
+        submit.setPrefWidth(75);
+        submit.setOnAction(this::submitLogin);
+
+        loginError = new Label("Error Label");
+        loginURLField = new TextField("Enter URL");
+        loginIDField = new TextField("Enter ID");
+        loginPassField = new TextField("Enter Password");
+
+        loginFields.getChildren().addAll(loginURLField, loginIDField, loginPassField, submit, loginError);
+    
+        FlowPane fpanePopup = new FlowPane(loginFields);
+        fpanePopup.setAlignment(Pos.CENTER);
+        fpanePopup.setHgap(20);
+	fpanePopup.setVgap(50);
+
+        loginScene = new Scene(fpanePopup, 300, 500);
+    	stage.setScene(loginScene);
+    	stage.setTitle("Enter Info");
+	stage.setResizable(false);
+    	stage.show();
+    }
+    
+
+    public void submitLogin(ActionEvent event) {
+        String url = loginURLField.getText();
+        String ID = loginIDField.getText();
+        String pass = loginPassField.getText();
+    	try {
+		//conn = new CMConnection(url, ID, pass);
+		switchToBrowseScene(event);
+    	} catch (IllegalArgumentException iae) {
+		loginError.setText(iae.getMessage());
+		return;
+	}
+    }
+    
+    
+                            
+    public void switchToBrowseScene(ActionEvent event) {
         BorderPane root = new BorderPane();
-        stage = primaryStage;
         VBox vbox = new VBox(85);
         VBox vbox2 = new VBox(95);
         HBox hbox = new HBox(350);
 
-        Button butt1 = new Button("BOOK");
-        butt1.setPrefWidth(75);
-        butt1.setOnAction(this::bookAction);
-
-        Button butt2 = new Button("BOOK");
-        butt2.setPrefWidth(75);
-        butt2.setOnAction(this::bookAction);
-
-        Button butt3 = new Button("BOOK");
-        butt3.setPrefWidth(75);
-        butt3.setOnAction(this::bookAction);
-
         Button next = new Button("NEXT");
         next.setPrefWidth(75);
-        next.setOnAction(this::nextAction);
+        next.setOnAction(this::next);
 
         Button prev = new Button("PREV");
         prev.setPrefWidth(75);
-        prev.setOnAction(this::prevAction);
+        prev.setOnAction(this::prev);
 
-        shipInfoBox1 = new Text("Ship info here");
-        shipInfoBox2 = new Text("Ship info here");
-        shipInfoBox3 = new Text("Ship info here");
 
+	//TODO - make this get the trips from the database
+	tripListings = new Text[3];
+	for (int i = 0; i < tripListings.length; i++) {
+		tripListings[i] = new Text("Trip info here.");
+	}
+
+	Button[] bookingButtons = new Button[tripListings.length];//this needs to be same length as tripListings
+	for (int i = 0; i < bookingButtons.length; i++) {
+		bookingButtons[i] = new Button("BOOK");
+		bookingButtons[i].setPrefWidth(75);
+		bookingButtons[i].setOnAction(this::switchToBookingScene);
+	}
+
+	//HOMEWORK: name this better ffs
         root.setCenter(vbox2);
         root.setRight(vbox);
         root.setBottom(hbox);
-        
+
+	//this too
         hbox.getChildren().addAll(next, prev);
-        vbox2.getChildren().addAll(shipInfoBox1, shipInfoBox2, shipInfoBox3);
-        vbox.getChildren().addAll(butt1, butt2, butt3);
+	vbox2.getChildren().addAll(tripListings);
+	vbox.getChildren().addAll(bookingButtons);
 
-        scene = new Scene (root, 500, 500);
+        browsingScene = new Scene(root, 500, 500);
 
-        stage.setScene(scene);
-        stage.setTitle("Cruise Ship Application");
-        stage.show(); 
-
+        stage.setScene(browsingScene);
+        stage.setTitle("Crus, Man!");
     }
-        public void bookAction (ActionEvent event) {
 
+    public void switchToBookingScene(ActionEvent event) {
             Label mealLabel = new Label("Meal Plan");
             Label roomLabel = new Label("Room Plan");
-            Label boardLabel = new Label("Boarding Port");
-            Label destLabel = new Label("Destination Port");
             
+	    //TODO - MAKE THIS BETTER
             TextField customerName = new TextField("Input Customer Name");
 
-             Button returnButton = new Button("RETURN");
+            Button returnButton = new Button("RETURN");
             returnButton.setPrefWidth(300);
-            returnButton.setOnAction(e -> switchScenes(scene));
+            returnButton.setOnAction(this::switchToBrowseScene);
 
             Button printTicket = new Button("PRINT TICKET");
             printTicket.setPrefWidth(300);
+            printTicket.setOnAction(this::printTicket);
 
+	    //if this is temporary then fix it so help me god
             HBox hbox3 = new HBox(30);
             HBox hbox4 = new HBox(70);
             VBox vbox3 = new VBox(20);
             vbox3.getChildren().addAll(customerName, printTicket, returnButton);
 
+	    //what the fuck is this
             ComboBox cb1 = new ComboBox();
             ComboBox cb2 = new ComboBox();
             ComboBox cb3 = new ComboBox();
             ComboBox cb4 = new ComboBox();
 
+	    //meals are opt in or opt out. meals have a single cost and that cost is zero if opt out
             ObservableList<String> mealList = cb1.getItems();
             mealList.add("single plan");
             mealList.add("double plan");
             mealList.add("family plan");
 
+	    //TODO - trip info will show the occupancy, only allow them to pick room types that arent fully occupied
             ObservableList<String> roomList = cb2.getItems();
-            roomList.add("balcony");
-            roomList.add("Outside View");
-            roomList.add("Suite");
-
-            ObservableList<String> boardingList = cb3.getItems();
-            boardingList.add("board port 1");
-            boardingList.add("board port 2");
-
-            ObservableList<String> destinationList = cb4.getItems();
-            destinationList.add("Destination 2");
-            destinationList.add("Destination 3");
-
-            hbox3.getChildren().addAll(cb1, cb2, cb3, cb4 );
-            hbox4.getChildren().addAll(mealLabel, roomLabel, boardLabel, destLabel);
+            for (RoomType roomType : RoomType.values()) {
+                roomList.add(roomType.toString());
+            }
+            hbox3.getChildren().addAll(cb1, cb2);
+            hbox4.getChildren().addAll(mealLabel, roomLabel);
 
             FlowPane pane = new FlowPane(hbox4, hbox3, vbox3);
             pane.setAlignment(Pos.CENTER);
 				pane.setHgap(50);
 				pane.setVgap(60);
 
-            scene2 = new Scene (pane, 700, 500);
-            stage.setScene(scene2);
+            bookingScene = new Scene (pane, 700, 500);
+            stage.setScene(bookingScene);
             stage.setTitle("Print ticket");
-            stage.show();
+        }
 
-        }
-        //switches scene
-        public void switchScenes(Scene scene) {
-                stage.setScene(scene);
-        }
-        
-        public void nextAction (ActionEvent event) {}
-        public void prevAction (ActionEvent event) {}
+    	//TODO
+        public void printTicket(ActionEvent event) {}
+        public void next(ActionEvent event) {} //TODO - MART!!!!
+        public void prev(ActionEvent event) {}
 }
