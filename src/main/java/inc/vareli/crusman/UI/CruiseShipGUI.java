@@ -79,7 +79,7 @@ public class CruiseShipGUI extends Application {
         String pass = loginPassField.getText();
     	try {
 		//conn = new CMConnection(url, ID, pass);
-		switchToBrowseScene();
+		switchToBrowseScene(event);
     	} catch (IllegalArgumentException iae) {
 		loginError.setText(iae.getMessage());
 		return;
