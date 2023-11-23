@@ -3,23 +3,22 @@ package inc.vareli.crusman.databases;
 import inc.vareli.crusman.databases.Ship.RoomType;
 import inc.vareli.crusman.databases.Trip.TripBuilder;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Map;
 import java.sql.*;
-/*Contains methods to connect the application to a mySQL database hosted on the UNB servers.
- * @author Arhaan Sami 3751940*/
+
+/**
+ * A wrapper around java.sql.Connection to encapsulate it for use in CrusMan
+ * @author Arhaan Sami 3751940
+ */
 public class CMConnection {
 	private Connection connector;
-	/*
-	 Creates a database connection, and sets up the tables to be used in all database operations. If tables already exist, it does not create duplicates.
+	/**
+	 *Creates a database connection, and sets up the tables to be used in all database operations. If tables already exist, it does not create duplicates.
 	 */
 	public CMConnection(String url, String loginID, String loginPass) throws IllegalArgumentException { 
-		//this is just so my tests can work
-		if (url == null) {
-			connector = null;
-			return;
-		}
 		try {
 			connector = DriverManager.getConnection(url, loginID, loginPass);
 			String shipCreator = "Create table CruiseShip (shipID int unsigned not null primary key, " +
@@ -57,11 +56,7 @@ public class CMConnection {
 	/*Creates a ship object and enters its data into the database.
 	 * @param roomCounts The numbers of room of each type
 	 * @return A ship object with the ID and */
-	public Ship createShip(Map<RoomType,Integer> roomCounts) throws IllegalArgumentException{ 
-		//just so my tests can work, remove later
-		if (connector == null) {
-			return new Ship(0, roomCounts);
-		}
+	public Ship createShip(Map<RoomType,Integer> roomCounts) throws IllegalArgumentException {
 		String retrieveID = "select shipID from CruiseShip";
 		int id = 1000;
 		try {
@@ -89,8 +84,8 @@ public class CMConnection {
 		return new Ship(id, roomCounts);
 	}
 	
-	public ArrayList<Ship> queryShip() throws IllegalArgumentException{
-		ArrayList<Ship> shipList = new ArrayList<Ship>();
+	public List<Ship> queryShip() throws IllegalArgumentException{
+		List<Ship> shipList = new ArrayList<Ship>();
 		String queryStatement = "select * from CruiseShip";
 		try {
 			PreparedStatement retrieveStatement = connector.prepareStatement(queryStatement);
@@ -121,6 +116,23 @@ public class CMConnection {
 		return toReturn;
 	}
 	
+	public List<Trip> queryTrip(){
+		List<Trip> tripList = new ArrayList<Trip>();
+		String[] queryStatements = {"select * from Trip", "select * from Port", "select * from RoomInfo"};
+		ResultSet[] queryResults = new ResultSet[queryStatements.length];
+		try {	
+			for(int i = 0; i< queryStatements.length; i++) {
+				PreparedStatement retrieveStatement = connector.prepareStatement(queryStatements[i]);
+				queryResults[i] = retrieveStatement.executeQuery();			
+			}
+			while(queryResults[1].next()) {
+				
+			}
+		} catch(SQLException e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
+		return tripList;
+	}
 	
 	private void addTrip(long tripID, long shipID, String startPort, String endPort, String visitingPorts,
 						Date startDate, Date endDate, double roomCost, double drinkCost, double mealCost, int totalRooms) throws SQLException{
