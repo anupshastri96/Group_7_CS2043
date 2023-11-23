@@ -126,8 +126,8 @@ public class CruiseShipGUI extends Application {
         
 	//this too
         hbox.getChildren().addAll(next, prev);
-        vbox2.getChildren().addAll(tripListings);
-        vbox.getChildren().addAll(bookingButtons);
+        vbox2.getChildren().setAll(tripListings);
+        vbox.getChildren().setAll(bookingButtons);
 
         browsingScene = new Scene(root, 500, 500);
 
