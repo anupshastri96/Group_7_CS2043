@@ -28,26 +28,26 @@ public class Trip {
 	 * The ship that this trip ison.
 	 * Protected so that CMConnection ca write to the DB
 	 */
-	protected Ship ship;
+	protected final Ship SHIP;
 
 	/**
 	 * A list of ports that the trip will go on.
 	 * Protected so CMConnection can write to the DB
 	 */
-	protected List<Port> ports;
+	protected final List<Port> PORTS;
 
 	/**
 	 * A mapping of different costs to how much they cost for this particular
 	 * trip.
 	 * Protected so CMConnection can write them to the DB.
 	 */
-	protected Map<CostType,Double> costs;
+	protected final Map<CostType,Double> COSTS;
 
 	private Trip(long ID, Ship ship, List<Port> ports, Map<CostType,Double> costs) {
 		this.ID = ID;
-		this.ship = ship;
-		this.ports = ports;
-		this.costs = costs;
+		this.SHIP = ship;
+		this.PORTS = ports;
+		this.COSTS = costs;
 	}
 
 	/**
@@ -58,7 +58,7 @@ public class Trip {
 	 */
 	public boolean addPerson(RoomType type) {
 		long days = this.getDuration();
-		return ship.addPerson(type, (days <= 2) ? 5 : 4);
+		return SHIP.addPerson(type, (days <= 2) ? 5 : 4);
 	}
 
 	/**
@@ -66,10 +66,10 @@ public class Trip {
 	 * @return a long value representing the number of days long this trip is
 	 */
 	public long getDuration() {
-		int z = ports.size();
+		int z = PORTS.size();
 		return Duration.between(
-							ports.get(0).arrival.toInstant(),
-							ports.get(z).departure.toInstant()
+							PORTS.get(0).arrival.toInstant(),
+							PORTS.get(z).departure.toInstant()
 						).toDays();
 	}
 
@@ -79,7 +79,7 @@ public class Trip {
 	 * correct timezone for the situation.
 	 * Calculations and stuff use UTC-0 (unix time)
 	 */
-	private static class Port { 
+	protected static class Port { 
 		public String location;
 		public TimeZone zone;
 		public Date arrival;
@@ -114,8 +114,7 @@ public class Trip {
 		/**
 		 * Constructor. Initialized ID and ship as these are non-null values
 		 */
-		public TripBuilder(long ID, Ship ship) {
-			this.ID = ID;
+		public TripBuilder(Ship ship) {
 			this.ship = ship;
 			this.ports = new ArrayList<Port>();
 			this.costs = new HashMap<CostType,Double>();

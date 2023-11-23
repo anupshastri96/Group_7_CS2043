@@ -5,8 +5,8 @@ import java.util.Iterator;
 
 public class Ship {
 
-	private final long ID;
-	private  Room[] rooms;
+	protected final int ID;
+	protected Room[] rooms;
 
 	/**
 	 * A constructor. Creates a Ship with the specified ID and room counts
@@ -16,7 +16,7 @@ public class Ship {
 	 * @param roomCounts - a Map from RoomType to Integer, specifies how many
 	 * of each type of room there is
 	 */
-	protected Ship(long ID, Map<RoomType,Integer> roomCounts) {
+	protected Ship(int ID, Map<RoomType,Integer> roomCounts) {
 
 		int size = roomCounts.values().stream().mapToInt(t->t).sum();
 		this.ID = ID;
@@ -51,7 +51,26 @@ public class Ship {
 		return false;
 	}
 
-	private static class Room {
+
+
+
+	/**
+	 * A method to get the total occupancy of all the rooms of roomType on
+	 * this Ship
+	 * @param roomType - the type of the room we want to find the total occupancy of
+	 * @return the total occupancy of all rooms of type roomType
+	 */
+	public int getTotalOccupancy(RoomType roomType) {
+		int sum = 0;
+		for (Room r : rooms) {
+			if (r.type == roomType) {
+				sum += r.count;
+			}
+		}
+		return sum;
+	}
+
+	protected static class Room {
 		public RoomType type;
 		public int count;
 
