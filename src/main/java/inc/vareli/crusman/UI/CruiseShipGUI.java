@@ -123,10 +123,16 @@ public class CruiseShipGUI extends Application {
 
 	//this too
         hbox.getChildren().addAll(next, prev);
+
 	for (int i = 0; i < tripListings.length; i++) {
+		tripListings[i] = new Text("Text.");
 		vbox2.getChildren().addAll(tripListings[i]);
 	}
+
 	for (int i = 0; i < bookingButtons.length; i++) {
+		bookingButtons[i] = new Button("BOOK");
+		bookingButtons[i].setPrefWidth(75);
+		bookingBUttons[i].setOnAction(this::switchToBookingScene);
 		vbox.getChildren().addAll(bookingButtons[i]);
 	}
 
