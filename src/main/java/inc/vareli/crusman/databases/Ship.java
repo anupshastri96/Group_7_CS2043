@@ -82,7 +82,7 @@ public class Ship {
 		return sum;
 	}
 
-	private static class Room {
+	protected static class Room {
 		public RoomType type;
 		public int count;
 
