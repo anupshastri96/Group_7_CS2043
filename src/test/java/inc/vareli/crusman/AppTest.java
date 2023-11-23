@@ -53,5 +53,7 @@ public class AppTest {
 		//seeing if multiple rooms works
 		assertTrue(s.addPerson(RoomType.SUITE, 1));
 		assertTrue(!s.addPerson(RoomType.SUITE, 1));
+		assertTrue(s.getTotalOccupancy(RoomType.INTERIOR) == 3);
+		assertTrue(s.getTotalOccupancy(RoomType.OUTSIDE) == 1);
 	}
 }
