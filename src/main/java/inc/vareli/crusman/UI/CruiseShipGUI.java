@@ -96,9 +96,9 @@ public class CruiseShipGUI extends Application {
 
 	Button[] bookingButtons = new Button[3];
 	for (int i = 0; i < bookingButtons.length; i++) {
-		bookingButtongs[i] = new Button("BOOK");
-		bookingButtongs[i].setPrefWidth(75);
-		bookingButtongs[i].setOnAction(this::switchToBookingScene);
+		bookingButtons[i] = new Button("BOOK");
+		bookingButtons[i].setPrefWidth(75);
+		bookingButtons[i].setOnAction(this::switchToBookingScene);
 	}
 
         Button next = new Button("NEXT");
