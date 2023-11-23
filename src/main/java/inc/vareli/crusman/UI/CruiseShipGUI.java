@@ -6,6 +6,7 @@
 package inc.vareli.crusman.UI;
 
 import inc.vareli.crusman.databases.*;
+import inc.vareli.crusman.databases.Ship.RoomType;
 
 import javafx.collections.ObservableList;
 import javafx.application.Application;
@@ -40,6 +41,7 @@ public class CruiseShipGUI extends Application {
     private Scene popUpBoxScene;
     private Scene scene;
     private Scene scene2;
+    private Scene createShipScene;
     private Stage stage;
 
     private TextField urlField;
@@ -59,7 +61,7 @@ public class CruiseShipGUI extends Application {
         Button submitButt = new Button("Submit");
         submitButt.setPrefWidth(75);
         //submitButt.setOnAction(e -> switchToSceneOne());
-        submitButt.setOnAction(this::submitAction);
+        submitButt.setOnAction(this::submitButtonAction);
 
         lblError = new Label("Error Label");
         urlField = new TextField("Enter URL");
@@ -80,23 +82,19 @@ public class CruiseShipGUI extends Application {
 
     }
     
-      
 
-    public void submitAction (ActionEvent event) {
+    public void submitButtonAction (ActionEvent event) {
         String url = urlField.getText();
         String ID = idField.getText();
         String pass = passField.getText();
         CMConnection conn = null; 
-        while (true) {
             try {
-                conn = new CMConnection(url, ID, pass);
-                break;
+                //conn = new CMConnection(url, ID, pass);
+                switchToSceneOne();
             } catch (IllegalArgumentException iae) {
                 lblError.setText(iae.getMessage());
+                return;
             }
-        }
-
-        switchToSceneOne();
     }
     
     
@@ -183,6 +181,10 @@ public class CruiseShipGUI extends Application {
             mealList.add("family plan");
 
             ObservableList<String> roomList = cb2.getItems();
+            for (RoomType roomType : RoomType.values()) {
+                roomList.add(roomType.toString());
+            }
+
             ObservableList<String> boardingList = cb3.getItems();
             boardingList.add("board port 1");
             boardingList.add("board port 2");
@@ -203,6 +205,16 @@ public class CruiseShipGUI extends Application {
             stage.setScene(scene2);
             stage.setTitle("Print ticket");
             stage.show();
+
+        }
+
+        public void createNewShipGUI () {
+
+            HBox hboxNewShip = new HBox(10);
+
+
+
+
 
         }
         
