@@ -53,9 +53,11 @@ public class CMConnection {
 		}
 	}
 
-	/*Creates a ship object and enters its data into the database.
+	/*
+	 * Creates a ship object and enters its data into the database.
 	 * @param roomCounts The numbers of room of each type
-	 * @return A ship object with the ID and */
+	 * @return A ship object with the ID and
+	 */
 	public Ship createShip(Map<RoomType,Integer> roomCounts) throws IllegalArgumentException {
 		String retrieveID = "select shipID from CruiseShip";
 		int id = 1000;
