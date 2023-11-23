@@ -85,9 +85,19 @@ public class Ship {
 	 * An enum of the possible types of rooms. Rooms are a type of cost as well.
 	 */
 	public enum RoomType implements CostType {
-		INTERIOR,
-		OUTSIDE,
-		BALCONY,
-		SUITE;
+		INTERIOR("Interior"),
+		OUTSIDE("Outside"),
+		BALCONY("Balcony"),
+		SUITE("Suite");
+
+		private String name;
+
+		private RoomType(String name) {
+			this.name = name;
+		}
+
+		public String toString() {
+			return name;
+		}
 	}
 }
