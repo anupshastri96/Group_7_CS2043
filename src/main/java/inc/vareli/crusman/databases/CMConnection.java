@@ -8,28 +8,57 @@ import java.sql.*;
 
 public class CMConnection {
 	private Connection connector;
+	private int shipCount = 0;
 	
-	public CMConnection(String URL, String loginID, String loginPass) {//throws IllegalArgumentException 
-		//try {
-		//	this.connector = DriverManager.getConnection(URL, loginID, loginPass);
-		//catch (SQLException sqle) {
-		//	throw new IllegalArgumentException(sqle, sqle.getMessage());
-		//}
+	public CMConnection(String URL, String loginID, String loginPass) throws IllegalArgumentException { 
+		try {
+			this.connector = DriverManager.getConnection(URL, loginID, loginPass);
+			String shipCreator = "Create table CruiseShip (ShipID int unsigned not null primary key, " +
+							"InteriorRooms int unsigned not null, OutsideRooms int unsigned not null, " + 
+							"BalconyRooms int unsigned not null, Suites int unsigned not null)";
+			String tripCreator = "Create table Trip (TripID int unsigned not null primary key, " + 
+							"ShipID int unsigned not null, StartDate date not null, " + 
+							"EndDate date not null, RoomFees float unsigned not null, " + 
+							"DrinkFees float unsigned not null, MealFees float unsigned not null, " + 
+							"RoomOccupancy int unsigned not null, " + 
+							"foreign key(ShipID) references CruiseShip(ShipID))";
+			String portCreator = "Create table Port (PortName varchar(100) not null, " +
+							"TripID int unsigned not null, StartPortFlag int unsigned not null, " + 
+							"EndPortFlag int unsigned not null, primary key(PortName, TripID), " + 
+							"foreign key(TripID) references Trip(TripID))";
+			String ticketCreator = "Create table Ticket (TicketID int unsigned not null primary key, " + 
+							"TripID int unsigned not null, CustomerName varchar(255) not null, " + 
+							"MealPackageFlag int unsigned not null, DrinkPackageFlag int unsigned not null, " + 
+							"RoomNumber int unsigned not null, foreign key(TripID) references Trip(TripID))";
+			String[] createStatements = {shipCreator, tripCreator, portCreator, ticketCreator};
+			String[] tableNames = {"CruiseShip", "Trip", "Port", "Ticket"};
+			Statement stmt = connector.createStatement();
+			DatabaseMetaData dbm = connector.getMetaData();
+			for(int i = 0; i < createStatements.length; i++) {
+				ResultSet tables = dbm.getTables(null, null, tableNames[i], null);
+				if(!tables.next()) {
+					stmt.executeUpdate(createStatements[i]);
+				}
+			}
+		} catch (SQLException sqle) {
+			throw new IllegalArgumentException(sqle.getMessage());
+		}
 	}
 
 	//these methods are what will be used to both create
 	//new ships and trips and to write them to the db
 	//this ensures all data will be saved in the db and not lost
 	//they are not implemented because that is arhaan's job
-	public Ship createShip(Map<RoomType,Integer> roomCounts) { 
-		long ID = 0;//this should come from some database operation
-		//try {
-		//	some database operation storing this Ship to the db
-		//} catch (SQLException sqle) {
-		//	throw new IllegalArgumentException(sqle, "Invalid inputs for createShip()");
-		//}
-		return new Ship(ID, roomCounts);
-	}
+//	public Ship createShip(Map<RoomType,Integer> roomCounts) throws IllegalArgumentException{ 
+//		int ID = 1000 + shipCount++;
+//		try {
+//			String insert = ""
+//		//	some database operation storing this Ship to the db
+//		} catch (SQLException sqle) {
+//			throw new IllegalArgumentException(sqle, "Invalid inputs for createShip()");
+//		}
+//		return new Ship(ID, roomCounts);
+//	}
 
 	public Trip createTrip(TripBuilder temp) {
 		Trip toReturn = temp.build();
