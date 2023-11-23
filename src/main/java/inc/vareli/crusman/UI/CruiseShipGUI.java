@@ -122,7 +122,7 @@ public class CruiseShipGUI extends Application {
 	//this too
         hbox.getChildren().addAll(next, prev);
         vbox2.getChildren().addAll(shipInfoBox1, shipInfoBox2, shipInfoBox3);
-        vbox.getChildren().addAll(butt1, butt2, butt3);
+        vbox.getChildren().addAll(bookingButtons);
 
         browsingScene = new Scene(root, 500, 500);
 
