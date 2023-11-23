@@ -109,6 +109,8 @@ public class CruiseShipGUI extends Application {
         prev.setPrefWidth(75);
         prev.setOnAction(this::prev);
 
+	tripListings = new Text[3];
+
 	//TODO - make this get the trips from the database
 	for (Text tripInfo : tripListings) {
 		tripInfo = new Text("Trip info here.");
