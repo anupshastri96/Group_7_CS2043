@@ -94,13 +94,6 @@ public class CruiseShipGUI extends Application {
         VBox vbox2 = new VBox(95);
         HBox hbox = new HBox(350);
 
-	Button[] bookingButtons = new Button[3];
-	for (int i = 0; i < bookingButtons.length; i++) {
-		bookingButtons[i] = new Button("BOOK");
-		bookingButtons[i].setPrefWidth(75);
-		bookingButtons[i].setOnAction(this::switchToBookingScene);
-	}
-
         Button next = new Button("NEXT");
         next.setPrefWidth(75);
         next.setOnAction(this::next);
@@ -109,11 +102,18 @@ public class CruiseShipGUI extends Application {
         prev.setPrefWidth(75);
         prev.setOnAction(this::prev);
 
-	tripListings = new Text[3];
 
 	//TODO - make this get the trips from the database
+	tripListings = new Text[3];
 	for (int i = 0; i < tripListings.length; i++) {
 		tripListings[i] = new Text("Trip info here.");
+	}
+
+	Button[] bookingButtons = new Button[tripListings.length];//this needs to be same length as tripListings
+	for (int i = 0; i < bookingButtons.length; i++) {
+		bookingButtons[i] = new Button("BOOK");
+		bookingButtons[i].setPrefWidth(75);
+		bookingButtons[i].setOnAction(this::switchToBookingScene);
 	}
 
 	//HOMEWORK: name this better ffs
