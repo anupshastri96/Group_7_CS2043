@@ -56,16 +56,13 @@ public class CMConnectionTest {
 		try{
 			CMConnection testConnection = new CMConnection("jdbc:mysql://cs1103.cs.unb.ca:3306/j3zh5", "j3zh5", "rGR45WHX");
 			List<Ship> shipList = testConnection.queryShip();
-			for(int i = 0; i < shipList.size(); i++) {
-				System.out.println(shipList.get(i).toString());
-		}
 		}catch(IllegalArgumentException e) {
 			System.out.println(e.getMessage());
 		}
 	}
 	
 	@Test
-	void testCreateTrip() {
+	public void testCreateTrip() {
 		CMConnection testConnection = new CMConnection("jdbc:mysql://cs1103.cs.unb.ca:3306/j3zh5", "j3zh5", "rGR45WHX");
 		TripBuilder tb = new TripBuilder(testConnection.queryShip().get(0));
 		String pattern = "yyyy-MM-dd";
@@ -87,13 +84,10 @@ public class CMConnectionTest {
 	}
 
 	@Test
-	void testQueryTrip() {
+	public void testQueryTrip() {
 		try{
 			CMConnection testConnection = new CMConnection("jdbc:mysql://cs1103.cs.unb.ca:3306/j3zh5", "j3zh5", "rGR45WHX");
 			List<Trip> tripList = testConnection.queryTrip();
-			for(int i = 0; i < tripList.size(); i++) {
-				System.out.println(tripList.get(i).toString());
-		}
 		}catch(IllegalArgumentException e) {
 			System.out.println(e.getMessage());
 		}

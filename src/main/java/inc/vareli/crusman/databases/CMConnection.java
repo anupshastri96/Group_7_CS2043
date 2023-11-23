@@ -146,7 +146,6 @@ public class CMConnection {
 				insertStatement.setDate(4, new java.sql.Date(toReturn.PORTS.get(i).arrival.getTime()));
 				insertStatement.setDate(5, new java.sql.Date(toReturn.PORTS.get(i).departure.getTime()));
 				affectedRows = insertStatement.executeUpdate();
-				System.out.println("Ports added");
 			}
 			for(int i = 0; i<toReturn.SHIP.rooms.length; i++) {
 				RoomType currentType = toReturn.SHIP.rooms[i].type;
@@ -157,7 +156,6 @@ public class CMConnection {
 				insertStatement.setDouble(3, toReturn.COSTS.get(currentType));
 				insertStatement.setInt(4, toReturn.SHIP.getTotalOccupancy(currentType));
 				affectedRows = insertStatement.executeUpdate();
-				System.out.println("Rooms added");
 			}
 		} catch (SQLException e) {
 			throw new IllegalArgumentException(e.getMessage());
