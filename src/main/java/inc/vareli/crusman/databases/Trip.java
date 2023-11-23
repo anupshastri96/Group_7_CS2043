@@ -6,10 +6,10 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
-
 import java.util.Date;
 import java.time.Duration;
 import java.util.TimeZone;
+import java.text.NumberFormat;
 
 /**
  * Represents a Trip a user can buy a ticket to go on etc.
@@ -73,6 +73,17 @@ public class Trip {
 						).toDays();
 	}
 
+	@Override
+	public String toString() {
+		NumberFormat nf = NumberFormat.getCurrencyInstance();
+		StringBuilder builder = new StringBuilder();
+		builder.append(this.SHIP.toString());
+		for (CostType cost : COSTS) {
+			builder.append(cost.toString() + ": " + nf.format(COSTS.get(cost)));
+		}
+		return builder.toString();
+	}
+
 	/*
 	 * Solution to the timezone issue: the timezone is stored with the port
 	 * and will be interpreted at the display level (GUI stuff) to show the
@@ -97,8 +108,14 @@ public class Trip {
 	 * An enum of the different services you must pay for on a trip
 	 */
 	public enum Service implements CostType {
-		MEALS,
-		DRINKS;
+		MEALS("Meals"),
+		DRINKS("Drinks");
+
+		private String name;
+
+		private Service(String name) {
+			this.name = name;
+		}
 	}
 
 	/**
