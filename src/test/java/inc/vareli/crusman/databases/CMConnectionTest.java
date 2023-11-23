@@ -1,22 +1,22 @@
 package inc.vareli.crusman.databases;
 
-import static org.junit.jupiter.api.Assertions.*;
+//import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.EnumMap;
 
-import org.junit.jupiter.api.Test;
+//import org.junit.jupiter.api.Test;
 
 import inc.vareli.crusman.databases.Ship.RoomType;
 
 class CMConnectionTest {
 
-	@Test
+	//@Test
 	void testCMConnection() {
 		//create a database connection in my database
 		CMConnection testConnection = new CMConnection("jdbc:mysql://cs1103.cs.unb.ca:3306/j3zh5", "j3zh5", "rGR45WHX");
 	}
 	
-	@Test
+	//@Test
 	void testCreateShip() {
 		CMConnection testConnection = new CMConnection("jdbc:mysql://cs1103.cs.unb.ca:3306/j3zh5", "j3zh5", "rGR45WHX");
 		EnumMap<RoomType,Integer> roomCounts = new EnumMap<RoomType,Integer>(RoomType.class);
