@@ -2,6 +2,7 @@ package inc.vareli.crusman.databases;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,19 @@ class CMConnectionTest {
 		Ship s2 = testConnection.createShip(roomCounts2);
 		} catch(IllegalArgumentException e) {
 			System.out.println(e);
+		}
+	}
+	
+	@Test
+	void testQueryShip() {
+		try{
+			CMConnection testConnection = new CMConnection("jdbc:mysql://cs1103.cs.unb.ca:3306/j3zh5", "j3zh5", "rGR45WHX");
+			ArrayList<Ship> shipList = testConnection.queryShip();
+			for(int i = 0; i < shipList.size(); i++) {
+				System.out.println(shipList.get(i).toString());
+		}
+		}catch(IllegalArgumentException e) {
+			System.out.println("error retrieving ships");
 		}
 	}
 

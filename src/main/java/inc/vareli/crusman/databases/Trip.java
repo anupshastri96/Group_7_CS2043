@@ -79,7 +79,7 @@ public class Trip {
 	 * correct timezone for the situation.
 	 * Calculations and stuff use UTC-0 (unix time)
 	 */
-	private static class Port { 
+	protected static class Port { 
 		public String location;
 		public TimeZone zone;
 		public Date arrival;
