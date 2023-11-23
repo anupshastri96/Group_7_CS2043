@@ -3,33 +3,37 @@ package inc.vareli.crusman.databases;
 import inc.vareli.crusman.databases.Ship.RoomType;
 import inc.vareli.crusman.databases.Trip.TripBuilder;
 
+import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.Map;
 import java.sql.*;
-
+/*Contains methods to connect the application to a mySQL database hosted on the UNB servers.
+ * @author Arhaan Sami 3751940*/
 public class CMConnection {
 	private Connection connector;
-	private int shipCount = 0;
-	
-	public CMConnection(String URL, String loginID, String loginPass) throws IllegalArgumentException { 
+	/*
+	 Creates a database connection, and sets up the tables to be used in all database operations. If tables already exist, it does not create duplicates.
+	 */
+	public CMConnection(String url, String loginID, String loginPass) throws IllegalArgumentException { 
 		try {
-			this.connector = DriverManager.getConnection(URL, loginID, loginPass);
-			String shipCreator = "Create table CruiseShip (ShipID int unsigned not null primary key, " +
-							"InteriorRooms int unsigned not null, OutsideRooms int unsigned not null, " + 
-							"BalconyRooms int unsigned not null, Suites int unsigned not null)";
-			String tripCreator = "Create table Trip (TripID int unsigned not null primary key, " + 
-							"ShipID int unsigned not null, StartDate date not null, " + 
-							"EndDate date not null, RoomFees float unsigned not null, " + 
-							"DrinkFees float unsigned not null, MealFees float unsigned not null, " + 
-							"RoomOccupancy int unsigned not null, " + 
-							"foreign key(ShipID) references CruiseShip(ShipID))";
-			String portCreator = "Create table Port (PortName varchar(100) not null, " +
-							"TripID int unsigned not null, StartPortFlag int unsigned not null, " + 
-							"EndPortFlag int unsigned not null, primary key(PortName, TripID), " + 
-							"foreign key(TripID) references Trip(TripID))";
-			String ticketCreator = "Create table Ticket (TicketID int unsigned not null primary key, " + 
-							"TripID int unsigned not null, CustomerName varchar(255) not null, " + 
-							"MealPackageFlag int unsigned not null, DrinkPackageFlag int unsigned not null, " + 
-							"RoomNumber int unsigned not null, foreign key(TripID) references Trip(TripID))";
+			connector = DriverManager.getConnection(url, loginID, loginPass);
+			String shipCreator = "Create table CruiseShip (shipID int unsigned not null primary key, " +
+							"interiorRooms int unsigned not null, outsideRooms int unsigned not null, " + 
+							"balconyRooms int unsigned not null, suites int unsigned not null)";
+			String tripCreator = "Create table Trip (tripID int unsigned not null primary key, " + 
+							"shipID int unsigned not null, startDate date not null, " + 
+							"endDate date not null, roomFees float unsigned not null, " + 
+							"drinkFees float unsigned not null, mealFees float unsigned not null, " + 
+							"roomOccupancy int unsigned not null, " + 
+							"foreign key(shipID) references CruiseShip(shipID))";
+			String portCreator = "Create table Port (portName varchar(100) not null, " +
+							"tripID int unsigned not null, startPortFlag int unsigned not null, " + 
+							"endPortFlag int unsigned not null, primary key(portName, tripID), " + 
+							"foreign key(tripID) references Trip(tripID))";
+			String ticketCreator = "Create table Ticket (ticketID int unsigned not null primary key, " + 
+							"tripID int unsigned not null, customerName varchar(255) not null, " + 
+							"mealPackageFlag int unsigned not null, drinkPackageFlag int unsigned not null, " + 
+							"roomNumber int unsigned not null, foreign key(tripID) references Trip(tripID))";
 			String[] createStatements = {shipCreator, tripCreator, portCreator, ticketCreator};
 			String[] tableNames = {"CruiseShip", "Trip", "Port", "Ticket"};
 			Statement stmt = connector.createStatement();
@@ -45,20 +49,57 @@ public class CMConnection {
 		}
 	}
 
-	//these methods are what will be used to both create
-	//new ships and trips and to write them to the db
-	//this ensures all data will be saved in the db and not lost
-	//they are not implemented because that is arhaan's job
-//	public Ship createShip(Map<RoomType,Integer> roomCounts) throws IllegalArgumentException{ 
-//		int ID = 1000 + shipCount++;
-//		try {
-//			String insert = ""
-//		//	some database operation storing this Ship to the db
-//		} catch (SQLException sqle) {
-//			throw new IllegalArgumentException(sqle, "Invalid inputs for createShip()");
-//		}
-//		return new Ship(ID, roomCounts);
-//	}
+	/*Creates a ship object and enters its data into the database.
+	 * @param roomCounts The numbers of room of each type
+	 * @return A ship object with the ID and */
+	public Ship createShip(Map<RoomType,Integer> roomCounts) throws IllegalArgumentException{ 
+		String retrieveID = "select shipID from CruiseShip";
+		int id = 1000;
+		try {
+			PreparedStatement retrieveStatement = connector.prepareStatement(retrieveID);
+			ResultSet idSet = retrieveStatement.executeQuery();
+			while(idSet.next()) {
+				id = idSet.getInt("shipID") + 1;
+			}
+		} catch(SQLException e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
+		
+		try {
+			String insert = "insert into CruiseShip values (?,?,?,?,?)";
+			PreparedStatement insertStatement = connector.prepareStatement(insert);
+			insertStatement.setInt(1, id);
+			insertStatement.setInt(2, roomCounts.get(RoomType.INTERIOR));
+			insertStatement.setInt(3, roomCounts.get(RoomType.OUTSIDE));
+			insertStatement.setInt(4, roomCounts.get(RoomType.BALCONY));
+			insertStatement.setInt(5, roomCounts.get(RoomType.SUITE));
+			int affectedRows = insertStatement.executeUpdate();
+		} catch (SQLException sqle) {
+			throw new IllegalArgumentException("Invalid inputs for createShip()");
+		}
+		return new Ship(id, roomCounts);
+	}
+	
+	public ArrayList<Ship> queryShip() throws IllegalArgumentException{
+		ArrayList<Ship> shipList = new ArrayList<Ship>();
+		String queryStatement = "select * from CruiseShip";
+		try {
+			PreparedStatement retrieveStatement = connector.prepareStatement(queryStatement);
+			ResultSet shipSet = retrieveStatement.executeQuery();
+			while(shipSet.next()) {
+				EnumMap<RoomType,Integer> roomCounts = new EnumMap<RoomType,Integer>(RoomType.class);
+				int id = shipSet.getInt("shipID");
+				roomCounts.put(RoomType.INTERIOR, shipSet.getInt("interiorRooms"));
+				roomCounts.put(RoomType.OUTSIDE, shipSet.getInt("outsideRooms"));
+				roomCounts.put(RoomType.BALCONY, shipSet.getInt("balconyRooms"));
+				roomCounts.put(RoomType.SUITE, shipSet.getInt("suites"));
+				shipList.add(new Ship(id, roomCounts));
+			}
+		} catch(SQLException e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
+		return shipList;
+	}
 
 	public Trip createTrip(TripBuilder temp) {
 		Trip toReturn = temp.build();
@@ -71,17 +112,6 @@ public class CMConnection {
 		return toReturn;
 	}
 	
-	private void addShip(long shipID, int interior, int outside, int balcony, int suites) throws SQLException{
-		String insert = "insert into Ship values (?,?,?,?,?)";
-		PreparedStatement insertStatement = connector.prepareStatement(insert);
-		insertStatement.setLong(1, shipID);
-		insertStatement.setInt(2, interior);
-		insertStatement.setInt(3, outside);
-		insertStatement.setInt(4, balcony);
-		insertStatement.setInt(5, suites);
-		
-		int affectedRows = insertStatement.executeUpdate();
-	}
 	
 	private void addTrip(long tripID, long shipID, String startPort, String endPort, String visitingPorts,
 						Date startDate, Date endDate, double roomCost, double drinkCost, double mealCost, int totalRooms) throws SQLException{
