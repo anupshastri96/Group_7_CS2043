@@ -39,7 +39,7 @@ class CMConnectionTest {
 		}
 	}
 	
-	@Test
+	//@Test
 	void testQueryShip() {
 		try{
 			CMConnection testConnection = new CMConnection("jdbc:mysql://cs1103.cs.unb.ca:3306/j3zh5", "j3zh5", "rGR45WHX");

@@ -51,9 +51,9 @@ public class Ship {
 		return false;
 	}
 
-<<<<<<< HEAD
-	protected static class Room {
-=======
+
+
+
 	/**
 	 * A method to get the total occupancy of all the rooms of roomType on
 	 * this Ship
@@ -70,8 +70,7 @@ public class Ship {
 		return sum;
 	}
 
-	private static class Room {
->>>>>>> 91c67a3ab74a7e6d84645a06e80d8c203e253e00
+	protected static class Room {
 		public RoomType type;
 		public int count;
 
