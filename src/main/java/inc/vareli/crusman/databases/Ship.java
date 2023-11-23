@@ -51,21 +51,6 @@ public class Ship {
 		return false;
 	}
 
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		for (RoomType type : RoomType.values()) {
-			int typeCount = 0;
-			for (Room r : rooms) {
-				if (r.type == type) {
-					typeCount++;
-				}
-			}
-			builder.append(typeCount + " " + type + " rooms.\n");
-		}
-		return builder.toString();
-	}
-
 	/**
 	 * A method to get the total occupancy of all the rooms of roomType on
 	 * this Ship
