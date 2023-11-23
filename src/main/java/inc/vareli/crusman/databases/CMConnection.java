@@ -5,6 +5,7 @@ import inc.vareli.crusman.databases.Trip.*;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+
 import java.util.Map;
 import java.sql.*;
 /*Contains methods to connect the application to a mySQL database hosted on the UNB servers.
@@ -38,8 +39,8 @@ public class CMConnection {
 							"tripID int unsigned not null, customerName varchar(255) not null, " + 
 							"mealPackageFlag int unsigned not null, drinkPackageFlag int unsigned not null, " + 
 							"roomNumber int unsigned not null, foreign key(tripID) references Trip(tripID))";
-			String roomCreator = "Create table RoomInfo (tripID int unsigned not null, " + 
-							"roomType varchar(100) not null, fees double unsigned not null, " + 
+			String roomCreator = "Create table RoomInfo (roomType varchar(100) not null, " + 
+							"tripID int unsigned not null, fees double unsigned not null, " + 
 							"occupancy int unsigned not null, " + 
 							"primary key(roomType, tripID), foreign key(tripID) references Trip(tripID))";
 			String[] createStatements = {shipCreator, tripCreator, portCreator, ticketCreator, roomCreator};
@@ -127,7 +128,7 @@ public class CMConnection {
 			throw new IllegalArgumentException(e.getMessage());
 		}
 		try {
-			String insert = "insert into Trip values (?,?,?,?,?,?,?,?)";
+			String insert = "insert into Trip values (?,?,?,?)";
 			PreparedStatement insertStatement = connector.prepareStatement(insert);
 			insertStatement.setInt(1, id);
 			insertStatement.setInt(2, toReturn.SHIP.ID);
@@ -136,7 +137,7 @@ public class CMConnection {
 			int affectedRows = insertStatement.executeUpdate();
 			
 			for(int i = 0; i < toReturn.PORTS.size(); i++) {
-				insert = "insert into Port values (?,?,?,?)";
+				insert = "insert into Port values (?,?,?,?,?)";
 				insertStatement = connector.prepareStatement(insert);
 				insertStatement.setString(1, toReturn.PORTS.get(i).location);
 				insertStatement.setInt(2, id);
@@ -147,18 +148,21 @@ public class CMConnection {
 				}else {
 					insertStatement.setInt(3, 2);
 				}
-				insertStatement.setDate(4, (Date)toReturn.PORTS.get(i).arrival);
-				insertStatement.setDate(5, (Date)toReturn.PORTS.get(i).departure);
+				insertStatement.setDate(4, new java.sql.Date(toReturn.PORTS.get(i).arrival.getTime()));
+				insertStatement.setDate(5, new java.sql.Date(toReturn.PORTS.get(i).departure.getTime()));
 				affectedRows = insertStatement.executeUpdate();
+				System.out.println("Ports added");
 			}
 			for(int i = 0; i<toReturn.SHIP.rooms.length; i++) {
 				RoomType currentType = toReturn.SHIP.rooms[i].type;
 				insert = "insert into RoomInfo values (?,?,?,?)";
+				insertStatement = connector.prepareStatement(insert);
 				insertStatement.setString(1, currentType.name());
 				insertStatement.setInt(2, id);
 				insertStatement.setDouble(3, toReturn.COSTS.get(currentType));
 				insertStatement.setInt(4, toReturn.SHIP.getTotalOccupancy(currentType));
 				affectedRows = insertStatement.executeUpdate();
+				System.out.println("Rooms added");
 			}
 		} catch (SQLException e) {
 			throw new IllegalArgumentException(e.getMessage());
@@ -167,16 +171,35 @@ public class CMConnection {
 	}
 	
 	public ArrayList<Trip> queryTrip(){
+		System.out.println("method called");
 		ArrayList<Trip> tripList = new ArrayList<Trip>();
-		String[] queryStatements = {"select * from Trip", "select * from Port", "select * from RoomInfo"};
-		ResultSet[] queryResults = new ResultSet[queryStatements.length];
+		String retrieveDetails = "select * from Trip natural join CruiseShip natural join Port natural Join RoomInfo";
 		try {	
-			for(int i = 0; i< queryStatements.length; i++) {
-				PreparedStatement retrieveStatement = connector.prepareStatement(queryStatements[i]);
-				queryResults[i] = retrieveStatement.executeQuery();			
-			}
-			while(queryResults[1].next()) {
+			PreparedStatement retrieveStatement = connector.prepareStatement(retrieveDetails);
+			ResultSet queryResults = retrieveStatement.executeQuery();
+			while(queryResults.next()) {
+				int tripId = queryResults.getInt("tripID");
+				int shipId = queryResults.getInt("shipID");
+				double drinkFee = queryResults.getDouble("drinkFees");
+				double mealFee = queryResults.getDouble("mealFees");
+				EnumMap<RoomType,Integer> roomCounts = new EnumMap<RoomType,Integer>(RoomType.class);
+				roomCounts.put(RoomType.INTERIOR, queryResults.getInt("interiorRooms"));
+				roomCounts.put(RoomType.OUTSIDE, queryResults.getInt("outsideRooms"));
+				roomCounts.put(RoomType.BALCONY, queryResults.getInt("balconyRooms"));
+				roomCounts.put(RoomType.SUITE, queryResults.getInt("suites"));
 				
+				ArrayList<Port> ports = new ArrayList<Port>();
+				ports.add(new Port(queryResults.getDate("arrivalDate"),queryResults.getDate("departureDate"), 
+						queryResults.getString("portName"), queryResults.getString("portName")));
+				//Map<CostType, Double> costs = new HashMap<CostType, Double>();
+				TripBuilder builder = new TripBuilder(new Ship(shipId, roomCounts));
+				builder.addPort(queryResults.getDate("arrivalDate"),queryResults.getDate("departureDate"), 
+						queryResults.getString("portName"), queryResults.getString("portName"));
+				builder.addCost(Service.MEALS, mealFee);
+				builder.addCost(Service.DRINKS, drinkFee);
+				builder.addCost(RoomType.valueOf(queryResults.getString("RoomType")), queryResults.getInt("fees"));
+				
+				tripList.add(builder.build());
 			}
 		} catch(SQLException e) {
 			throw new IllegalArgumentException(e.getMessage());
