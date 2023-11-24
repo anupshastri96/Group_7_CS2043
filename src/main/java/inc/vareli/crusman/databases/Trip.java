@@ -66,23 +66,35 @@ public class Trip {
 	 * @return a long value representing the number of days long this trip is
 	 */
 	public long getDuration() {
-		int z = PORTS.size();
+		int z = PORTS.size()-1;
 		return Duration.between(
-							PORTS.get(0).arrival.toInstant(),
-							PORTS.get(z).departure.toInstant()
+							PORTS.get(0).departure.toInstant(),
+							PORTS.get(z).arrival.toInstant()
 						).toDays();
+	}
+
+	public double getTotalFees() {
+		double total = 0;
+		for (CostType cost : COSTS.keySet()) {
+			total += COSTS.get(cost);
+		}
+		return total;
 	}
 
 	@Override
 	public String toString() {
 		NumberFormat nf = NumberFormat.getCurrencyInstance();
 		StringBuilder builder = new StringBuilder();
+
 		builder.append(this.SHIP.toString());
 		for (CostType cost : COSTS.keySet()) {
 			builder.append(cost.toString() + ": " + nf.format(COSTS.get(cost)) + "\n");
 		}
-		builder.append(this.PORTS[0].location + ", " + this.PORTS[0].departure + "\n");
-		builder.append(this.PORTS[this.PORTS.length].location + ", " + this.PORTS[this.PORTS.length].arrival + "\n");
+		builder.append("TOTAL FEES: " + nf.format(this.getTotalFees()) + "\n");
+
+		int z = this.PORTS.size()-1;
+		builder.append(this.PORTS.get(0).location + ", " + this.PORTS.get(0).departure + "\n");
+		builder.append(this.PORTS.get(z).location + ", " + this.PORTS.get(z).arrival + "\n");
 		return builder.toString();
 	}
 
@@ -117,6 +129,11 @@ public class Trip {
 
 		private Service(String name) {
 			this.name = name;
+		}
+
+		@Override
+		public String toString() {
+			return name;
 		}
 	}
 
