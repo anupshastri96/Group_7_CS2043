@@ -125,7 +125,6 @@ public class CruiseShipGUI extends Application {
         root.setBottom(arrangeNextAndPrev);
 
         browsingScene = new Scene(root, 500, 500);
-
         stage.setScene(browsingScene);
         stage.setTitle("Crus, Man!");
     }
@@ -149,11 +148,17 @@ public class CruiseShipGUI extends Application {
             ComboBox mealSelection = new ComboBox();
             ComboBox roomSelection = new ComboBox();
 
-	    //meals are opt in or opt out. meals have a single cost and that cost is zero if opt out
             ObservableList<String> mealList = mealSelection.getItems();
             mealList.add("Opt In");
             mealList.add("Opt Out");
-        //add action event if opt in or out
+
+            //Event handler for mealSelection
+            EventHandler<ActionEvent> chooseMealSelection = new EventHandler<ActionEvent>() {
+                public void handle (ActionEvent e) {
+                    testLabelForEvents.setText(mealSelection.getValue().toString());
+                }
+        };
+        mealSelection.setOnAction(chooseMealSelection);
            
 
 	    //TODO - trip info will show the occupancy, only allow them to pick room types that arent fully occupied
@@ -162,6 +167,14 @@ public class CruiseShipGUI extends Application {
                 roomList.add(roomType.toString());
             }
 
+            //This is the event handler for roomSelection choicebox
+            EventHandler<ActionEvent> chooseRoomType = new EventHandler<ActionEvent>() {
+                public void handle (ActionEvent e) {
+                    testLabelForEvents.setText(roomSelection.getValue().toString());
+                }
+        };
+        roomSelection.setOnAction(chooseRoomType);
+
             HBox arrangeLabels = new HBox(70);
             arrangeLabels.getChildren().addAll(mealLabel, roomLabel);
 
@@ -169,7 +182,7 @@ public class CruiseShipGUI extends Application {
             arrangeSelections.getChildren().addAll(mealSelection, roomSelection);
 
             VBox arrangeButtons = new VBox(20);
-            arrangeButtons.getChildren().addAll(customerName, printTicket, returnButton);
+            arrangeButtons.getChildren().addAll(customerName, printTicket, returnButton, testLabelForEvents);
 
             FlowPane pane = new FlowPane(arrangeLabels, arrangeSelections, arrangeButtons);
             pane.setAlignment(Pos.CENTER);
