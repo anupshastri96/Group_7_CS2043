@@ -35,6 +35,7 @@ public class CruiseShipGUI extends Application {
     private Scene createShipScene;
     private Scene payConfirmationScene;
     private Scene adminPasswordScene;
+    private Scene mainMenuScene;
     private Stage stage;
 
     private TextField loginURLField;
@@ -81,11 +82,38 @@ public class CruiseShipGUI extends Application {
         String pass = loginPassField.getText();
     	try {
 		//conn = new CMConnection(url, ID, pass);
-		switchToBrowseScene(event);
+		switchToMainMenuScene(event);
     	} catch (IllegalArgumentException iae) {
 		loginError.setText(iae.getMessage());
 		return;
 	}
+    }
+
+    public void  switchToMainMenuScene (ActionEvent event) {
+
+        Label menuLabel = new Label("Welcome!");
+
+        Button goToBrowseScene = new Button("Book Trips");
+        goToBrowseScene.setPrefWidth(90);
+        goToBrowseScene.setOnAction(this::switchToBrowseScene);
+
+        Button createATripButton = new Button("Create a trip");
+        createATripButton.setPrefWidth(90);
+        createATripButton.setOnAction(this::switchToAdminPassword);
+
+        Button createAShipButton = new Button("Create a ship");
+        createAShipButton.setPrefWidth(90);
+        createAShipButton.setOnAction(this::switchToAdminPassword);
+
+        VBox arrangeMenu =  new VBox(10);
+        arrangeMenu.getChildren().addAll(menuLabel, goToBrowseScene, createATripButton, createAShipButton);
+
+        FlowPane fpaneMenu = new FlowPane(arrangeMenu);
+        fpaneMenu.setAlignment(Pos.CENTER);
+
+        mainMenuScene = new Scene(fpaneMenu, 250, 300);
+        stage.setScene(mainMenuScene);
+        stage.setTitle("Crusman cruise ship application");
     }
                          
     public void switchToBrowseScene(ActionEvent event) {
@@ -203,7 +231,7 @@ public class CruiseShipGUI extends Application {
     	
         public void switchToPayConfirmationScene (ActionEvent event) {
             
-            Label waitingPayment = new Label("Waiting for admin to handle payment");
+            Label waitingPaymentLabel = new Label("Waiting for admin to handle payment");
             Button printTicket = new Button("Print Ticket");
             printTicket.setPrefWidth(80);
             printTicket.setOnAction(this::printTicketToFile);
@@ -211,21 +239,21 @@ public class CruiseShipGUI extends Application {
             TextField confirmPasswordField = new TextField("Enter password");
 
             VBox arrangeAdmin = new VBox(60);
-            arrangeAdmin.getChildren().addAll(waitingPayment, confirmPasswordField, printTicket);
+            arrangeAdmin.getChildren().addAll(waitingPaymentLabel, confirmPasswordField, printTicket);
 
-            FlowPane fpanePaymConfirm = new FlowPane(arrangeAdmin);
-            fpanePaymConfirm.setAlignment(Pos.CENTER);
-            fpanePaymConfirm.setHgap(10);
-            fpanePaymConfirm.setVgap(60);
+            FlowPane fpanePayConfirm = new FlowPane(arrangeAdmin);
+            fpanePayConfirm.setAlignment(Pos.CENTER);
+            fpanePayConfirm.setHgap(10);
+            fpanePayConfirm.setVgap(60);
 
-            payConfirmationScene = new Scene (fpanePaymConfirm, 275, 300);
+            payConfirmationScene = new Scene (fpanePayConfirm, 275, 300);
             stage.setScene(payConfirmationScene);
             stage.setTitle("Admin Confirm Payment");
         }
 
         public void switchToAdminPassword (ActionEvent event) {
 
-            Label welcomeLabel = new Label("Enter password to proceed to admin panel");
+            Label welcomeLabel = new Label("Press Enter");
             TextField adminPasswordField = new TextField();
 
             VBox box = new VBox(10);
