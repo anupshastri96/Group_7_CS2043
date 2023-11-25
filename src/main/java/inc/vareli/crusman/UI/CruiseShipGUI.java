@@ -12,11 +12,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
 import javafx.scene.text.Text;
 import javafx.geometry.Pos;
-import javafx.event.ActionEvent; 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.control.ComboBox;
 import java.util.List;
@@ -85,14 +86,8 @@ public class CruiseShipGUI extends Application {
 		return;
 	}
     }
-    
-    
-                            
+                         
     public void switchToBrowseScene(ActionEvent event) {
-        BorderPane root = new BorderPane();
-        VBox vbox = new VBox(85);
-        VBox vbox2 = new VBox(95);
-        HBox hbox = new HBox(350);
 
         Button next = new Button("NEXT");
         next.setPrefWidth(75);
@@ -101,7 +96,6 @@ public class CruiseShipGUI extends Application {
         Button prev = new Button("PREV");
         prev.setPrefWidth(75);
         prev.setOnAction(this::prev);
-
 
 	//TODO - make this get the trips from the database
 	tripListings = new Text[3];
@@ -116,15 +110,19 @@ public class CruiseShipGUI extends Application {
 		bookingButtons[i].setOnAction(this::switchToBookingScene);
 	}
 
-	//HOMEWORK: name this better ffs
-        root.setCenter(vbox2);
-        root.setRight(vbox);
-        root.setBottom(hbox);
+        VBox arrangeBookButtons = new VBox(85);
+        arrangeBookButtons.getChildren().addAll(bookingButtons);
 
-	//this too
-    hbox.getChildren().addAll(next, prev);
-	vbox2.getChildren().addAll(tripListings);
-	vbox.getChildren().addAll(bookingButtons);
+        VBox arrangeTripListings = new VBox(95);
+        arrangeTripListings.getChildren().addAll(tripListings);
+
+        HBox arrangeNextAndPrev = new HBox(350);
+        arrangeNextAndPrev.getChildren().addAll(next, prev);
+
+        BorderPane root = new BorderPane();
+        root.setCenter(arrangeTripListings);
+        root.setRight(arrangeBookButtons);
+        root.setBottom(arrangeNextAndPrev);
 
         browsingScene = new Scene(root, 500, 500);
 
@@ -135,6 +133,7 @@ public class CruiseShipGUI extends Application {
     public void switchToBookingScene(ActionEvent event) {
             Label mealLabel = new Label("Meal Plan");
             Label roomLabel = new Label("Room Plan");
+            Label testLabelForEvents = new Label("test");
             
 	    //TODO - MAKE THIS BETTER
             TextField customerName = new TextField("Input Customer Name");
@@ -147,38 +146,37 @@ public class CruiseShipGUI extends Application {
             printTicket.setPrefWidth(300);
             printTicket.setOnAction(this::printTicket);
 
-	    //if this is temporary then fix it so help me god
-            HBox hbox3 = new HBox(30);
-            HBox hbox4 = new HBox(70);
-            VBox vbox3 = new VBox(20);
-            vbox3.getChildren().addAll(customerName, printTicket, returnButton);
-
-	    //what the fuck is this
-            ComboBox cb1 = new ComboBox();
-            ComboBox cb2 = new ComboBox();
-            ComboBox cb3 = new ComboBox();
-            ComboBox cb4 = new ComboBox();
+            ComboBox mealSelection = new ComboBox();
+            ComboBox roomSelection = new ComboBox();
 
 	    //meals are opt in or opt out. meals have a single cost and that cost is zero if opt out
-            ObservableList<String> mealList = cb1.getItems();
-            mealList.add("single plan");
-            mealList.add("double plan");
-            mealList.add("family plan");
+            ObservableList<String> mealList = mealSelection.getItems();
+            mealList.add("Opt In");
+            mealList.add("Opt Out");
+        //add action event if opt in or out
+           
 
 	    //TODO - trip info will show the occupancy, only allow them to pick room types that arent fully occupied
-            ObservableList<String> roomList = cb2.getItems();
+            ObservableList<String> roomList = roomSelection.getItems();
             for (RoomType roomType : RoomType.values()) {
                 roomList.add(roomType.toString());
             }
-            hbox3.getChildren().addAll(cb1, cb2);
-            hbox4.getChildren().addAll(mealLabel, roomLabel);
 
-            FlowPane pane = new FlowPane(hbox4, hbox3, vbox3);
+            HBox arrangeLabels = new HBox(70);
+            arrangeLabels.getChildren().addAll(mealLabel, roomLabel);
+
+            HBox arrangeSelections = new HBox(30);
+            arrangeSelections.getChildren().addAll(mealSelection, roomSelection);
+
+            VBox arrangeButtons = new VBox(20);
+            arrangeButtons.getChildren().addAll(customerName, printTicket, returnButton);
+
+            FlowPane pane = new FlowPane(arrangeLabels, arrangeSelections, arrangeButtons);
             pane.setAlignment(Pos.CENTER);
 				pane.setHgap(50);
 				pane.setVgap(60);
 
-            bookingScene = new Scene (pane, 700, 500);
+            bookingScene = new Scene (pane, 400, 500);
             stage.setScene(bookingScene);
             stage.setTitle("Print ticket");
         }
