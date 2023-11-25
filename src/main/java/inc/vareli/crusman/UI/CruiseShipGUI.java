@@ -33,7 +33,8 @@ public class CruiseShipGUI extends Application {
     private Scene browsingScene;
     private Scene bookingScene;
     private Scene createShipScene;
-    private Scene adminScene;
+    private Scene payConfirmationScene;
+    private Scene adminPasswordScene;
     private Stage stage;
 
     private TextField loginURLField;
@@ -97,6 +98,9 @@ public class CruiseShipGUI extends Application {
         prev.setPrefWidth(75);
         prev.setOnAction(this::prev);
 
+        Button adminButton = new Button ("Admin Panel");
+        adminButton.setPrefWidth(60);
+        adminButton.setOnAction(this::switchToAdminPassword);
 
 
 	//TODO - make this get the trips from the database
@@ -118,15 +122,15 @@ public class CruiseShipGUI extends Application {
         VBox arrangeTripListings = new VBox(95);
         arrangeTripListings.getChildren().addAll(tripListings);
 
-        HBox arrangeNextAndPrev = new HBox(350);
-        arrangeNextAndPrev.getChildren().addAll(next, prev);
+        HBox arrangeNextAndPrev = new HBox(10);
+        arrangeNextAndPrev.getChildren().addAll(adminButton);
 
         BorderPane root = new BorderPane();
         root.setCenter(arrangeTripListings);
         root.setRight(arrangeBookButtons);
         root.setBottom(arrangeNextAndPrev);
 
-        browsingScene = new Scene(root, 500, 500);
+        browsingScene = new Scene(root, 500, 550);
         stage.setScene(browsingScene);
         stage.setTitle("Crus, Man!");
     }
@@ -145,7 +149,7 @@ public class CruiseShipGUI extends Application {
 
             Button confirmButton = new Button("Confirm");
             confirmButton.setPrefWidth(300);
-            confirmButton.setOnAction(this::switchToAdminScene);
+            confirmButton.setOnAction(this::switchToPayConfirmationScene);
 
             ComboBox mealSelection = new ComboBox();
             ComboBox roomSelection = new ComboBox();
@@ -197,27 +201,46 @@ public class CruiseShipGUI extends Application {
         }
 
     	
-        public void switchToAdminScene (ActionEvent event) {
+        public void switchToPayConfirmationScene (ActionEvent event) {
             
-
             Label waitingPayment = new Label("Waiting for admin to handle payment");
             Button printTicket = new Button("Print Ticket");
             printTicket.setPrefWidth(80);
+            printTicket.setOnAction(this::printTicketToFile);
 
-            TextField adminPassField = new TextField("Enter password");
+            TextField confirmPasswordField = new TextField("Enter password");
 
             VBox arrangeAdmin = new VBox(60);
-            arrangeAdmin.getChildren().addAll(waitingPayment, adminPassField, printTicket);
+            arrangeAdmin.getChildren().addAll(waitingPayment, confirmPasswordField, printTicket);
 
-            FlowPane fpaneAdmin = new FlowPane(arrangeAdmin);
-            fpaneAdmin.setAlignment(Pos.CENTER);
-            fpaneAdmin.setHgap(10);
-            fpaneAdmin.setVgap(60);
+            FlowPane fpanePaymConfirm = new FlowPane(arrangeAdmin);
+            fpanePaymConfirm.setAlignment(Pos.CENTER);
+            fpanePaymConfirm.setHgap(10);
+            fpanePaymConfirm.setVgap(60);
 
-            adminScene = new Scene (fpaneAdmin, 275, 300);
-            stage.setScene(adminScene);
-            stage.setTitle("Admin");
+            payConfirmationScene = new Scene (fpanePaymConfirm, 275, 300);
+            stage.setScene(payConfirmationScene);
+            stage.setTitle("Admin Confirm Payment");
         }
+
+        public void switchToAdminPassword (ActionEvent event) {
+
+            Label welcomeLabel = new Label("Enter password to proceed to admin panel");
+            TextField adminPasswordField = new TextField();
+
+            VBox box = new VBox(10);
+            box.getChildren().addAll(welcomeLabel, adminPasswordField);
+
+            FlowPane fpaneAdminPass = new FlowPane(box);
+            fpaneAdminPass.setAlignment(Pos.CENTER);
+            fpaneAdminPass.setVgap(10);
+
+            adminPasswordScene = new Scene (fpaneAdminPass, 400, 400);
+            stage.setScene(adminPasswordScene);
+            stage.setTitle("Admin Login Panel");
+
+        }
+        public void printTicketToFile (ActionEvent event){}
         public void next(ActionEvent event) {} //TODO - MART!!!!
         public void prev(ActionEvent event) {}
 }
