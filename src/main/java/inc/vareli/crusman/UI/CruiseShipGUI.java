@@ -33,6 +33,7 @@ public class CruiseShipGUI extends Application {
     private Scene browsingScene;
     private Scene bookingScene;
     private Scene createShipScene;
+    private Scene adminScene;
     private Stage stage;
 
     private TextField loginURLField;
@@ -73,7 +74,6 @@ public class CruiseShipGUI extends Application {
     	stage.show();
     }
     
-
     public void submitLogin(ActionEvent event) {
         String url = loginURLField.getText();
         String ID = loginIDField.getText();
@@ -96,6 +96,8 @@ public class CruiseShipGUI extends Application {
         Button prev = new Button("PREV");
         prev.setPrefWidth(75);
         prev.setOnAction(this::prev);
+
+
 
 	//TODO - make this get the trips from the database
 	tripListings = new Text[3];
@@ -141,9 +143,9 @@ public class CruiseShipGUI extends Application {
             returnButton.setPrefWidth(300);
             returnButton.setOnAction(this::switchToBrowseScene);
 
-            Button printTicket = new Button("PRINT TICKET");
-            printTicket.setPrefWidth(300);
-            printTicket.setOnAction(this::printTicket);
+            Button confirmButton = new Button("Confirm");
+            confirmButton.setPrefWidth(300);
+            confirmButton.setOnAction(this::switchToAdminScene);
 
             ComboBox mealSelection = new ComboBox();
             ComboBox roomSelection = new ComboBox();
@@ -182,20 +184,40 @@ public class CruiseShipGUI extends Application {
             arrangeSelections.getChildren().addAll(mealSelection, roomSelection);
 
             VBox arrangeButtons = new VBox(20);
-            arrangeButtons.getChildren().addAll(customerName, printTicket, returnButton, testLabelForEvents);
+            arrangeButtons.getChildren().addAll(customerName, confirmButton, returnButton, testLabelForEvents);
 
-            FlowPane pane = new FlowPane(arrangeLabels, arrangeSelections, arrangeButtons);
-            pane.setAlignment(Pos.CENTER);
-				pane.setHgap(50);
-				pane.setVgap(60);
+            FlowPane fpaneBooking = new FlowPane(arrangeLabels, arrangeSelections, arrangeButtons);
+            fpaneBooking.setAlignment(Pos.CENTER);
+			fpaneBooking.setHgap(50);
+			fpaneBooking.setVgap(60);
 
-            bookingScene = new Scene (pane, 400, 500);
+            bookingScene = new Scene (fpaneBooking, 400, 500);
             stage.setScene(bookingScene);
             stage.setTitle("Print ticket");
         }
 
-    	//TODO
-        public void printTicket(ActionEvent event) {}
+    	
+        public void switchToAdminScene (ActionEvent event) {
+            
+
+            Label waitingPayment = new Label("Waiting for admin to handle payment");
+            Button printTicket = new Button("Print Ticket");
+            printTicket.setPrefWidth(80);
+
+            TextField adminPassField = new TextField("Enter password");
+
+            VBox arrangeAdmin = new VBox(60);
+            arrangeAdmin.getChildren().addAll(waitingPayment, adminPassField, printTicket);
+
+            FlowPane fpaneAdmin = new FlowPane(arrangeAdmin);
+            fpaneAdmin.setAlignment(Pos.CENTER);
+            fpaneAdmin.setHgap(10);
+            fpaneAdmin.setVgap(60);
+
+            adminScene = new Scene (fpaneAdmin, 275, 300);
+            stage.setScene(adminScene);
+            stage.setTitle("Admin");
+        }
         public void next(ActionEvent event) {} //TODO - MART!!!!
         public void prev(ActionEvent event) {}
 }
