@@ -63,12 +63,12 @@ public class CruiseShipGUI extends Application {
         FlowPane fpanePopup = new FlowPane(loginFields);
         fpanePopup.setAlignment(Pos.CENTER);
         fpanePopup.setHgap(20);
-	fpanePopup.setVgap(50);
+	    fpanePopup.setVgap(50);
 
         loginScene = new Scene(fpanePopup, 300, 500);
     	stage.setScene(loginScene);
     	stage.setTitle("Enter Info");
-	stage.setResizable(false);
+	    stage.setResizable(false);
     	stage.show();
     }
     
