@@ -33,6 +33,7 @@ public class CruiseShipGUI extends Application {
     private Scene browsingScene;
     private Scene bookingScene;
     private Scene createShipScene;
+    private Scene createTripsScene;
     private Scene payConfirmationScene;
     private Scene adminPasswordScene;
     private Scene mainMenuScene;
@@ -43,7 +44,17 @@ public class CruiseShipGUI extends Application {
     private TextField loginPassField;
     private Label loginError;
 
+    private TextField addShipField;
+    private TextField dateArrivalField;
+    private TextField dateDepartureField;
+    private TextField locationField;
+    private TextField zoneIdField;
+    private TextField costTypeField;
+    private TextField costAmountField;
+
     private CMConnection conn;
+    private int numberOfTrips; 
+    private int s;
 
     /* 
     List<Trip> trips = conn.queryTrips();
@@ -99,11 +110,12 @@ public class CruiseShipGUI extends Application {
 
         Button createATripButton = new Button("Create a trip");
         createATripButton.setPrefWidth(90);
-        createATripButton.setOnAction(this::switchToAdminPassword);
+        createATripButton.setOnAction(this::createTrip);
+        
 
         Button createAShipButton = new Button("Create a ship");
         createAShipButton.setPrefWidth(90);
-        createAShipButton.setOnAction(this::switchToAdminPassword);
+        createAShipButton.setOnAction(this::createShip);
 
         VBox arrangeMenu =  new VBox(10);
         arrangeMenu.getChildren().addAll(menuLabel, goToBrowseScene, createATripButton, createAShipButton);
@@ -114,6 +126,15 @@ public class CruiseShipGUI extends Application {
         mainMenuScene = new Scene(fpaneMenu, 250, 300);
         stage.setScene(mainMenuScene);
         stage.setTitle("Crusman cruise ship application");
+    }
+
+    public void createTrip (ActionEvent event) {
+        s = 2;
+        switchToAdminPassword(event);
+    }
+    public void createShip (ActionEvent event) {
+        s = 1;
+        switchToAdminPassword(event);
     }
                          
     public void switchToBrowseScene(ActionEvent event) {
@@ -132,6 +153,11 @@ public class CruiseShipGUI extends Application {
 
 
 	//TODO - make this get the trips from the database
+    //in progress
+
+    List<Trip> trips = conn.queryTrip();
+    numberOfTrips = trips.size();
+
 	tripListings = new Text[3];
 	for (int i = 0; i < tripListings.length; i++) {
 		tripListings[i] = new Text("Trip info here.");
@@ -171,7 +197,7 @@ public class CruiseShipGUI extends Application {
 	    //TODO - MAKE THIS BETTER
             TextField customerName = new TextField("Input Customer Name");
 
-            Button returnButton = new Button("RETURN");
+            Button returnButton = new Button("Return");
             returnButton.setPrefWidth(300);
             returnButton.setOnAction(this::switchToBrowseScene);
 
@@ -256,8 +282,15 @@ public class CruiseShipGUI extends Application {
             Label welcomeLabel = new Label("Press Enter");
             TextField adminPasswordField = new TextField();
 
+            Button enterButton = new Button("Enter password");
+            enterButton.setPrefWidth(80);
+            if (s == 2) 
+            enterButton.setOnAction(this::switchToCreateTripsScene);
+            //if (s == 1)
+            //enterButton.setOnAction(this::switchToCreateShipScene);
+
             VBox box = new VBox(10);
-            box.getChildren().addAll(welcomeLabel, adminPasswordField);
+            box.getChildren().addAll(welcomeLabel, adminPasswordField, enterButton);
 
             FlowPane fpaneAdminPass = new FlowPane(box);
             fpaneAdminPass.setAlignment(Pos.CENTER);
@@ -266,6 +299,48 @@ public class CruiseShipGUI extends Application {
             adminPasswordScene = new Scene (fpaneAdminPass, 400, 400);
             stage.setScene(adminPasswordScene);
             stage.setTitle("Admin Login Panel");
+
+        }
+
+        public void switchToCreateTripsScene (ActionEvent event) {
+
+            Label addShipLabel = new Label("Add a ship");
+            Label portLabel = new Label("Create a port");
+            Label costLabel = new Label("Add cost");
+
+            addShipField = new TextField("add a ship");
+            dateArrivalField = new TextField("date arrival");
+            dateDepartureField = new TextField("date departure");
+            locationField = new TextField("location");
+            zoneIdField = new TextField("zone id");
+            costTypeField = new TextField("Cost Type");
+            costAmountField = new TextField("amount");
+
+            Button finalized = new Button("finalized");
+            finalized.setPrefWidth(80);
+            finalized.setOnAction(this::printTicketToFile);
+
+            HBox tripShipArrange = new HBox(10);
+            HBox tripPortArrange = new HBox(20);
+            HBox tripCostArrange = new HBox(20);
+            VBox tripVerticalArrange = new VBox(20);
+
+            tripShipArrange.getChildren().addAll(addShipField); //seems redundant but size messess up if not
+
+            tripPortArrange.getChildren().addAll(dateArrivalField, dateDepartureField, 
+                                                    locationField, zoneIdField);
+            
+            tripCostArrange.getChildren().addAll(costTypeField, costAmountField);
+
+            tripVerticalArrange.getChildren().addAll(addShipLabel, tripShipArrange, portLabel,
+                                                    tripPortArrange, costLabel, tripCostArrange, finalized);   
+
+            FlowPane fpaneTrip = new FlowPane(tripVerticalArrange);
+            fpaneTrip.setAlignment(Pos.CENTER);
+
+            createTripsScene = new Scene(fpaneTrip, 800, 500);
+            stage.setScene(createTripsScene);
+            stage.setTitle("Create Trip");
 
         }
         public void printTicketToFile (ActionEvent event){}
