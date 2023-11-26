@@ -34,7 +34,6 @@ public class CruiseShipGUI extends Application {
     private Scene bookingScene;
     private Scene createShipScene;
     private Scene createTripsScene;
-    private Scene payConfirmationScene;
     private Scene adminPasswordScene;
     private Scene mainMenuScene;
     private Stage stage;
@@ -136,6 +135,11 @@ public class CruiseShipGUI extends Application {
         s = 1;
         switchToAdminPassword(event);
     }
+
+    public void confirmTrip (ActionEvent event) {
+        s = 0;
+        switchToAdminPassword(event);
+    }
                          
     public void switchToBrowseScene(ActionEvent event) {
 
@@ -147,9 +151,6 @@ public class CruiseShipGUI extends Application {
         prev.setPrefWidth(75);
         prev.setOnAction(this::prev);
 
-        Button adminButton = new Button ("Admin Panel");
-        adminButton.setPrefWidth(60);
-        adminButton.setOnAction(this::switchToAdminPassword);
 
 
 	//TODO - make this get the trips from the database
@@ -206,7 +207,7 @@ public class CruiseShipGUI extends Application {
 
             Button confirmButton = new Button("Confirm");
             confirmButton.setPrefWidth(300);
-            confirmButton.setOnAction(this::switchToPayConfirmationScene);
+            confirmButton.setOnAction(this::switchToAdminPassword);
 
             ComboBox mealSelection = new ComboBox();
             ComboBox roomSelection = new ComboBox();
@@ -258,43 +259,29 @@ public class CruiseShipGUI extends Application {
             stage.setTitle("Print ticket");
         }
 
-    	
-        public void switchToPayConfirmationScene (ActionEvent event) {
-            
-            Label waitingPaymentLabel = new Label("Waiting for admin to handle payment");
-            Button printTicket = new Button("Print Ticket");
-            printTicket.setPrefWidth(80);
-            printTicket.setOnAction(this::printTicketToFile);
-
-            TextField confirmPasswordField = new TextField("Enter password");
-            confirmPasswordField.setOnMouseClicked(m -> confirmPasswordField.clear());
-
-            VBox arrangeAdmin = new VBox(60);
-            arrangeAdmin.getChildren().addAll(waitingPaymentLabel, confirmPasswordField, printTicket);
-
-            FlowPane fpanePayConfirm = new FlowPane(arrangeAdmin);
-            fpanePayConfirm.setAlignment(Pos.CENTER);
-            fpanePayConfirm.setHgap(10);
-            fpanePayConfirm.setVgap(60);
-
-            payConfirmationScene = new Scene (fpanePayConfirm, 275, 300);
-            stage.setScene(payConfirmationScene);
-            stage.setTitle("Admin Confirm Payment");
-        }
-
         public void switchToAdminPassword (ActionEvent event) {
 
-            Label welcomeLabel = new Label("Press Enter");
-            TextField adminPasswordField = new TextField("Enter password");
-            adminPasswordField.setOnMouseClicked(m -> adminPasswordField.clear());
+            Button adminButton = new Button("Confirm / Print Ticket");
+            adminButton.setVisible(false);
+            adminButton.setOnAction(this::printTicketToFile);
 
+            Label welcomeLabel = new Label("Enter Password");
+            TextField adminPasswordField = new TextField("hit enter to submit");
+            adminPasswordField.setOnMouseClicked(m -> adminPasswordField.clear());
             if (s == 2) 
-            adminPasswordField.setOnAction(this::switchToCreateTripsScene);
+                adminPasswordField.setOnAction(this::switchToCreateTripsScene);
             if (s == 1)
-            adminPasswordField.setOnAction(this::switchToCreateShipScene);
+                adminPasswordField.setOnAction(this::switchToCreateShipScene);
+
+            if (s == 0) {
+                welcomeLabel.setText("Waiting for admin to confirm payment");
+                adminPasswordField.setText("");
+                adminButton.setVisible(true);
+            }
+
 
             VBox box = new VBox(10);
-            box.getChildren().addAll(welcomeLabel, adminPasswordField);
+            box.getChildren().addAll(welcomeLabel, adminPasswordField, adminButton);
 
             FlowPane fpaneAdminPass = new FlowPane(box);
             fpaneAdminPass.setAlignment(Pos.CENTER);
