@@ -70,6 +70,21 @@ public class Ship {
 		return sum;
 	}
 
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("ID: " + ID + " \n");
+		for (RoomType type : RoomType.values()) {
+			int typeCount = 0;
+			for (Room r : rooms) {
+				if (r.type == type) {
+					typeCount++;
+				}
+			}
+			builder.append(typeCount + " " + type + " rooms.\n");
+		}
+		return builder.toString();
+	}
+
 	protected static class Room {
 		public RoomType type;
 		public int count;

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import java.util.Date;
+import java.text.NumberFormat;
 import java.time.Duration;
 import java.util.TimeZone;
 
@@ -71,6 +72,31 @@ public class Trip {
 							PORTS.get(0).arrival.toInstant(),
 							PORTS.get(z).departure.toInstant()
 						).toDays();
+	}
+
+	public double getTotalFees() {
+		double total = 0;
+		for (CostType cost : COSTS.keySet()) {
+			total += COSTS.get(cost);
+		}
+		return total;
+	}
+
+	@Override
+	public String toString() {
+		NumberFormat nf = NumberFormat.getCurrencyInstance();
+		StringBuilder builder = new StringBuilder();
+
+		builder.append("Trip ID: " + ID + "\nShip " + this.SHIP.toString());
+		for (CostType cost : COSTS.keySet()) {
+			builder.append(cost.toString() + ": " + nf.format(COSTS.get(cost)) + "\n");
+		}
+		builder.append("TOTAL FEES: " + nf.format(this.getTotalFees()) + "\n");
+
+		int z = this.PORTS.size()-1;
+		builder.append(this.PORTS.get(0).location + ", " + this.PORTS.get(0).departure + "\n");
+		builder.append(this.PORTS.get(z).location + ", " + this.PORTS.get(z).arrival + "\n");
+		return builder.toString();
 	}
 
 	/*

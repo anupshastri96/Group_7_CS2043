@@ -56,6 +56,9 @@ public class CMConnectionTest {
 		try{
 			CMConnection testConnection = new CMConnection("jdbc:mysql://cs1103.cs.unb.ca:3306/j3zh5", "j3zh5", "rGR45WHX");
 			List<Ship> shipList = testConnection.queryShip();
+			for(int i = 0; i<shipList.size(); i++){
+				System.out.println(shipList.get(i).toString() + "\n");
+			}
 		}catch(IllegalArgumentException e) {
 			System.out.println(e.getMessage());
 		}
@@ -88,6 +91,9 @@ public class CMConnectionTest {
 		try{
 			CMConnection testConnection = new CMConnection("jdbc:mysql://cs1103.cs.unb.ca:3306/j3zh5", "j3zh5", "rGR45WHX");
 			List<Trip> tripList = testConnection.queryTrip();
+			for(int i = 0; i<tripList.size(); i++ ){
+				System.out.println(tripList.get(i) + "\n");
+			}
 		}catch(IllegalArgumentException e) {
 			System.out.println(e.getMessage());
 		}
