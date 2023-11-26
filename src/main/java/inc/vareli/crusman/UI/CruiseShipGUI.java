@@ -242,7 +242,7 @@ public class CruiseShipGUI extends Application {
 
 		ComboBox<String> mealSelection = new ComboBox<String>();
 		mealSelection.getItems().add("Opt In");
-		mealSelection.getItem().add("Opt Out");
+		mealSelection.getItems().add("Opt Out");
 
 		ComboBox<RoomType> roomSelection = new ComboBox<RoomType>();
 
@@ -254,7 +254,7 @@ public class CruiseShipGUI extends Application {
 
 		//TODO - trip info will show the occupancy, only allow them to pick room types that arent fully occupied
 		for (RoomType roomType : RoomType.values()) {
-			roomSelection.getItems().add(roomType.toString());
+			roomSelection.getItems().add(roomType);
 		}
 
 		roomSelection.setOnAction(
