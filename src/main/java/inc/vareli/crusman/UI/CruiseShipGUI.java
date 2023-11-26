@@ -43,6 +43,7 @@ public class CruiseShipGUI extends Application {
     private TextField loginPassField;
     private Label loginError;
 
+    //create trips
     private TextField addShipField;
     private TextField dateArrivalField;
     private TextField dateDepartureField;
@@ -50,6 +51,10 @@ public class CruiseShipGUI extends Application {
     private TextField zoneIdField;
     private TextField costTypeField;
     private TextField costAmountField;
+
+    //create ships
+    private TextField roomCountField;
+    private ComboBox roomListShip;
 
     private CMConnection conn;
     private int numberOfTrips; 
@@ -159,6 +164,11 @@ public class CruiseShipGUI extends Application {
     /** 
     List<Trip> trips = conn.queryTrip();
     numberOfTrips = trips.size();
+
+    tripListings = new Text[numberOfTrips];
+    for (int i = 0; < tripListings.length; i++ \) {
+        tripListings[i] = new Text(trips.get(i).toString());
+    }
     */
 
 	tripListings = new Text[3];
@@ -272,7 +282,6 @@ public class CruiseShipGUI extends Application {
                 adminPasswordField.setOnAction(this::switchToCreateTripsScene);
             if (s == 1)
                 adminPasswordField.setOnAction(this::switchToCreateShipScene);
-
             if (s == 0) {
                 welcomeLabel.setText("Waiting for admin to confirm payment");
                 adminPasswordField.setText("");
@@ -280,7 +289,7 @@ public class CruiseShipGUI extends Application {
             }
 
 
-            VBox box = new VBox(10);
+            VBox box = new VBox(20);
             box.getChildren().addAll(welcomeLabel, adminPasswordField, adminButton);
 
             FlowPane fpaneAdminPass = new FlowPane(box);
@@ -298,6 +307,13 @@ public class CruiseShipGUI extends Application {
             Label addShipLabel = new Label("Add a ship");
             Label portLabel = new Label("Create a port");
             Label costLabel = new Label("Add cost");
+
+            //combo box to store ships from db
+            List<Ship> shipList = conn.queryShip();
+            ComboBox<Ship> cbShip = new ComboBox<>();
+            for (Ship ship : shipList) {
+                cbShip.getItems().add(ship);
+            }
 
             addShipField = new TextField("add a ship");
             addShipField.setOnMouseClicked(m -> addShipField.clear());
@@ -351,22 +367,30 @@ public class CruiseShipGUI extends Application {
         public void switchToCreateShipScene (ActionEvent event) {
 
             Label chooseRoomTypeLabel = new Label("Choose Room Type");
-            TextField roomCount = new TextField("Room Count");
-            roomCount.setOnMouseClicked(m -> roomCount.clear());
-            roomCount.setPrefWidth(80);
+
+            roomCountField = new TextField("Room Count");
+            roomCountField.setOnMouseClicked(m -> roomCountField.clear());
+            roomCountField.setPrefWidth(80);
             
             Button createShipButton = new Button("Finalize");
             createShipButton.setOnAction(this::makeAShip);
 
-            ComboBox roomListShip = new ComboBox();
+            //** old combox box
+            roomListShip = new ComboBox();
 
+            //*** new combo box
+            ComboBox<RoomType> listRoom = new ComboBox<>();
+            for (RoomType roomType : RoomType.values()) {
+                listRoom.getItems().add(roomType);
+            }
+            
             ObservableList<String> roomList = roomListShip.getItems();
             for (RoomType roomType : RoomType.values()) {
                 roomList.add(roomType.toString());
             }
 
             VBox arrangeShips = new VBox(30);
-            arrangeShips.getChildren().addAll(chooseRoomTypeLabel, roomListShip, roomCount, createShipButton);
+            arrangeShips.getChildren().addAll(chooseRoomTypeLabel, listRoom, roomCountField, createShipButton);
 
             FlowPane fpaneShip = new FlowPane(arrangeShips);
             fpaneShip.setAlignment(Pos.CENTER);
@@ -379,12 +403,37 @@ public class CruiseShipGUI extends Application {
 
         public void makeAShip (ActionEvent event) {
             //..make ship functionality
+
+            String roomCount = roomCountField.getText();
+
+            //Map<roomType, Integer> rc = new Map<>();
+           // rc.put(listRoom.getValue(), roomCount);
+
+           // Ship ship = new conn.createShip();
+
         }
         public void makeATrip (ActionEvent event) {
             //..make trip functionality
+
+            String ship = addShipField.getText();
+            String dateArrival = dateArrivalField.getText();
+            String dateDeparture = dateDepartureField.getText();
+            String location = locationField.getText();
+            String zoneID = zoneIdField.getText();
+            String costType = costTypeField.getText();
+            String costAmount = costAmountField.getText();
+
+        /**  
+           Trip t = new conn.createTrip();
+        
+           trip1.addCost(costType, costAmount);
+         **/
+
         }
 
-        public void printTicketToFile (ActionEvent event){}
+        public void printTicketToFile (ActionEvent event){
+            //..print ticket out to file
+        }
         public void next(ActionEvent event) {} //TODO - MART!!!!
         public void prev(ActionEvent event) {}
         
