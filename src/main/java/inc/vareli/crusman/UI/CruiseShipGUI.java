@@ -155,8 +155,10 @@ public class CruiseShipGUI extends Application {
 	//TODO - make this get the trips from the database
     //in progress
 
+    /** 
     List<Trip> trips = conn.queryTrip();
     numberOfTrips = trips.size();
+    */
 
 	tripListings = new Text[3];
 	for (int i = 0; i < tripListings.length; i++) {
@@ -177,7 +179,7 @@ public class CruiseShipGUI extends Application {
         arrangeTripListings.getChildren().addAll(tripListings);
 
         HBox arrangeNextAndPrev = new HBox(10);
-        arrangeNextAndPrev.getChildren().addAll(adminButton);
+        arrangeNextAndPrev.getChildren().addAll(prev, next);
 
         BorderPane root = new BorderPane();
         root.setCenter(arrangeTripListings);
@@ -196,6 +198,7 @@ public class CruiseShipGUI extends Application {
             
 	    //TODO - MAKE THIS BETTER
             TextField customerName = new TextField("Input Customer Name");
+            customerName.setOnMouseClicked(m -> customerName.clear());
 
             Button returnButton = new Button("Return");
             returnButton.setPrefWidth(300);
@@ -263,6 +266,7 @@ public class CruiseShipGUI extends Application {
             printTicket.setOnAction(this::printTicketToFile);
 
             TextField confirmPasswordField = new TextField("Enter password");
+            confirmPasswordField.setOnMouseClicked(m -> confirmPasswordField.clear());
 
             VBox arrangeAdmin = new VBox(60);
             arrangeAdmin.getChildren().addAll(waitingPaymentLabel, confirmPasswordField, printTicket);
@@ -280,17 +284,16 @@ public class CruiseShipGUI extends Application {
         public void switchToAdminPassword (ActionEvent event) {
 
             Label welcomeLabel = new Label("Press Enter");
-            TextField adminPasswordField = new TextField();
+            TextField adminPasswordField = new TextField("Enter password");
+            adminPasswordField.setOnMouseClicked(m -> adminPasswordField.clear());
 
-            Button enterButton = new Button("Enter password");
-            enterButton.setPrefWidth(80);
             if (s == 2) 
-            enterButton.setOnAction(this::switchToCreateTripsScene);
+            adminPasswordField.setOnAction(this::switchToCreateTripsScene);
             //if (s == 1)
-            //enterButton.setOnAction(this::switchToCreateShipScene);
+            //adminpasswordField.setOnAction(this::switchToCreateShipScene);
 
             VBox box = new VBox(10);
-            box.getChildren().addAll(welcomeLabel, adminPasswordField, enterButton);
+            box.getChildren().addAll(welcomeLabel, adminPasswordField);
 
             FlowPane fpaneAdminPass = new FlowPane(box);
             fpaneAdminPass.setAlignment(Pos.CENTER);
@@ -309,16 +312,30 @@ public class CruiseShipGUI extends Application {
             Label costLabel = new Label("Add cost");
 
             addShipField = new TextField("add a ship");
+            addShipField.setOnMouseClicked(m -> addShipField.clear());
+            
             dateArrivalField = new TextField("date arrival");
+            dateArrivalField.setOnMouseClicked(m -> dateArrivalField.clear());
+
             dateDepartureField = new TextField("date departure");
+            dateDepartureField.setOnMouseClicked(m -> dateDepartureField.clear());
+           
             locationField = new TextField("location");
+            locationField.setOnMouseClicked(m -> locationField.clear());
+            
             zoneIdField = new TextField("zone id");
+            zoneIdField.setOnMouseClicked(m -> zoneIdField.clear());
+
             costTypeField = new TextField("Cost Type");
+            costTypeField.setOnMouseClicked(m -> costTypeField.clear());
+            
             costAmountField = new TextField("amount");
+            costAmountField.setOnMouseClicked(m -> costAmountField.clear());
+           
 
             Button finalized = new Button("finalized");
             finalized.setPrefWidth(80);
-            finalized.setOnAction(this::printTicketToFile);
+            finalized.setOnAction(this::makeATrip);
 
             HBox tripShipArrange = new HBox(10);
             HBox tripPortArrange = new HBox(20);
@@ -343,7 +360,13 @@ public class CruiseShipGUI extends Application {
             stage.setTitle("Create Trip");
 
         }
+
+        public void makeATrip (ActionEvent event) {
+            //.............
+        }
+
         public void printTicketToFile (ActionEvent event){}
         public void next(ActionEvent event) {} //TODO - MART!!!!
         public void prev(ActionEvent event) {}
+        
 }
