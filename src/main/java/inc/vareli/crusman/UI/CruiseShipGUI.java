@@ -234,6 +234,7 @@ public class CruiseShipGUI extends Application {
             EventHandler<ActionEvent> chooseRoomType = new EventHandler<ActionEvent>() {
                 public void handle (ActionEvent e) {
                     testLabelForEvents.setText(roomSelection.getValue().toString());
+                    
                 }
         };
         roomSelection.setOnAction(chooseRoomType);
@@ -289,8 +290,8 @@ public class CruiseShipGUI extends Application {
 
             if (s == 2) 
             adminPasswordField.setOnAction(this::switchToCreateTripsScene);
-            //if (s == 1)
-            //adminpasswordField.setOnAction(this::switchToCreateShipScene);
+            if (s == 1)
+            adminPasswordField.setOnAction(this::switchToCreateShipScene);
 
             VBox box = new VBox(10);
             box.getChildren().addAll(welcomeLabel, adminPasswordField);
@@ -332,10 +333,9 @@ public class CruiseShipGUI extends Application {
             costAmountField = new TextField("amount");
             costAmountField.setOnMouseClicked(m -> costAmountField.clear());
            
-
-            Button finalized = new Button("finalized");
-            finalized.setPrefWidth(80);
-            finalized.setOnAction(this::makeATrip);
+            Button createTripButton = new Button("Create Trip");
+            createTripButton.setPrefWidth(80);
+            createTripButton.setOnAction(this::makeATrip);
 
             HBox tripShipArrange = new HBox(10);
             HBox tripPortArrange = new HBox(20);
@@ -350,7 +350,7 @@ public class CruiseShipGUI extends Application {
             tripCostArrange.getChildren().addAll(costTypeField, costAmountField);
 
             tripVerticalArrange.getChildren().addAll(addShipLabel, tripShipArrange, portLabel,
-                                                    tripPortArrange, costLabel, tripCostArrange, finalized);   
+                                                    tripPortArrange, costLabel, tripCostArrange, createTripButton);   
 
             FlowPane fpaneTrip = new FlowPane(tripVerticalArrange);
             fpaneTrip.setAlignment(Pos.CENTER);
@@ -361,8 +361,40 @@ public class CruiseShipGUI extends Application {
 
         }
 
+        public void switchToCreateShipScene (ActionEvent event) {
+
+            Label chooseRoomTypeLabel = new Label("Choose Room Type");
+            TextField roomCount = new TextField("Room Count");
+            roomCount.setOnMouseClicked(m -> roomCount.clear());
+            roomCount.setPrefWidth(80);
+            
+            Button createShipButton = new Button("Finalize");
+            createShipButton.setOnAction(this::makeAShip);
+
+            ComboBox roomListShip = new ComboBox();
+
+            ObservableList<String> roomList = roomListShip.getItems();
+            for (RoomType roomType : RoomType.values()) {
+                roomList.add(roomType.toString());
+            }
+
+            VBox arrangeShips = new VBox(30);
+            arrangeShips.getChildren().addAll(chooseRoomTypeLabel, roomListShip, roomCount, createShipButton);
+
+            FlowPane fpaneShip = new FlowPane(arrangeShips);
+            fpaneShip.setAlignment(Pos.CENTER);
+
+            createShipScene = new Scene(fpaneShip, 350, 300);
+            stage.setScene(createShipScene);
+            stage.setTitle("Create ship");
+
+        }
+
+        public void makeAShip (ActionEvent event) {
+            //..make ship functionality
+        }
         public void makeATrip (ActionEvent event) {
-            //.............
+            //..make trip functionality
         }
 
         public void printTicketToFile (ActionEvent event){}
