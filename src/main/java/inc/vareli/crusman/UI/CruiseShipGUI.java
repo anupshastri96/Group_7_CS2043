@@ -51,6 +51,9 @@ public class CruiseShipGUI extends Application {
     private TextField zoneIdField;
     private TextField costTypeField;
     private TextField costAmountField;
+    private Button createATripButton;
+    private Button createAShipButton;
+    private Button confirmButton;
 
     //create ships
     private TextField roomCountField;
@@ -58,7 +61,7 @@ public class CruiseShipGUI extends Application {
 
     private CMConnection conn;
     private int numberOfTrips; 
-    private int s;
+    
 
     /* 
     List<Trip> trips = conn.queryTrips();
@@ -112,14 +115,14 @@ public class CruiseShipGUI extends Application {
         goToBrowseScene.setPrefWidth(90);
         goToBrowseScene.setOnAction(this::switchToBrowseScene);
 
-        Button createATripButton = new Button("Create a trip");
+        createATripButton = new Button("Create a trip");
         createATripButton.setPrefWidth(90);
-        createATripButton.setOnAction(this::createTrip);
+        createATripButton.setOnAction(this::switchToAdminPassword);
         
 
-        Button createAShipButton = new Button("Create a ship");
+        createAShipButton = new Button("Create a ship");
         createAShipButton.setPrefWidth(90);
-        createAShipButton.setOnAction(this::createShip);
+        createAShipButton.setOnAction(this::switchToAdminPassword);
 
         VBox arrangeMenu =  new VBox(10);
         arrangeMenu.getChildren().addAll(menuLabel, goToBrowseScene, createATripButton, createAShipButton);
@@ -130,20 +133,6 @@ public class CruiseShipGUI extends Application {
         mainMenuScene = new Scene(fpaneMenu, 250, 300);
         stage.setScene(mainMenuScene);
         stage.setTitle("Crusman cruise ship application");
-    }
-
-    public void createTrip (ActionEvent event) {
-        s = 2;
-        switchToAdminPassword(event);
-    }
-    public void createShip (ActionEvent event) {
-        s = 1;
-        switchToAdminPassword(event);
-    }
-
-    public void confirmTrip (ActionEvent event) {
-        s = 0;
-        switchToAdminPassword(event);
     }
                          
     public void switchToBrowseScene(ActionEvent event) {
@@ -215,7 +204,7 @@ public class CruiseShipGUI extends Application {
             returnButton.setPrefWidth(300);
             returnButton.setOnAction(this::switchToBrowseScene);
 
-            Button confirmButton = new Button("Confirm");
+            confirmButton = new Button("Confirm");
             confirmButton.setPrefWidth(300);
             confirmButton.setOnAction(this::switchToAdminPassword);
 
@@ -278,11 +267,11 @@ public class CruiseShipGUI extends Application {
             Label welcomeLabel = new Label("Enter Password");
             TextField adminPasswordField = new TextField("hit enter to submit");
             adminPasswordField.setOnMouseClicked(m -> adminPasswordField.clear());
-            if (s == 2) 
+            if (event.getSource() == createATripButton) {
                 adminPasswordField.setOnAction(this::switchToCreateTripsScene);
-            if (s == 1)
+            } else if (event.getSource() == createAShipButton) {
                 adminPasswordField.setOnAction(this::switchToCreateShipScene);
-            if (s == 0) {
+            } else if (event.getSource() == confirmButton) {
                 welcomeLabel.setText("Waiting for admin to confirm payment");
                 adminPasswordField.setText("");
                 adminButton.setVisible(true);
@@ -309,11 +298,13 @@ public class CruiseShipGUI extends Application {
             Label costLabel = new Label("Add cost");
 
             //combo box to store ships from db
+            /* 
             List<Ship> shipList = conn.queryShip();
             ComboBox<Ship> cbShip = new ComboBox<>();
             for (Ship ship : shipList) {
                 cbShip.getItems().add(ship);
             }
+            */
 
             addShipField = new TextField("add a ship");
             addShipField.setOnMouseClicked(m -> addShipField.clear());
@@ -340,6 +331,10 @@ public class CruiseShipGUI extends Application {
             createTripButton.setPrefWidth(80);
             createTripButton.setOnAction(this::makeATrip);
 
+            Button addPortButton = new Button("Create Port");
+            createTripButton.setPrefWidth(80);
+            createTripButton.setOnAction(this::createAPort);
+
             HBox tripShipArrange = new HBox(10);
             HBox tripPortArrange = new HBox(20);
             HBox tripCostArrange = new HBox(20);
@@ -353,7 +348,7 @@ public class CruiseShipGUI extends Application {
             tripCostArrange.getChildren().addAll(costTypeField, costAmountField);
 
             tripVerticalArrange.getChildren().addAll(addShipLabel, tripShipArrange, portLabel,
-                                                    tripPortArrange, costLabel, tripCostArrange, createTripButton);   
+                                    tripPortArrange, costLabel, tripCostArrange, createTripButton, addPortButton);   
 
             FlowPane fpaneTrip = new FlowPane(tripVerticalArrange);
             fpaneTrip.setAlignment(Pos.CENTER);
@@ -384,11 +379,13 @@ public class CruiseShipGUI extends Application {
                 listRoom.getItems().add(roomType);
             }
             
-            ObservableList<String> roomList = roomListShip.getItems();
-            for (RoomType roomType : RoomType.values()) {
-                roomList.add(roomType.toString());
-            }
 
+            //Map<RoomType,Integer> rooms = new EnumMap<RoomType,Integer>(RoomType.class);
+
+            //RoomType selectedType = listRoom.getValue();
+
+            //rooms.put(selectedType,Integer.parseInt(textfield...));
+            //when they click finalize -> CMConnection.createShip(rooms);
             VBox arrangeShips = new VBox(30);
             arrangeShips.getChildren().addAll(chooseRoomTypeLabel, listRoom, roomCountField, createShipButton);
 
@@ -412,6 +409,8 @@ public class CruiseShipGUI extends Application {
            // Ship ship = new conn.createShip();
 
         }
+
+        public void createAPort(ActionEvent event) {}
         public void makeATrip (ActionEvent event) {
             //..make trip functionality
 
@@ -422,6 +421,16 @@ public class CruiseShipGUI extends Application {
             String zoneID = zoneIdField.getText();
             String costType = costTypeField.getText();
             String costAmount = costAmountField.getText();
+
+            //in the ship select menu
+            //shipSeelected = whatever they selected from a list
+
+            /*
+            TripBuiler temp = new TripBuilder(shipSelected);
+            temp.addPort(....);
+
+            createTrip -> CMConnection.createTrip(temp);
+            */
 
         /**  
            Trip t = new conn.createTrip();
