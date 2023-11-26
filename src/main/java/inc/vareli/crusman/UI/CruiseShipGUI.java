@@ -247,7 +247,8 @@ public class CruiseShipGUI extends Application {
 
 				
 		mealSelection.setOnAction(e -> testLabelForEvents.setText(
-						mealSelection.getValue().toString()
+							mealSelection.getValue().toString()
+						)
 					);
 
 		//TODO - trip info will show the occupancy, only allow them to pick room types that arent fully occupied
