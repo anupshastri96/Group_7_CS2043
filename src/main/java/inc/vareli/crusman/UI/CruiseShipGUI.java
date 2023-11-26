@@ -28,6 +28,7 @@ import java.util.List;
  * @author Mart Palamine
  */
 public class CruiseShipGUI extends Application {
+	private Stage stage;
 	private Scene mainMenuScene;
 	private Scene loginScene;
 	private Scene browsingScene;
