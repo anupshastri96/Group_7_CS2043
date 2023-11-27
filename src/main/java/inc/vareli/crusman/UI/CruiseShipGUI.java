@@ -295,10 +295,10 @@ public class CruiseShipGUI extends Application {
 
         Button createTripButton = new Button("Create Trip");
         Button addPortButton = new Button("Create Port");
-        Button addCostButton = new Button("Add Cost");
+        Button addCostButton = new Button("Specfiy costs for room types and services on the trip");
 
         createTripButton.setOnAction(this::finalizeTrip);
-        addPortButton.setOnAction(this::createPort);
+        addPortButton.setOnAction(this::addPort);
         //addCostButton.setOnAction(this::addCost);
 
 		dateArrivalField.setOnMouseClicked(e -> dateArrivalField.clear());
@@ -307,7 +307,7 @@ public class CruiseShipGUI extends Application {
         zoneIdField.setOnMouseClicked(e -> zoneIdField.clear());
         roomCostField.setOnMouseClicked(e -> roomCostField.clear());
         serviceCostField.setOnMouseClicked(e -> serviceCostField.clear());
-
+        
         ComboBox<RoomType> roomSelection = new ComboBox<RoomType>();
 		for (RoomType roomType : RoomType.values()) {
 			roomSelection.getItems().add(roomType);
@@ -383,7 +383,7 @@ public class CruiseShipGUI extends Application {
 		// Ship ship = new conn.createShip();
 	}
 
-	public void createPort(ActionEvent event) {
+	public void addPort(ActionEvent event) {
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
         Date arrivalDate = new Date();
@@ -400,6 +400,23 @@ public class CruiseShipGUI extends Application {
 
         tripBuilder.addPort(arrivalDate, departureDate, locationField.getText(), zoneIdField.getText());
 	}
+
+    public void addCost (ActionEvent event) {
+        double roomCost = 0;
+        double serviceCost = 0;
+
+        try {
+
+            roomCost = Double.parseDouble(roomCostField.getText());
+             serviceCost = Double.parseDouble(serviceCostField.getText());
+        }
+        catch(NumberFormatException nfe) {
+            System.out.println(nfe);
+            }    
+
+        tripBuilder.addCost(roomTypeSelectedForTrip, roomCost);
+        tripBuilder.addCost(serviceSelectedForTrip,serviceCost);
+    }
 
 	public void finalizeTrip (ActionEvent event) {
 
