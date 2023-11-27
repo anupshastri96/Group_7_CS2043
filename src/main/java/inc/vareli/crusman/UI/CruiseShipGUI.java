@@ -221,7 +221,6 @@ public class CruiseShipGUI extends Application {
 
 	public void browseAction (ActionEvent event)  {
 
-
 		try {
 		if (event.getSource() == nextButton) {
 			text.setText(demo.get(++i));
@@ -231,14 +230,12 @@ public class CruiseShipGUI extends Application {
 			text.setText(demo.get(--i));
 			//text.setText(trips.get(--1).toString());
 		}
-
 		else if (event.getSource() == bookButton) {
 			booked = demo.get(i);
 			switchToBookingScene(event);
 			//booked = trips.get(i).toString();
 			//Trip trip = trip.get(i);
 		}
-
 		} catch(IndexOutOfBoundsException e) {
 			text.setText("None");
 		}
@@ -490,25 +487,7 @@ public class CruiseShipGUI extends Application {
         stage.setScene(scene);
         stage.setTitle("Choose a ship for the trip");
     }
-
-	public void bookTrip (ActionEvent event) {
-
-		Label label = new Label("No trip chose");
-		ComboBox<String> trips = new ComboBox<String>();
-		trips.getItems().add("trip1");
-		trips.getItems().add("trip2");
-		trips.getItems().add("trip3");
-		trips.setPrefWidth(120);
-
-
-		FlowPane pane = new FlowPane(trips);
-		pane.setAlignment(Pos.CENTER);
-		Scene scene = new Scene(pane, 300, 300);
-		stage.setScene(scene);
-		stage.setTitle("Book");
-
-	}
-
+	
 	public void printTicketToFile (ActionEvent event){
 		//..print ticket out to file
 	}
