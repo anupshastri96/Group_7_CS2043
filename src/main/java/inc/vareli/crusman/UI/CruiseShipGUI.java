@@ -395,6 +395,9 @@ public class CruiseShipGUI extends Application {
 
     public void switchToChooseShipScene (ActionEvent event) {
 
+        Button button = new Button("Done");
+        Label label = new Label("Choose a ship");
+
         //combo box to store ships from db
 		/* 
 		   List<Ship> shipList = conn.queryShip();
@@ -403,9 +406,6 @@ public class CruiseShipGUI extends Application {
 		   cbShip.getItems().add(ship);
 		   }
 		   */
-        
-        Button button = new Button("Done");
-        Label label = new Label("Choose a ship");
         ComboBox<String> placeHolder = new ComboBox<>();
         placeHolder.getItems().add("Ship1");
         placeHolder.getItems().add("Ship2");
@@ -414,7 +414,8 @@ public class CruiseShipGUI extends Application {
         placeHolder.setOnAction(e -> selectedShip = placeHolder.getValue());
         button.setOnAction(this::switchToCreateTripsScene);
         
-        FlowPane pane = new FlowPane(label, placeHolder, button);
+        VBox arrange = new VBox(30, label, placeHolder, button);
+        FlowPane pane = new FlowPane(arrange);
         pane.setAlignment(Pos.CENTER);
         Scene scene = new Scene(pane, 300, 300);
         stage.setScene(scene);
