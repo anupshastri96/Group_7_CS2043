@@ -2,6 +2,8 @@ package inc.vareli.crusman.UI;
 
 import inc.vareli.crusman.databases.*;
 import inc.vareli.crusman.databases.Ship.RoomType;
+import inc.vareli.crusman.databases.Trip.TripBuilder;
+
 
 import javafx.collections.ObservableList;
 import javafx.application.Application;
@@ -21,6 +23,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.control.ComboBox;
 import java.util.List;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 /**
  * The main entry point to CrusMan, where users will interact with the data and buy tickets etc
@@ -32,6 +37,7 @@ public class CruiseShipGUI extends Application {
 	//global
 	private Stage stage;
 	private CMConnection conn;
+    private TripBuilder tripBuilder;
 
 	//loggin in
 	private TextField loginURLField;
@@ -43,7 +49,6 @@ public class CruiseShipGUI extends Application {
 	private Text[] tripListings;
 
 	//creating
-	private TextField addShipField;
 	private TextField dateArrivalField;
 	private TextField dateDepartureField;
 	private TextField locationField;
@@ -54,8 +59,10 @@ public class CruiseShipGUI extends Application {
 	private Button createAShipButton;
 	private Button confirmBookingButton;
 	private TextField roomCountField;
+    private Label warningLabel;
     //private Ship selectedShip;
     private String selectedShip;
+    
 
 	public void start(Stage stage) {
 		this.stage = stage;
@@ -210,7 +217,9 @@ public class CruiseShipGUI extends Application {
 
 	public void switchToBookingScene(ActionEvent event) {
 		Label mealLabel = new Label("Meal Plan");
+        Label drinkLabel = new Label("Drink Plan");
 		Label roomLabel = new Label("Room Plan");
+
 
 		TextField customerName = new TextField("Input Customer Name");
 		customerName.setOnMouseClicked(e -> customerName.clear());
@@ -245,10 +254,10 @@ public class CruiseShipGUI extends Application {
 		}
 
 		HBox arrangeLabels = new HBox(70);
-		arrangeLabels.getChildren().addAll(mealLabel, roomLabel);
+		arrangeLabels.getChildren().addAll(mealLabel, roomLabel, drinkLabel);
 
 		HBox arrangeSelections = new HBox(30);
-		arrangeSelections.getChildren().addAll(mealSelection, roomSelection);
+		arrangeSelections.getChildren().addAll(mealSelection, drinkSelection, roomSelection);
 
 		VBox arrangeButtons = new VBox(20);
 		arrangeButtons.getChildren().addAll(customerName, 
@@ -263,19 +272,23 @@ public class CruiseShipGUI extends Application {
 		stage.setScene(bookingScene);
 		stage.setTitle("Print ticket");
 	}
+ 
 
 	public void switchToCreateTripsScene (ActionEvent event) {
 
 		Label addShipLabel = new Label("Your selected ship:  " + selectedShip);
-        //Label addShipLabel = new Label(selectedShip.ToString());
+        //Label addShipLabel = new Label("Your selected ship: " + selectedShip.ToString());
         
-		Label portLabel = new Label("Create a port");
+		Label portLabel = new Label("Create a port  -  A trip must have at least 2 ports");
+        Label titleLabel = new Label("Arrival Date\t         \t" + "  \tDeparture Date");
+
+        warningLabel = new Label();
 		Label costLabel = new Label("Add cost");
 
-		dateArrivalField = new TextField("date arrival");
+		dateArrivalField = new TextField("dd-MM-yyyy");
 		dateArrivalField.setOnMouseClicked(e -> dateArrivalField.clear());
 
-		dateDepartureField = new TextField("date departure");
+		dateDepartureField = new TextField("dd-MM-yyyy");
 		dateDepartureField.setOnMouseClicked(e -> dateDepartureField.clear());
 
 		locationField = new TextField("location");
@@ -298,20 +311,20 @@ public class CruiseShipGUI extends Application {
 		createTripButton.setPrefWidth(80);
 		createTripButton.setOnAction(this::createPort);
 
-		HBox arrangeTripShip = new HBox(10);
+		HBox arrangeTripButton = new HBox(10);
 		HBox arrangeTripPortInfo = new HBox(20);
 		HBox arrangeTripCosts = new HBox(20);
 		VBox arrangeTripVertical = new VBox(20);
 
-		arrangeTripShip.getChildren().addAll(addShipLabel);
+		arrangeTripButton.getChildren().addAll(addPortButton, warningLabel);
 
 		arrangeTripPortInfo.getChildren().addAll(dateArrivalField, dateDepartureField, 
 							locationField, zoneIdField);
 
 		arrangeTripCosts.getChildren().addAll(costTypeField, costAmountField);
 
-		arrangeTripVertical.getChildren().addAll(arrangeTripShip, portLabel,
-			arrangeTripPortInfo, costLabel, arrangeTripCosts, createTripButton, addPortButton);   
+		arrangeTripVertical.getChildren().addAll(addShipLabel, portLabel, titleLabel,
+			arrangeTripPortInfo, arrangeTripButton, costLabel, arrangeTripCosts, createTripButton);   
 
 		FlowPane pane = new FlowPane(arrangeTripVertical);
 		pane.setAlignment(Pos.CENTER);
@@ -366,14 +379,24 @@ public class CruiseShipGUI extends Application {
 
 	public void createPort(ActionEvent event) {
 
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        Date arrivalDate = new Date();
+        Date departureDate = new Date();
+
+        try 
+        {
+            arrivalDate = sdf.parse(dateArrivalField.getText());
+            departureDate = sdf.parse(dateDepartureField.getText());
+        }
+         catch(ParseException pe) {
+            warningLabel.setText("Warning: Failed to input date(s), please check if format is correct");
+        }
+
+        tripBuilder.addPort(arrivalDate, departureDate, locationField.getText(), zoneIdField.getText());
 	}
 
 	public void finalizeTrip (ActionEvent event) {
 
-		String dateArrival = dateArrivalField.getText();
-		String dateDeparture = dateDepartureField.getText();
-		String location = locationField.getText();
-		String zoneID = zoneIdField.getText();
 		String costType = costTypeField.getText();
 		String costAmount = costAmountField.getText();
 
@@ -406,12 +429,16 @@ public class CruiseShipGUI extends Application {
 		   cbShip.getItems().add(ship);
 		   }
 		   */
+
         ComboBox<String> placeHolder = new ComboBox<>();
         placeHolder.getItems().add("Ship1");
         placeHolder.getItems().add("Ship2");
 
         //cbShip.setOnAction(e -> selectedShip = cbShip.getValue());
         placeHolder.setOnAction(e -> selectedShip = placeHolder.getValue());
+
+        //tripBuilder = new TripBuilder(selectedShip);
+
         button.setOnAction(this::switchToCreateTripsScene);
         
         VBox arrange = new VBox(30, label, placeHolder, button);
@@ -420,7 +447,6 @@ public class CruiseShipGUI extends Application {
         Scene scene = new Scene(pane, 300, 300);
         stage.setScene(scene);
         stage.setTitle("Choose a ship for the trip");
-        
     }
 
 	public void printTicketToFile (ActionEvent event){
