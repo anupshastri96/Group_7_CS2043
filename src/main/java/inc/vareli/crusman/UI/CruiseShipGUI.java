@@ -54,16 +54,13 @@ public class CruiseShipGUI extends Application {
 	private Button createAShipButton;
 	private Button confirmBookingButton;
 	private TextField roomCountField;
-
-	/* 
-	   List<Trip> trips = conn.queryTrips();
-	   user selection stuff -> Trip trip = trips.asfigoslfh 
-   	*/
+    //private Ship selectedShip;
+    private String selectedShip;
 
 	public void start(Stage stage) {
 		this.stage = stage;
-		VBox loginFieldsArrangement = new VBox(20);//change to noun phrase - 
-							//loginFieldsArrangement
+		VBox loginFieldsArrangement = new VBox(20);
+							
 		Button submit = new Button("Submit");
 		submit.setPrefWidth(75);
 		submit.setOnAction(this::submitLogin);
@@ -135,8 +132,9 @@ public class CruiseShipGUI extends Application {
 		Label welcomeLabel = new Label("Enter Password");
 		TextField adminPasswordField = new TextField("Hit enter to submit");
 		adminPasswordField.setOnMouseClicked(m -> adminPasswordField.clear());
+
 		if (event.getSource() == createATripButton) {
-			adminPasswordField.setOnAction(this::switchToCreateTripsScene);
+			adminPasswordField.setOnAction(this::switchToChooseShipScene);
 		} else if (event.getSource() == createAShipButton) {
 			adminPasswordField.setOnAction(this::switchToCreateShipScene);
 		} else if (event.getSource() == confirmBookingButton) {
@@ -167,9 +165,6 @@ public class CruiseShipGUI extends Application {
 		Button prev = new Button("PREV");
 		prev.setPrefWidth(75);
 		prev.setOnAction(this::prev);*/
-
-		//TODO - make this get the trips from the database
-		//in progress
 
 		/* 
 		  List<Trip> trips = conn.queryTrip();
@@ -271,21 +266,11 @@ public class CruiseShipGUI extends Application {
 
 	public void switchToCreateTripsScene (ActionEvent event) {
 
-		Label addShipLabel = new Label("Add a ship");
+		Label addShipLabel = new Label("Your selected ship:  " + selectedShip);
+        //Label addShipLabel = new Label(selectedShip.ToString());
+        
 		Label portLabel = new Label("Create a port");
 		Label costLabel = new Label("Add cost");
-
-		//combo box to store ships from db
-		/* 
-		   List<Ship> shipList = conn.queryShip();
-		   ComboBox<Ship> cbShip = new ComboBox<>();
-		   for (Ship ship : shipList) {
-		   cbShip.getItems().add(ship);
-		   }
-		   */
-
-		addShipField = new TextField("add a ship");
-		addShipField.setOnMouseClicked(e -> addShipField.clear());
 
 		dateArrivalField = new TextField("date arrival");
 		dateArrivalField.setOnMouseClicked(e -> dateArrivalField.clear());
@@ -318,14 +303,14 @@ public class CruiseShipGUI extends Application {
 		HBox arrangeTripCosts = new HBox(20);
 		VBox arrangeTripVertical = new VBox(20);
 
-		arrangeTripShip.getChildren().addAll(addShipField);
+		arrangeTripShip.getChildren().addAll(addShipLabel);
 
 		arrangeTripPortInfo.getChildren().addAll(dateArrivalField, dateDepartureField, 
 							locationField, zoneIdField);
 
 		arrangeTripCosts.getChildren().addAll(costTypeField, costAmountField);
 
-		arrangeTripVertical.getChildren().addAll(addShipLabel, arrangeTripShip, portLabel,
+		arrangeTripVertical.getChildren().addAll(arrangeTripShip, portLabel,
 			arrangeTripPortInfo, costLabel, arrangeTripCosts, createTripButton, addPortButton);   
 
 		FlowPane pane = new FlowPane(arrangeTripVertical);
@@ -384,9 +369,7 @@ public class CruiseShipGUI extends Application {
 	}
 
 	public void finalizeTrip (ActionEvent event) {
-		//..make trip functionality
 
-		String ship = addShipField.getText();
 		String dateArrival = dateArrivalField.getText();
 		String dateDeparture = dateDepartureField.getText();
 		String location = locationField.getText();
@@ -409,6 +392,35 @@ public class CruiseShipGUI extends Application {
 		  trip1.addCost(costType, costAmount);
 		 */
 	}
+
+    public void switchToChooseShipScene (ActionEvent event) {
+
+        //combo box to store ships from db
+		/* 
+		   List<Ship> shipList = conn.queryShip();
+		   ComboBox<Ship> cbShip = new ComboBox<>();
+		   for (Ship ship : shipList) {
+		   cbShip.getItems().add(ship);
+		   }
+		   */
+        
+        Button button = new Button("Done");
+        Label label = new Label("Choose a ship");
+        ComboBox<String> placeHolder = new ComboBox<>();
+        placeHolder.getItems().add("Ship1");
+        placeHolder.getItems().add("Ship2");
+
+        //cbShip.setOnAction(e -> selectedShip = cbShip.getValue());
+        placeHolder.setOnAction(e -> selectedShip = placeHolder.getValue());
+        button.setOnAction(this::switchToCreateTripsScene);
+        
+        FlowPane pane = new FlowPane(label, placeHolder, button);
+        pane.setAlignment(Pos.CENTER);
+        Scene scene = new Scene(pane, 300, 300);
+        stage.setScene(scene);
+        stage.setTitle("Choose a ship for the trip");
+        
+    }
 
 	public void printTicketToFile (ActionEvent event){
 		//..print ticket out to file
