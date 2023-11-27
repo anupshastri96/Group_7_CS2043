@@ -62,7 +62,7 @@ public class CruiseShipGUI extends Application {
 
 	public void start(Stage stage) {
 		this.stage = stage;
-		VBox arrangeLoginFields = new VBox(20);//change to noun phrase - 
+		VBox loginFieldsArrangement = new VBox(20);//change to noun phrase - 
 							//loginFieldsArrangement
 		Button submit = new Button("Submit");
 		submit.setPrefWidth(75);
@@ -73,10 +73,10 @@ public class CruiseShipGUI extends Application {
 		loginIDField = new TextField("Enter ID");
 		loginPassField = new TextField("Enter Password");
 
-		loginFields.getChildren().addAll(loginURLField, loginIDField,
+		loginFieldsArrangement.getChildren().addAll(loginURLField, loginIDField,
 			       			loginPassField, submit, loginError);
 
-		FlowPane pane = new FlowPane(loginFields);
+		FlowPane pane = new FlowPane(loginFieldsArrangement);
 		pane.setAlignment(Pos.CENTER);
 		pane.setHgap(20);
 		pane.setVgap(50);
@@ -147,7 +147,7 @@ public class CruiseShipGUI extends Application {
 		}
 
 		VBox arrangement = new VBox(20);
-		box.getChildren().addAll(welcomeLabel, adminPasswordField, adminButton);
+		arrangement.getChildren().addAll(welcomeLabel, adminPasswordField, adminButton);
 
 		FlowPane pane = new FlowPane(arrangement);
 		pane.setAlignment(Pos.CENTER);
@@ -198,13 +198,15 @@ public class CruiseShipGUI extends Application {
 		VBox arrangeTripListings = new VBox(95);
 		arrangeTripListings.getChildren().addAll(tripListings);
 
+        /* 
 		HBox arrangeNextAndPrev = new HBox(10);
 		arrangeNextAndPrev.getChildren().addAll(prev, next);
+        */
 
 		BorderPane root = new BorderPane();
 		root.setCenter(arrangeTripListings);
 		root.setRight(arrangeBookButtons);
-		root.setBottom(arrangeNextAndPrev);
+		//root.setBottom(arrangeNextAndPrev);
 
 		Scene browsingScene = new Scene(root, 500, 550);
 		stage.setScene(browsingScene);
@@ -318,15 +320,15 @@ public class CruiseShipGUI extends Application {
 
 		arrangeTripShip.getChildren().addAll(addShipField);
 
-		arrangeTripPorts.getChildren().addAll(dateArrivalField, dateDepartureField, 
+		arrangeTripPortInfo.getChildren().addAll(dateArrivalField, dateDepartureField, 
 							locationField, zoneIdField);
 
 		arrangeTripCosts.getChildren().addAll(costTypeField, costAmountField);
 
-		arrangeTripVertical.getChildren().addAll(addShipLabel, tripShipArrange, portLabel,
-			tripPortArrange, costLabel, tripCostArrange, createTripButton, addPortButton);   
+		arrangeTripVertical.getChildren().addAll(addShipLabel, arrangeTripShip, portLabel,
+			arrangeTripPortInfo, costLabel, arrangeTripCosts, createTripButton, addPortButton);   
 
-		FlowPane pane = new FlowPane(tripVerticalArrange);
+		FlowPane pane = new FlowPane(arrangeTripVertical);
 		pane.setAlignment(Pos.CENTER);
 
 		Scene createTripsScene = new Scene(pane, 800, 500);
