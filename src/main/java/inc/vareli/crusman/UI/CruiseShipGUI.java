@@ -69,6 +69,7 @@ public class CruiseShipGUI extends Application {
     private RoomType roomTypeSelectedForTrip;
     private RoomType roomTypeSelectedForShip;
     private Service serviceSelectedForTrip;
+	private ComboBox<RoomType> listRoom;
 
 	public void start(Stage stage) {
 		this.stage = stage;
@@ -346,24 +347,22 @@ public class CruiseShipGUI extends Application {
 
 		roomCountField = new TextField("Room Count");
 		roomCountField.setOnMouseClicked(e -> roomCountField.clear());
-		roomCountField.setPrefWidth(80);
+		roomCountField.setMaxSize(100, 50);
 		Button createShipButton = new Button("Finalize");
 
-		ComboBox<RoomType> listRoom = new ComboBox<>();
+		listRoom = new ComboBox<>();
 		for (RoomType roomType : RoomType.values()) {
 			listRoom.getItems().add(roomType);
 		}
 
-        roomTypeSelectedForShip = listRoom.getValue();
-
         
         createShipButton.setOnAction(this::finalizeShip);
 
-		VBox arrangeShips = new VBox(30);
-		arrangeShips.getChildren().addAll(labelCreateShip, listRoom, 
-							roomCountField, createShipButton);
+		
+		VBox arrangeShips = new VBox(20, listRoom, roomCountField, createShipButton);
+		VBox arrangeText = new VBox(20, labelCreateShip, arrangeShips);
 
-		FlowPane pane = new FlowPane(arrangeShips);
+		FlowPane pane = new FlowPane(arrangeText);
 		pane.setAlignment(Pos.CENTER);
 
 		Scene createShipScene = new Scene(pane, 400, 400);
@@ -373,14 +372,16 @@ public class CruiseShipGUI extends Application {
 
 	public void finalizeShip(ActionEvent event) {
 		int roomCount = 0;
-		Map<RoomType, Integer> rooms;
-        
+		roomTypeSelectedForShip = listRoom.getValue();
+        Map<RoomType, Integer> rooms;
+
         try {
 
             roomCount = Integer.parseInt(roomCountField.getText());
 			rooms = new EnumMap<RoomType, Integer>(RoomType.class);
         	rooms.put(roomTypeSelectedForShip, roomCount);
-			
+			//conn.createShip(rooms);
+		    labelCreateShip.setText("Ship Creation successful");
         }
         catch(NumberFormatException nfe) {
             labelCreateShip.setText("Please only input integer values");
@@ -389,9 +390,8 @@ public class CruiseShipGUI extends Application {
 			labelCreateShip.setText("Denied, please add both Room Type and Count");
 			
 		}
-		
+
 		//conn.createShip(rooms);
-		labelCreateShip.setText("Ship Creation successful");
 
 	}
 
