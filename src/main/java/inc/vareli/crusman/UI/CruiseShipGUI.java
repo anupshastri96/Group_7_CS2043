@@ -5,7 +5,6 @@ import inc.vareli.crusman.databases.Ship.RoomType;
 import inc.vareli.crusman.databases.Trip.Service;
 import inc.vareli.crusman.databases.Trip.TripBuilder;
 
-
 import javafx.collections.ObservableList;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -25,6 +24,9 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.control.ComboBox;
 import java.util.List;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.EnumMap;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
@@ -54,7 +56,6 @@ public class CruiseShipGUI extends Application {
 	private TextField dateDepartureField;
 	private TextField locationField;
 	private TextField zoneIdField;
-	private TextField costTypeField;
 	private TextField roomCostField;
     private TextField serviceCostField;
 	private Button createATripButton;
@@ -65,6 +66,7 @@ public class CruiseShipGUI extends Application {
     //private Ship selectedShip;
     private String selectedShip;
     private RoomType roomTypeSelectedForTrip;
+    private RoomType roomTypeSelectedForShip;
     private Service serviceSelectedForTrip;
 
 	public void start(Stage stage) {
@@ -275,7 +277,6 @@ public class CruiseShipGUI extends Application {
 		stage.setScene(bookingScene);
 		stage.setTitle("Print ticket");
 	}
- 
 
 	public void switchToCreateTripsScene (ActionEvent event) {
 
@@ -297,7 +298,7 @@ public class CruiseShipGUI extends Application {
         Button addPortButton = new Button("Create Port");
         Button addCostButton = new Button("Specfiy costs for room types and services on the trip");
 
-        createTripButton.setOnAction(this::finalizeTrip);
+        createTripButton.setOnAction(e -> conn.createTrip(tripBuilder));
         addPortButton.setOnAction(this::addPort);
         //addCostButton.setOnAction(this::addCost);
 
@@ -319,7 +320,6 @@ public class CruiseShipGUI extends Application {
             serviceSelection.getItems().add(service);
         }
         serviceSelectedForTrip =  serviceSelection.getValue();
-
 
 		HBox arrangeTripButton = new HBox(10, addPortButton, warningLabel);
 		HBox arrangeTripPortInfo = new HBox(20, dateArrivalField, dateDepartureField, locationField,
@@ -346,19 +346,17 @@ public class CruiseShipGUI extends Application {
 		roomCountField = new TextField("Room Count");
 		roomCountField.setOnMouseClicked(e -> roomCountField.clear());
 		roomCountField.setPrefWidth(80);
-
 		Button createShipButton = new Button("Finalize");
-		createShipButton.setOnAction(this::finalizeShip);
 
 		ComboBox<RoomType> listRoom = new ComboBox<>();
 		for (RoomType roomType : RoomType.values()) {
 			listRoom.getItems().add(roomType);
 		}
 
-		//Map<RoomType,Integer> rooms = new EnumMap<RoomType,Integer>(RoomType.class);
-		//RoomType selectedType = listRoom.getValue();
-		//rooms.put(selectedType,Integer.parseInt(textfield...));
-		//when they click finalize -> CMConnection.createShip(rooms);
+        roomTypeSelectedForShip = listRoom.getValue();
+
+        
+        createShipButton.setOnAction(this::finalizeShip);
 
 		VBox arrangeShips = new VBox(30);
 		arrangeShips.getChildren().addAll(chooseRoomTypeLabel, listRoom, 
@@ -373,14 +371,18 @@ public class CruiseShipGUI extends Application {
 	}
 
 	public void finalizeShip(ActionEvent event) {
-		//..make ship functionality
+		int roomCount = 0;
+        
+        try {
+            roomCount = Integer.parseInt(roomCountField.getText());
+        }
+        catch(NumberFormatException nfe) {
+            System.out.println(nfe);
+        }
+        
+        Map<RoomType, Integer> rooms = new EnumMap<RoomType, Integer>(RoomType.class);
+        rooms.put(roomTypeSelectedForShip, roomCount);
 
-		String roomCount = roomCountField.getText();
-
-		//Map<roomType, Integer> rc = new Map<>();
-		// rc.put(listRoom.getValue(), roomCount);
-
-		// Ship ship = new conn.createShip();
 	}
 
 	public void addPort(ActionEvent event) {
@@ -406,7 +408,6 @@ public class CruiseShipGUI extends Application {
         double serviceCost = 0;
 
         try {
-
             roomCost = Double.parseDouble(roomCostField.getText());
              serviceCost = Double.parseDouble(serviceCostField.getText());
         }
@@ -417,27 +418,6 @@ public class CruiseShipGUI extends Application {
         tripBuilder.addCost(roomTypeSelectedForTrip, roomCost);
         tripBuilder.addCost(serviceSelectedForTrip,serviceCost);
     }
-
-	public void finalizeTrip (ActionEvent event) {
-
-		String costType = costTypeField.getText();
-		String costAmount = roomCostField.getText();
-
-		//in the ship select menu
-		//shipSeelected = whatever they selected from a list
-
-		/*
-		   TripBuiler temp = new TripBuilder(shipSelected);
-		   temp.addPort(....);
-
-		   createTrip -> CMConnection.createTrip(temp);
-		   */
-
-		/*  
-		  Trip t = new conn.createTrip();
-		  trip1.addCost(costType, costAmount);
-		 */
-	}
 
     public void switchToChooseShipScene (ActionEvent event) {
 
