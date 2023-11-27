@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.EnumMap;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
+//test
+import java.util.ArrayList;
 
 /**
  * The main entry point to CrusMan, where users will interact with the data and buy tickets etc
@@ -49,9 +51,16 @@ public class CruiseShipGUI extends Application {
 	private Label loginError;
 
 	//browsing
-	private Text[] tripListings;
+	private ArrayList<String> demo;
+	private Text text;
+	private int i;
+	private Button nextButton;
+	private Button prevButton;
+	private Button bookButton;
+	private String booked;
 
 	//creating
+	private int numTrips;
 	private TextField dateArrivalField;
 	private TextField dateDepartureField;
 	private TextField locationField;
@@ -60,16 +69,20 @@ public class CruiseShipGUI extends Application {
     private TextField serviceCostField;
 	private Button createATripButton;
 	private Button createAShipButton;
+	private Button createTripButton;
 	private Button confirmBookingButton;
 	private TextField roomCountField;
     private Label warningLabel;
 	private Label labelCreateShip;
+	private Label costLabel;
     //private Ship selectedShip;
     private String selectedShip;
     private RoomType roomTypeSelectedForTrip;
     private RoomType roomTypeSelectedForShip;
     private Service serviceSelectedForTrip;
 	private ComboBox<RoomType> listRoom;
+	private Map<RoomType, Integer> rooms;
+
 
 	public void start(Stage stage) {
 		this.stage = stage;
@@ -171,62 +184,70 @@ public class CruiseShipGUI extends Application {
 	}
 
 	public void switchToBrowseScene(ActionEvent event) {
-		//TODO - maybe
-		/*Button next = new Button("NEXT");
-		next.setPrefWidth(75);
-		next.setOnAction(this::next);
-
-		Button prev = new Button("PREV");
-		prev.setPrefWidth(75);
-		prev.setOnAction(this::prev);*/
-
 		/* 
 		  List<Trip> trips = conn.queryTrip();
-
-		  tripListings = new Text[trips.size()];
-		  for (int i = 0; < tripListings.length; i++ \) {
-		  tripListings[i] = new Text(trips.get(i).toString());
-		  }
 		 */
 
-		tripListings = new Text[3];
-		for (int i = 0; i < tripListings.length; i++) {
-			tripListings[i] = new Text("Trip info here.");
+		demo = new ArrayList<>();
+		demo.add("Trip1"); 
+		demo.add("Trip2"); 
+		demo.add("Trip3"); 
+		
+		//stores index for trips
+		i = 0;
+
+		text = new Text(demo.get(i));
+		//text = new Text(trips.get(i).toString());
+
+		bookButton = new Button("Book");
+		nextButton = new Button("Next");
+		prevButton = new Button("Prev");
+
+		Button[] arr = {bookButton, nextButton, prevButton};
+		for (int i = 0; i < 3; i++) {
+			arr[i].setPrefWidth(120);
+			arr[i].setOnAction(this::browseAction);
 		}
 
-		Button[] bookingButtons = new Button[tripListings.length];
-		for (int i = 0; i < bookingButtons.length; i++) {
-			bookingButtons[i] = new Button("BOOK");
-			bookingButtons[i].setPrefWidth(75);
-			bookingButtons[i].setOnAction(this::switchToBookingScene);
-		}
+		HBox arrangeButt = new HBox(10, prevButton, bookButton, nextButton);
+		VBox arrange = new VBox(40, text, arrangeButt);
 
-		VBox arrangeBookButtons = new VBox(85);
-		arrangeBookButtons.getChildren().addAll(bookingButtons);
-
-		VBox arrangeTripListings = new VBox(95);
-		arrangeTripListings.getChildren().addAll(tripListings);
-
-        /* 
-		HBox arrangeNextAndPrev = new HBox(10);
-		arrangeNextAndPrev.getChildren().addAll(prev, next);
-        */
-
-		BorderPane root = new BorderPane();
-		root.setCenter(arrangeTripListings);
-		root.setRight(arrangeBookButtons);
-		//root.setBottom(arrangeNextAndPrev);
-
-		Scene browsingScene = new Scene(root, 500, 550);
+		FlowPane pane = new FlowPane(arrange);
+		pane.setAlignment(Pos.CENTER);
+		Scene browsingScene = new Scene(pane, 500, 550);
 		stage.setScene(browsingScene);
 		stage.setTitle("Crus, Man!");
+	}
+
+	public void browseAction (ActionEvent event)  {
+
+
+		try {
+		if (event.getSource() == nextButton) {
+			text.setText(demo.get(++i));
+			//text.setText(trips.get(++i).toString());
+		}
+		else if (event.getSource() == prevButton) {
+			text.setText(demo.get(--i));
+			//text.setText(trips.get(--1).toString());
+		}
+
+		else if (event.getSource() == bookButton) {
+			booked = demo.get(i);
+			switchToBookingScene(event);
+			//booked = trips.get(i).toString();
+			//Trip trip = trip.get(i);
+		}
+
+		} catch(IndexOutOfBoundsException e) {
+			text.setText("None");
+		}
 	}
 
 	public void switchToBookingScene(ActionEvent event) {
 		Label mealLabel = new Label("Meal Plan");
         Label drinkLabel = new Label("Drink Plan");
 		Label roomLabel = new Label("Room Plan");
-
 
 		TextField customerName = new TextField("Input Customer Name");
 		customerName.setOnMouseClicked(e -> customerName.clear());
@@ -242,10 +263,6 @@ public class CruiseShipGUI extends Application {
 		ComboBox<String> mealSelection = new ComboBox<String>();
 		mealSelection.getItems().add("Opt In");
 		mealSelection.getItems().add("Opt Out");
-		/*mealSelection.setOnAction(e -> testLabelForEvents.setText(
-							mealSelection.getValue().toString()
-						)
-					); because this is complicated, maybe delete*/
 
 		ComboBox<String> drinkSelection = new ComboBox<String>();
 		drinkSelection.getItems().add("Opt In");
@@ -281,12 +298,12 @@ public class CruiseShipGUI extends Application {
 	}
 
 	public void switchToCreateTripsScene (ActionEvent event) {
-
 		Label addShipLabel = new Label("Your selected ship:  " + selectedShip);
         //Label addShipLabel = new Label("Your selected ship: " + selectedShip.ToString());
-		Label portLabel = new Label("Create a port  -  A trip must have at least 2 ports");
+		Label portLabel = new Label("Add a port  -  A trip must have at least 2 ports");
         Label titleLabel = new Label("Arrival Date\t         \t" + "  \tDeparture Date");
-		Label costLabel = new Label("Add cost");
+		costLabel = new Label("Add cost for each available room type" +
+										" and services in your trip");
         warningLabel = new Label();
 
 		dateArrivalField = new TextField("dd-MM-yyyy");
@@ -296,13 +313,15 @@ public class CruiseShipGUI extends Application {
         roomCostField = new TextField("Room Cost");
         serviceCostField = new TextField("Service Cost");
 
-        Button createTripButton = new Button("Create Trip");
-        Button addPortButton = new Button("Create Port");
-        Button addCostButton = new Button("Specfiy costs for room types and services on the trip");
+        createTripButton = new Button("Create Trip");
+		createTripButton.setVisible(false);
+        Button addPortButton = new Button("Add Port");
+        Button addCostButton = new Button("Add Cost");
 
-        createTripButton.setOnAction(e -> conn.createTrip(tripBuilder));
+		createTripButton.setOnAction(e -> conn.createTrip(tripBuilder));
+
         addPortButton.setOnAction(this::addPort);
-        //addCostButton.setOnAction(this::addCost);
+        addCostButton.setOnAction(this::addCost);
 
 		dateArrivalField.setOnMouseClicked(e -> dateArrivalField.clear());
         dateDepartureField.setOnMouseClicked(e -> dateDepartureField.clear());
@@ -340,27 +359,30 @@ public class CruiseShipGUI extends Application {
 		Scene createTripsScene = new Scene(pane, 800, 500);
 		stage.setScene(createTripsScene);
 		stage.setTitle("Create Trip");
+
 	}
 
 	public void switchToCreateShipScene(ActionEvent event) throws NumberFormatException, NullPointerException { 
-		labelCreateShip = new Label("Choose Room Type");
 
-		roomCountField = new TextField("Room Count");
+		labelCreateShip = new Label("Choose the number of rooms available for"+
+									 " each room type, finalize once complete");
+		labelCreateShip.setMaxSize(500, 500);
+
+		roomCountField = new TextField("Number Of Rooms");
+		//roomCountField.setMaxSize(80, 20);
 		roomCountField.setOnMouseClicked(e -> roomCountField.clear());
-		roomCountField.setMaxSize(100, 50);
+	
 		Button createShipButton = new Button("Finalize");
+		//createShipButton.setMaxSize(80, 20);
+		createShipButton.setOnAction(this::finalizeShip);
 
+		
 		listRoom = new ComboBox<>();
 		for (RoomType roomType : RoomType.values()) {
 			listRoom.getItems().add(roomType);
 		}
-
-        
-        createShipButton.setOnAction(this::finalizeShip);
-
 		
-		VBox arrangeShips = new VBox(20, listRoom, roomCountField, createShipButton);
-		VBox arrangeText = new VBox(20, labelCreateShip, arrangeShips);
+		VBox arrangeText = new VBox(20, labelCreateShip, listRoom, roomCountField, createShipButton);
 
 		FlowPane pane = new FlowPane(arrangeText);
 		pane.setAlignment(Pos.CENTER);
@@ -373,7 +395,6 @@ public class CruiseShipGUI extends Application {
 	public void finalizeShip(ActionEvent event) {
 		int roomCount = 0;
 		roomTypeSelectedForShip = listRoom.getValue();
-        Map<RoomType, Integer> rooms;
 
         try {
 
@@ -391,8 +412,6 @@ public class CruiseShipGUI extends Application {
 			
 		}
 
-		//conn.createShip(rooms);
-
 	}
 
 	public void addPort(ActionEvent event) {
@@ -405,12 +424,19 @@ public class CruiseShipGUI extends Application {
         {
             arrivalDate = sdf.parse(dateArrivalField.getText());
             departureDate = sdf.parse(dateDepartureField.getText());
+			tripBuilder.addPort(arrivalDate, departureDate, locationField.getText(), zoneIdField.getText());
+			warningLabel.setText("Port Added Succesfully");
+			numTrips++;
         }
          catch(ParseException pe) {
-            warningLabel.setText("Warning: Failed to input date(s), please check if format is correct");
+            warningLabel.setText("Failed to input date(s), please check if format is correct");
         }
+		catch(NullPointerException npe) {
+			warningLabel.setText("Failed to add a port, please fill all boxes before adding.");
+		}
 
-        tripBuilder.addPort(arrivalDate, departureDate, locationField.getText(), zoneIdField.getText());
+		if (numTrips >= 2)
+		createTripButton.setVisible(true);
 	}
 
     public void addCost (ActionEvent event) {
@@ -419,14 +445,17 @@ public class CruiseShipGUI extends Application {
 
         try {
             roomCost = Double.parseDouble(roomCostField.getText());
-             serviceCost = Double.parseDouble(serviceCostField.getText());
+            serviceCost = Double.parseDouble(serviceCostField.getText());
+			tripBuilder.addCost(roomTypeSelectedForTrip, roomCost);
+        	tripBuilder.addCost(serviceSelectedForTrip,serviceCost);
+			//message to let them know of success;
         }
         catch(NumberFormatException nfe) {
-            System.out.println(nfe);
-            }    
-
-        tripBuilder.addCost(roomTypeSelectedForTrip, roomCost);
-        tripBuilder.addCost(serviceSelectedForTrip,serviceCost);
+            costLabel.setText("Try again, no alphabetic characters  for cost");
+         } 
+		catch(NullPointerException npe) {
+			System.out.println("Try again, fill each boxes");
+		}   
     }
 
     public void switchToChooseShipScene (ActionEvent event) {
@@ -462,16 +491,27 @@ public class CruiseShipGUI extends Application {
         stage.setTitle("Choose a ship for the trip");
     }
 
+	public void bookTrip (ActionEvent event) {
+
+		Label label = new Label("No trip chose");
+		ComboBox<String> trips = new ComboBox<String>();
+		trips.getItems().add("trip1");
+		trips.getItems().add("trip2");
+		trips.getItems().add("trip3");
+		trips.setPrefWidth(120);
+
+
+		FlowPane pane = new FlowPane(trips);
+		pane.setAlignment(Pos.CENTER);
+		Scene scene = new Scene(pane, 300, 300);
+		stage.setScene(scene);
+		stage.setTitle("Book");
+
+	}
+
 	public void printTicketToFile (ActionEvent event){
 		//..print ticket out to file
 	}
 
-	public void next(ActionEvent event) {
-		//implement next and prev
-		//can do in a single method with ActionEvent.getSource()
-	}
-
-	public void prev(ActionEvent event) {
-		//implement next and prev
-	}
+	
 }
