@@ -2,6 +2,7 @@ package inc.vareli.crusman.UI;
 
 import inc.vareli.crusman.databases.*;
 import inc.vareli.crusman.databases.Ship.RoomType;
+import inc.vareli.crusman.databases.Trip.Service;
 import inc.vareli.crusman.databases.Trip.TripBuilder;
 
 
@@ -54,7 +55,8 @@ public class CruiseShipGUI extends Application {
 	private TextField locationField;
 	private TextField zoneIdField;
 	private TextField costTypeField;
-	private TextField costAmountField;
+	private TextField roomCostField;
+    private TextField serviceCostField;
 	private Button createATripButton;
 	private Button createAShipButton;
 	private Button confirmBookingButton;
@@ -62,7 +64,8 @@ public class CruiseShipGUI extends Application {
     private Label warningLabel;
     //private Ship selectedShip;
     private String selectedShip;
-    
+    private RoomType roomTypeSelectedForTrip;
+    private Service serviceSelectedForTrip;
 
 	public void start(Stage stage) {
 		this.stage = stage;
@@ -278,53 +281,56 @@ public class CruiseShipGUI extends Application {
 
 		Label addShipLabel = new Label("Your selected ship:  " + selectedShip);
         //Label addShipLabel = new Label("Your selected ship: " + selectedShip.ToString());
-        
 		Label portLabel = new Label("Create a port  -  A trip must have at least 2 ports");
         Label titleLabel = new Label("Arrival Date\t         \t" + "  \tDeparture Date");
-
-        warningLabel = new Label();
 		Label costLabel = new Label("Add cost");
+        warningLabel = new Label();
 
 		dateArrivalField = new TextField("dd-MM-yyyy");
+        dateDepartureField = new TextField("dd-MM-yyyy");
+        locationField = new TextField("location");
+        zoneIdField = new TextField("zone id");
+        roomCostField = new TextField("Room Cost");
+        serviceCostField = new TextField("Service Cost");
+
+        Button createTripButton = new Button("Create Trip");
+        Button addPortButton = new Button("Create Port");
+        Button addCostButton = new Button("Add Cost");
+
+        createTripButton.setOnAction(this::finalizeTrip);
+        addPortButton.setOnAction(this::createPort);
+        //addCostButton.setOnAction(this::addCost);
+
 		dateArrivalField.setOnMouseClicked(e -> dateArrivalField.clear());
+        dateDepartureField.setOnMouseClicked(e -> dateDepartureField.clear());
+        locationField.setOnMouseClicked(e -> locationField.clear());
+        zoneIdField.setOnMouseClicked(e -> zoneIdField.clear());
+        roomCostField.setOnMouseClicked(e -> roomCostField.clear());
+        serviceCostField.setOnMouseClicked(e -> serviceCostField.clear());
 
-		dateDepartureField = new TextField("dd-MM-yyyy");
-		dateDepartureField.setOnMouseClicked(e -> dateDepartureField.clear());
+        ComboBox<RoomType> roomSelection = new ComboBox<RoomType>();
+		for (RoomType roomType : RoomType.values()) {
+			roomSelection.getItems().add(roomType);
+		}
+        roomTypeSelectedForTrip = roomSelection.getValue();
 
-		locationField = new TextField("location");
-		locationField.setOnMouseClicked(e -> locationField.clear());
+        ComboBox<Service> serviceSelection = new ComboBox<Service>();
+        for (Service service : Service.values()) {
+            serviceSelection.getItems().add(service);
+        }
+        serviceSelectedForTrip =  serviceSelection.getValue();
 
-		zoneIdField = new TextField("zone id");
-		zoneIdField.setOnMouseClicked(e -> zoneIdField.clear());
 
-		costTypeField = new TextField("Cost Type");
-		costTypeField.setOnMouseClicked(e -> costTypeField.clear());
-
-		costAmountField = new TextField("amount");
-		costAmountField.setOnMouseClicked(e -> costAmountField.clear());
-
-		Button createTripButton = new Button("Create Trip");
-		createTripButton.setPrefWidth(80);
-		createTripButton.setOnAction(this::finalizeTrip);
-
-		Button addPortButton = new Button("Create Port");
-		createTripButton.setPrefWidth(80);
-		createTripButton.setOnAction(this::createPort);
-
-		HBox arrangeTripButton = new HBox(10);
-		HBox arrangeTripPortInfo = new HBox(20);
-		HBox arrangeTripCosts = new HBox(20);
+		HBox arrangeTripButton = new HBox(10, addPortButton, warningLabel);
+		HBox arrangeTripPortInfo = new HBox(20, dateArrivalField, dateDepartureField, locationField,
+                                            zoneIdField);
+		HBox arrangeTripRoomCosts = new HBox(20, roomSelection, roomCostField);
+        HBox arrangeTripServiceCosts = new HBox(20, serviceSelection, serviceCostField);
 		VBox arrangeTripVertical = new VBox(20);
 
-		arrangeTripButton.getChildren().addAll(addPortButton, warningLabel);
-
-		arrangeTripPortInfo.getChildren().addAll(dateArrivalField, dateDepartureField, 
-							locationField, zoneIdField);
-
-		arrangeTripCosts.getChildren().addAll(costTypeField, costAmountField);
-
 		arrangeTripVertical.getChildren().addAll(addShipLabel, portLabel, titleLabel,
-			arrangeTripPortInfo, arrangeTripButton, costLabel, arrangeTripCosts, createTripButton);   
+		            arrangeTripPortInfo, arrangeTripButton, costLabel, arrangeTripRoomCosts,
+                 arrangeTripServiceCosts, addCostButton, createTripButton);   
 
 		FlowPane pane = new FlowPane(arrangeTripVertical);
 		pane.setAlignment(Pos.CENTER);
@@ -398,7 +404,7 @@ public class CruiseShipGUI extends Application {
 	public void finalizeTrip (ActionEvent event) {
 
 		String costType = costTypeField.getText();
-		String costAmount = costAmountField.getText();
+		String costAmount = roomCostField.getText();
 
 		//in the ship select menu
 		//shipSeelected = whatever they selected from a list
