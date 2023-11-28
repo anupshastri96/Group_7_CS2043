@@ -389,9 +389,8 @@ public class CruiseShipGUI extends Application {
 	}
 
 	public void switchToCreateShipScene(ActionEvent event) { 
-
 		labelCreateShip = new Label("Choose the number of rooms available for"+
-									 "\neach room type, add ship once complete");
+									 "\neach room type, finalize ship once complete");
 		labelCreateShip.setMaxSize(500, 500);
 
 		roomCountField = new TextField("Number Of Rooms");
@@ -399,7 +398,7 @@ public class CruiseShipGUI extends Application {
 		roomCountField.setOnMouseClicked(e -> roomCountField.clear());
 
 		addRoomCountButton = new Button("Add room count");
-		addShipButton = new Button("Add Ship");
+		addShipButton = new Button("Finalize Ship Info");
 		Button returnButton = new Button("Return");
 
 		addRoomCountButton.setPrefWidth(300);
@@ -433,6 +432,9 @@ public class CruiseShipGUI extends Application {
 			if (event.getSource() == addRoomCountButton) {
 
 				roomCount = Integer.parseInt(roomCountField.getText());
+				if (roomCount < 0) {
+					throw new IllegalArgumentException("msg");
+				}
 				rooms = new EnumMap<RoomType, Integer>(RoomType.class);
 				rooms.put(roomTypeSelectedForShip, roomCount);
 				labelCreateShip.setText("Succesfully added room count");
@@ -450,6 +452,9 @@ public class CruiseShipGUI extends Application {
 			labelCreateShip.setText("Invalid, please fill both room type " 
 			                + " and count\n or add at least one room count"  
 			 			    + " before adding ship");
+		}
+		catch (IllegalArgumentException iae) {
+			labelCreateShip.setText("No negative numbers allowed");
 		}
 
 	}
