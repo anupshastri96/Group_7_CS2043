@@ -84,6 +84,8 @@ public class CruiseShipGUI extends Application {
     private Label warningLabelPort;
 	private Label warningLabelCost;
 
+	private Button addRoomCountButton;
+	private Button addShipButton;
 	private Label labelCreateShip;
 	private Label costLabel;
     //private Ship selectedShip; --use this for db
@@ -204,7 +206,6 @@ public class CruiseShipGUI extends Application {
 		/* 
 		  List<Trip> trips = conn.queryTrip();
 		 */
-
 		demo = new ArrayList<>();
 		demo.add("Trip1"); 
 		demo.add("Trip2"); 
@@ -376,22 +377,26 @@ public class CruiseShipGUI extends Application {
 
 	}
 
-	public void switchToCreateShipScene(ActionEvent event) throws NumberFormatException, NullPointerException { 
+	public void switchToCreateShipScene(ActionEvent event) { 
 
 		labelCreateShip = new Label("Choose the number of rooms available for"+
 									 "\neach room type, add ship once complete");
 		labelCreateShip.setMaxSize(500, 500);
 
 		roomCountField = new TextField("Number Of Rooms");
-	    roomCountField.setMaxSize(110, 20);
+	    roomCountField.setMaxSize(300, 20);
 		roomCountField.setOnMouseClicked(e -> roomCountField.clear());
 
-		Button addRoomCountButton = new Button("Add room count");
-		Button createShipButton = new Button("Add Ship");
+		addRoomCountButton = new Button("Add room count");
+		addShipButton = new Button("Add Ship");
 		Button returnButton = new Button("Return");
 
+		addRoomCountButton.setPrefWidth(300);
+		addShipButton.setPrefWidth(300);
+		returnButton.setPrefWidth(300);
+
 		addRoomCountButton.setOnAction(this::addRoomCount);
-		createShipButton.setOnAction(e -> conn.createShip(rooms));
+		addShipButton.setOnAction(this::addRoomCount);
 		returnButton.setOnAction(this::switchToMainMenuScene);
 
 		listRoom = new ComboBox<>();
@@ -400,12 +405,12 @@ public class CruiseShipGUI extends Application {
 		}
 		
 		VBox arrangeText = new VBox(20, labelCreateShip, listRoom, roomCountField,
-			 addRoomCountButton, createShipButton, returnButton);
+			 addRoomCountButton, addShipButton, returnButton);
 
 		FlowPane pane = new FlowPane(arrangeText);
 		pane.setAlignment(Pos.CENTER);
 
-		Scene createShipScene = new Scene(pane, 400, 400);
+		Scene createShipScene = new Scene(pane, 500, 400);
 		stage.setScene(createShipScene);
 		stage.setTitle("Create ship");
 	}
@@ -413,21 +418,27 @@ public class CruiseShipGUI extends Application {
 	public void addRoomCount(ActionEvent event) {
 		int roomCount = 0;
 		roomTypeSelectedForShip = listRoom.getValue();
-
         try {
+			if (event.getSource() == addRoomCountButton) {
 
-            roomCount = Integer.parseInt(roomCountField.getText());
-			rooms = new EnumMap<RoomType, Integer>(RoomType.class);
-        	rooms.put(roomTypeSelectedForShip, roomCount);
-		    labelCreateShip.setText("Succesfully added room count");
+				roomCount = Integer.parseInt(roomCountField.getText());
+				rooms = new EnumMap<RoomType, Integer>(RoomType.class);
+				rooms.put(roomTypeSelectedForShip, roomCount);
+				labelCreateShip.setText("Succesfully added room count");
+			}
+			else {
+				conn.createShip(rooms);
+				labelCreateShip.setText("Successfully added a ship");
+			}
+
         }
         catch(NumberFormatException nfe) {
             labelCreateShip.setText("Please only input integer values");
         }
 		catch(NullPointerException ne) {
-			labelCreateShip.setText("Invalid, please fill out both" +
-			 " room type and count before adding cost or adding ship");
-			
+			labelCreateShip.setText("Invalid, please fill both room type " 
+			                + " and count\n or add at least one room count"  
+			 			    + " before adding ship");
 		}
 
 	}
