@@ -326,8 +326,8 @@ public class CruiseShipGUI extends Application {
 		warningLabelCost = new Label();
 		tripLabel    = new Label();
 
-		dateArrivalField = new TextField("dd-MM-yyyy");
-        dateDepartureField = new TextField("dd-MM-yyyy");
+		dateArrivalField = new TextField("dd-MM-yyyy hh:mm");
+        dateDepartureField = new TextField("dd-MM-yyyy hh:mm");
         locationField = new TextField("location");
         zoneIdField = new TextField("zone id");
         roomCostField = new TextField("Room Cost");
@@ -457,7 +457,7 @@ public class CruiseShipGUI extends Application {
 	public void addTrip(ActionEvent event) {
 		
 		if(event.getSource() == addPortButton) 	{
-			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm");
 			Date arrivalDate = new Date();
 			Date departureDate = new Date();
 
