@@ -81,7 +81,8 @@ public class CruiseShipGUI extends Application {
 	private Button createAShipButton;
 	private Button createTripButton;
 	private TextField roomCountField;
-    private Label warningLabel;
+    private Label warningLabelPort;
+	private Label warningLabelCost;
 
 	private Label labelCreateShip;
 	private Label costLabel;
@@ -92,6 +93,7 @@ public class CruiseShipGUI extends Application {
     private Service serviceSelectedForTrip;
 	private ComboBox<RoomType> listRoom;
 	private Map<RoomType, Integer> rooms;
+	
 
 	public void start(Stage stage) {
 		this.stage = stage;
@@ -165,6 +167,9 @@ public class CruiseShipGUI extends Application {
 		adminButton.setVisible(false);
 		adminButton.setOnAction(this::printTicketToFile);
 
+		Button returnButton = new Button("Return");
+		returnButton.setOnAction(this::switchToMainMenuScene);
+
 		welcomeLabel = new Label("Enter Password");
 		TextField adminPasswordField = new TextField("Hit enter to submit");
 		adminPasswordField.setOnMouseClicked(m -> adminPasswordField.clear());
@@ -183,7 +188,8 @@ public class CruiseShipGUI extends Application {
 		}
 
 		VBox arrangement = new VBox(20);
-		arrangement.getChildren().addAll(welcomeLabel, adminPasswordField, adminButton);
+		arrangement.getChildren().addAll(welcomeLabel, adminPasswordField, adminButton,
+										returnButton);
 
 		FlowPane pane = new FlowPane(arrangement);
 		pane.setAlignment(Pos.CENTER);
@@ -213,6 +219,8 @@ public class CruiseShipGUI extends Application {
 		bookButton = new Button("Book");
 		nextButton = new Button("Next");
 		prevButton = new Button("Prev");
+		Button returnButton = new Button("Return");
+		returnButton.setOnAction(this::switchToMainMenuScene);
 
 		Button[] arr = {bookButton, nextButton, prevButton};
 		for (int i = 0; i < 3; i++) {
@@ -221,7 +229,7 @@ public class CruiseShipGUI extends Application {
 		}
 
 		HBox arrangeButt = new HBox(10, prevButton, bookButton, nextButton);
-		VBox arrange = new VBox(40, text, arrangeButt);
+		VBox arrange = new VBox(40, text, arrangeButt, returnButton);
 
 		FlowPane pane = new FlowPane(arrange);
 		pane.setAlignment(Pos.CENTER);
@@ -282,7 +290,7 @@ public class CruiseShipGUI extends Application {
 		}
 
 		HBox arrangeLabels = new HBox(70);
-		arrangeLabels.getChildren().addAll(mealLabel, roomLabel, drinkLabel);
+		arrangeLabels.getChildren().addAll(mealLabel, drinkLabel, roomLabel);
 
 		HBox arrangeSelections = new HBox(30);
 		arrangeSelections.getChildren().addAll(mealSelection, drinkSelection, roomSelection);
@@ -306,9 +314,10 @@ public class CruiseShipGUI extends Application {
         //Label addShipLabel = new Label("Your selected ship: " + selectedShip.ToString());
 		Label portLabel = new Label("Add a port  -  A trip must have at least 2 ports");
         Label titleLabel = new Label("Arrival Date\t         \t" + "  \tDeparture Date");
-		costLabel = new Label("Add cost for each available room type" +
+		costLabel = new Label("Add cost for available room types" +
 										" and services in your trip");
-        warningLabel = new Label();
+        warningLabelPort = new Label();
+		warningLabelCost = new Label();
 
 		dateArrivalField = new TextField("dd-MM-yyyy");
         dateDepartureField = new TextField("dd-MM-yyyy");
@@ -321,6 +330,9 @@ public class CruiseShipGUI extends Application {
 		createTripButton.setVisible(false);
         Button addPortButton = new Button("Add Port");
         Button addCostButton = new Button("Add Cost");
+		Button returnButton = new Button("Return");
+		returnButton.setOnAction(this::switchToMainMenuScene);
+
 
 		createTripButton.setOnAction(e -> conn.createTrip(tripBuilder));
 
@@ -346,21 +358,22 @@ public class CruiseShipGUI extends Application {
         }
         serviceSelectedForTrip =  serviceSelection.getValue();
 
-		HBox arrangeTripButton = new HBox(10, addPortButton, warningLabel);
+		HBox arrangeTripPortButton = new HBox(10, addPortButton, warningLabelPort);
 		HBox arrangeTripPortInfo = new HBox(20, dateArrivalField, dateDepartureField, locationField,
                                             zoneIdField);
 		HBox arrangeTripRoomCosts = new HBox(20, roomSelection, roomCostField);
         HBox arrangeTripServiceCosts = new HBox(20, serviceSelection, serviceCostField);
+		HBox arrangeTripCostButton = new HBox(10, addCostButton, warningLabelCost);
 		VBox arrangeTripVertical = new VBox(20);
 
 		arrangeTripVertical.getChildren().addAll(addShipLabel, portLabel, titleLabel,
-		            arrangeTripPortInfo, arrangeTripButton, costLabel, arrangeTripRoomCosts,
-                 arrangeTripServiceCosts, addCostButton, createTripButton);   
+		            arrangeTripPortInfo, arrangeTripPortButton, costLabel, arrangeTripRoomCosts,
+                 arrangeTripServiceCosts, arrangeTripCostButton, createTripButton, returnButton);   
 
 		FlowPane pane = new FlowPane(arrangeTripVertical);
 		pane.setAlignment(Pos.CENTER);
 
-		Scene createTripsScene = new Scene(pane, 800, 500);
+		Scene createTripsScene = new Scene(pane, 800, 530);
 		stage.setScene(createTripsScene);
 		stage.setTitle("Create Trip");
 
@@ -369,24 +382,28 @@ public class CruiseShipGUI extends Application {
 	public void switchToCreateShipScene(ActionEvent event) throws NumberFormatException, NullPointerException { 
 
 		labelCreateShip = new Label("Choose the number of rooms available for"+
-									 " each room type, finalize once complete");
+									 "\neach room type, add ship once complete");
 		labelCreateShip.setMaxSize(500, 500);
 
 		roomCountField = new TextField("Number Of Rooms");
-		//roomCountField.setMaxSize(80, 20);
+	    roomCountField.setMaxSize(110, 20);
 		roomCountField.setOnMouseClicked(e -> roomCountField.clear());
-	
-		Button createShipButton = new Button("Finalize");
-		//createShipButton.setMaxSize(80, 20);
-		createShipButton.setOnAction(this::finalizeShip);
 
-		
+		Button addRoomCountButton = new Button("Add room count");
+		Button createShipButton = new Button("Add Ship");
+		Button returnButton = new Button("Return");
+
+		addRoomCountButton.setOnAction(this::addRoomCount);
+		createShipButton.setOnAction(e -> conn.createShip(rooms));
+		returnButton.setOnAction(this::switchToMainMenuScene);
+
 		listRoom = new ComboBox<>();
 		for (RoomType roomType : RoomType.values()) {
 			listRoom.getItems().add(roomType);
 		}
 		
-		VBox arrangeText = new VBox(20, labelCreateShip, listRoom, roomCountField, createShipButton);
+		VBox arrangeText = new VBox(20, labelCreateShip, listRoom, roomCountField,
+			 addRoomCountButton, createShipButton, returnButton);
 
 		FlowPane pane = new FlowPane(arrangeText);
 		pane.setAlignment(Pos.CENTER);
@@ -396,7 +413,7 @@ public class CruiseShipGUI extends Application {
 		stage.setTitle("Create ship");
 	}
 
-	public void finalizeShip(ActionEvent event) {
+	public void addRoomCount(ActionEvent event) {
 		int roomCount = 0;
 		roomTypeSelectedForShip = listRoom.getValue();
 
@@ -405,14 +422,14 @@ public class CruiseShipGUI extends Application {
             roomCount = Integer.parseInt(roomCountField.getText());
 			rooms = new EnumMap<RoomType, Integer>(RoomType.class);
         	rooms.put(roomTypeSelectedForShip, roomCount);
-			//conn.createShip(rooms);
-		    labelCreateShip.setText("Ship Creation successful");
+		    labelCreateShip.setText("Succesfully added room count");
         }
         catch(NumberFormatException nfe) {
             labelCreateShip.setText("Please only input integer values");
         }
 		catch(NullPointerException ne) {
-			labelCreateShip.setText("Denied, please add both Room Type and Count");
+			labelCreateShip.setText("Invalid, please fill out both" +
+			 " room type and count before adding cost or adding ship");
 			
 		}
 
@@ -428,15 +445,15 @@ public class CruiseShipGUI extends Application {
         {
             arrivalDate = sdf.parse(dateArrivalField.getText());
             departureDate = sdf.parse(dateDepartureField.getText());
-			tripBuilder.addPort(arrivalDate, departureDate, locationField.getText(), zoneIdField.getText());
-			warningLabel.setText("Port Added Succesfully");
+			//tripBuilder.addPort(arrivalDate, departureDate, locationField.getText(), zoneIdField.getText());
+			warningLabelPort.setText("Port Added Succesfully");
 			numTrips++;
         }
          catch(ParseException pe) {
-            warningLabel.setText("Failed to input date(s), please check if format is correct");
+            warningLabelPort.setText("Failed to input date(s), please check if format is correct");
         }
 		catch(NullPointerException npe) {
-			warningLabel.setText("Failed to add a port, please fill all boxes before adding.");
+			warningLabelPort.setText("Failed to add a port, please fill all boxes before adding.");
 		}
 
 		if (numTrips >= 2)
@@ -450,15 +467,15 @@ public class CruiseShipGUI extends Application {
         try {
             roomCost = Double.parseDouble(roomCostField.getText());
             serviceCost = Double.parseDouble(serviceCostField.getText());
-			tripBuilder.addCost(roomTypeSelectedForTrip, roomCost);
-        	tripBuilder.addCost(serviceSelectedForTrip,serviceCost);
-			//message to let them know of success;
+			//tripBuilder.addCost(roomTypeSelectedForTrip, roomCost);
+        	//tripBuilder.addCost(serviceSelectedForTrip,serviceCost);
+			warningLabelCost.setText("Succesfully added cost");
         }
         catch(NumberFormatException nfe) {
-            costLabel.setText("Try again, no alphabetic characters  for cost");
+            warningLabelCost.setText("Try again, no alphabetic characters for cost");
          } 
 		catch(NullPointerException npe) {
-			System.out.println("Try again, fill each boxes");
+			warningLabelCost.setText("Try again, fill each boxes");
 		}   
     }
 
