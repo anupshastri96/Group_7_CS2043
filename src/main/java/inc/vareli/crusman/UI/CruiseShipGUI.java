@@ -331,21 +331,12 @@ public class CruiseShipGUI extends Application {
         addPortButton.setOnAction(this::addPort);
         addCostButton.setOnAction(this::addCost);
 
-		/* 
 		dateArrivalField.setOnMouseClicked(e -> dateArrivalField.clear());
         dateDepartureField.setOnMouseClicked(e -> dateDepartureField.clear());
         locationField.setOnMouseClicked(e -> locationField.clear());
         zoneIdField.setOnMouseClicked(e -> zoneIdField.clear());
         roomCostField.setOnMouseClicked(e -> roomCostField.clear());
-        serviceCostField.setOnMouseClicked(e -> serviceCostField.clear());
-        */
-
-		TextField[] arrTextFields = {dateArrivalField, dateDepartureField, locationField,
-											zoneIdField, roomCostField, serviceCostField};
-
-		for (forArrayInTrip = 0; forArrayInTrip < arrTextFields.length; forArrayInTrip++) {
-			arrTextFields[forArrayInTrip].setOnMouseClicked(e -> arrTextFields[forArrayInTrip].clear());
-		}									
+        serviceCostField.setOnMouseClicked(e -> serviceCostField.clear());						
 
         ComboBox<RoomType> roomSelection = new ComboBox<RoomType>();
 		for (RoomType roomType : RoomType.values()) {
