@@ -525,7 +525,7 @@ public class CruiseShipGUI extends Application {
 		cbShip.getItems().add(ship);
 		   }
 
-        tripBuilder = new TripBuilder(cbShip.getValue());
+        cbShip.setOnAction(e -> tripBuilder = new TripBuilder(cbShip.getValue()));
 
         button.setOnAction(this::switchToCreateTripsScene);
         
