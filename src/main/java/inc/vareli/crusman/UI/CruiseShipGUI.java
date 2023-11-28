@@ -167,13 +167,16 @@ public class CruiseShipGUI extends Application {
 	public void switchToAdminPassword(ActionEvent event) {
 		Button adminButton = new Button("Confirm and Print Ticket");
 		adminButton.setVisible(false);
+		adminButton.setPrefWidth(300);
 		adminButton.setOnAction(this::printTicketToFile);
 
 		Button returnButton = new Button("Return");
 		returnButton.setOnAction(this::switchToMainMenuScene);
+		returnButton.setPrefWidth(300);
 
 		welcomeLabel = new Label("Enter Password");
 		TextField adminPasswordField = new TextField("Hit enter to submit");
+		adminPasswordField.setPrefWidth(300);
 		adminPasswordField.setOnMouseClicked(m -> adminPasswordField.clear());
 
 		if (event.getSource() == createATripButton) {
@@ -186,7 +189,7 @@ public class CruiseShipGUI extends Application {
 			welcomeLabel.setText("Waiting for admin to confirm payment");
 			adminPasswordField.setText("");
 			adminButton.setVisible(true);
-			//TODO - actually handle password !
+			
 		}
 
 		VBox arrangement = new VBox(20);
@@ -311,7 +314,7 @@ public class CruiseShipGUI extends Application {
 
 	public void switchToCreateTripsScene (ActionEvent event) {
 		Label addShipLabel = new Label("Your selected ship:  " + selectedShip);
-        //Label addShipLabel = new Label("Your selected ship: " + selectedShip.ToString());
+        //Label addShipLabel = new Label("Your selected ship: " + conn.selectedShip.toString());
 		Label portLabel = new Label("Add a port  -  A trip must have at least 2 ports");
         Label titleLabel = new Label("Arrival Date\t         \t" + "  \tDeparture Date");
 		costLabel = new Label("Add cost for available room types" +
@@ -371,9 +374,9 @@ public class CruiseShipGUI extends Application {
 		FlowPane pane = new FlowPane(arrangeTripVertical);
 		pane.setAlignment(Pos.CENTER);
 
-		Scene createTripsScene = new Scene(pane, 800, 530);
+		Scene createTripsScene = new Scene(pane, 800, 600);
 		stage.setScene(createTripsScene);
-		stage.setTitle("Create Trip");
+		stage.setTitle("Add a trip");
 
 	}
 
@@ -427,7 +430,7 @@ public class CruiseShipGUI extends Application {
 				labelCreateShip.setText("Succesfully added room count");
 			}
 			else {
-				conn.createShip(rooms);
+				//conn.createShip(rooms);
 				labelCreateShip.setText("Successfully added a ship");
 			}
 
@@ -494,10 +497,10 @@ public class CruiseShipGUI extends Application {
 
         //combo box to store ships from db
 		/* 
-		   List<Ship> shipList = conn.queryShip();
-		   ComboBox<Ship> cbShip = new ComboBox<>();
-		   for (Ship ship : shipList) {
-		   cbShip.getItems().add(ship);
+		//List<Ship> shipList = conn.queryShip();
+		ComboBox<Ship> cbShip = new ComboBox<>();
+		for (Ship ship : shipList) {
+		cbShip.getItems().add(ship);
 		   }
 		   */
 		
