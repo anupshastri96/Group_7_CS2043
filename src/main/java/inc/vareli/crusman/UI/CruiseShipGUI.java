@@ -66,13 +66,14 @@ public class CruiseShipGUI extends Application {
 	//booking
 	private Button confirmBookingButton;
 	private TextField customerNameField;
+	ComboBox<String> mealSelection;
+	ComboBox<String> drinkSelection;
 
 	//admin password
 	private Label welcomeLabel;
 
 	//creating - trips
 	private int numTrips;
-	private int forArrayInTrip;
 	private TextField dateArrivalField;
 	private TextField dateDepartureField;
 	private TextField locationField;
@@ -93,7 +94,6 @@ public class CruiseShipGUI extends Application {
     private RoomType roomTypeSelectedForShip;
     private Service serviceSelectedForTrip;
 	private ComboBox<RoomType> listRoom;
-	private ComboBox<String> drinkSelection;
 	private Map<RoomType, Integer> rooms;
 
 
@@ -272,11 +272,11 @@ public class CruiseShipGUI extends Application {
 		confirmBookingButton.setPrefWidth(300);
 		confirmBookingButton.setOnAction(this::switchToAdminPassword);
 
-		ComboBox<String> mealSelection = new ComboBox<String>();
+		mealSelection = new ComboBox<String>();
 		mealSelection.getItems().add("Opt In");
 		mealSelection.getItems().add("Opt Out");
 
-		ComboBox<String> drinkSelection = new ComboBox<String>();
+		drinkSelection = new ComboBox<String>();
 		drinkSelection.getItems().add("Opt In");
 		drinkSelection.getItems().add("Opt Out");
 
@@ -502,7 +502,11 @@ public class CruiseShipGUI extends Application {
 	public void printTicketToFile (ActionEvent event){
 		//..print ticket out to file
 
-		String ticketContents = booked + "\n" + customerNameField;
+		String ticketContents = "Trip booked:\t" + booked 
+							+"\nCustomer Name: " + customerNameField.getText() 
+							+"\nMeal Plan: " + mealSelection.getValue()
+							+ "\nDrink plan: " + drinkSelection.getValue();
+
 		Path filePath = Path.of("ticket.txt");
 
 		try {
