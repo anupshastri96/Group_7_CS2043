@@ -239,7 +239,6 @@ public class CruiseShipGUI extends Application {
 	}
 
 	public void browseAction (ActionEvent event)  {
-
 		try {
 		if (event.getSource() == nextButton) {
 			text.setText(demo.get(++i));
@@ -331,20 +330,18 @@ public class CruiseShipGUI extends Application {
         Button addPortButton = new Button("Add Port");
         Button addCostButton = new Button("Add Cost");
 		Button returnButton = new Button("Return");
+
 		returnButton.setOnAction(this::switchToMainMenuScene);
-
-
 		createTripButton.setOnAction(e -> conn.createTrip(tripBuilder));
-
         addPortButton.setOnAction(this::addPort);
         addCostButton.setOnAction(this::addCost);
 
-		dateArrivalField.setOnMouseClicked(e -> dateArrivalField.clear());
-        dateDepartureField.setOnMouseClicked(e -> dateDepartureField.clear());
-        locationField.setOnMouseClicked(e -> locationField.clear());
-        zoneIdField.setOnMouseClicked(e -> zoneIdField.clear());
-        roomCostField.setOnMouseClicked(e -> roomCostField.clear());
-        serviceCostField.setOnMouseClicked(e -> serviceCostField.clear());						
+		TextField[] arr = {dateArrivalField, dateDepartureField, locationField,
+						zoneIdField, roomCostField, serviceCostField};
+		for (int i = 0; i < arr.length; i++) {
+			TextField field = arr[i];
+			field.setOnMouseClicked(e -> field.clear());
+		}
 
         ComboBox<RoomType> roomSelection = new ComboBox<RoomType>();
 		for (RoomType roomType : RoomType.values()) {
