@@ -18,13 +18,10 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.control.ComboBox;
 import java.util.List;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.EnumMap;
 import java.util.ArrayList;
@@ -88,14 +85,13 @@ public class CruiseShipGUI extends Application {
 
 	private Label labelCreateShip;
 	private Label costLabel;
-    //private Ship selectedShip;
+    //private Ship selectedShip; --use this for db
     private String selectedShip;
     private RoomType roomTypeSelectedForTrip;
     private RoomType roomTypeSelectedForShip;
     private Service serviceSelectedForTrip;
 	private ComboBox<RoomType> listRoom;
 	private Map<RoomType, Integer> rooms;
-
 
 	public void start(Stage stage) {
 		this.stage = stage;
@@ -500,7 +496,6 @@ public class CruiseShipGUI extends Application {
     }
 
 	public void printTicketToFile (ActionEvent event){
-		//..print ticket out to file
 
 		String ticketContents = "Trip booked:\t" + booked 
 							+"\nCustomer Name: " + customerNameField.getText() 
@@ -517,5 +512,4 @@ public class CruiseShipGUI extends Application {
 		}
 	}
 
-	
 }
