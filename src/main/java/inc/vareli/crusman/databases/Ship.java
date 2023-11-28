@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 public class Ship {
 
-	protected final int ID;
+	protected final long ID;
 	protected Room[] rooms;
 
 	/**
@@ -16,7 +16,7 @@ public class Ship {
 	 * @param roomCounts - a Map from RoomType to Integer, specifies how many
 	 * of each type of room there is
 	 */
-	protected Ship(int ID, Map<RoomType,Integer> roomCounts) {
+	protected Ship(long ID, Map<RoomType,Integer> roomCounts) {
 
 		int size = roomCounts.values().stream().mapToInt(t->t).sum();
 		this.ID = ID;

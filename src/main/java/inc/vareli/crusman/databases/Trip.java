@@ -106,7 +106,6 @@ public class Trip {
 	 * a simple constructor
 	 */
 	public static class TripBuilder {
-		private long ID;
 		private Ship ship;
 		private List<Port> ports;
 		private Map<CostType,Double> costs;
@@ -154,7 +153,7 @@ public class Trip {
 		 * everything is written to the DB
 		 * @return the Trip built
 		 */
-		protected Trip build() {
+		protected Trip build(long ID) {
 			return new Trip(ID, ship, ports, costs);
 		}
 	}
