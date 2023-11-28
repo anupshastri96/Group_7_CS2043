@@ -88,14 +88,13 @@ public class CruiseShipGUI extends Application {
 	private Label warningLabelCost;
 	private Label tripLabel;
 	ComboBox<String> timeZone;
+	ComboBox<RoomType> roomSelection;
+	ComboBox<Service> serviceSelection;
 
 	private Button addRoomCountButton;
 	private Button addShipButton;
 	private Label labelCreateShip;
 	private Label costLabel; 
-    private RoomType roomTypeSelectedForTrip;
-    private RoomType roomTypeSelectedForShip;
-    private Service serviceSelectedForTrip;
 	private ComboBox<RoomType> listRoom;
 	private ComboBox<Ship> cbShip;
 	private Map<RoomType, Integer> rooms;
@@ -353,17 +352,15 @@ public class CruiseShipGUI extends Application {
 			timeZone.getItems().add(timeZoneIDs);
 		}
 
-        ComboBox<RoomType> roomSelection = new ComboBox<RoomType>();
+        roomSelection = new ComboBox<RoomType>();
 		for (RoomType roomType : RoomType.values()) {
 			roomSelection.getItems().add(roomType);
 		}
-        roomTypeSelectedForTrip = roomSelection.getValue();
 
-        ComboBox<Service> serviceSelection = new ComboBox<Service>();
+        serviceSelection = new ComboBox<Service>();
         for (Service service : Service.values()) {
             serviceSelection.getItems().add(service);
         }
-        serviceSelectedForTrip =  serviceSelection.getValue();
 
 		HBox arrangeTripPortButton = new HBox(10, addPortButton, warningLabelPort);
 		HBox arrangeTripPortInfo = new HBox(20, dateArrivalField, dateDepartureField, locationField,
@@ -426,7 +423,6 @@ public class CruiseShipGUI extends Application {
 
 	public void addShip(ActionEvent event) {
 		int roomCount = 0;
-		roomTypeSelectedForShip = listRoom.getValue();
         try {
 			if (event.getSource() == addRoomCountButton) {
 				roomCount = Integer.parseInt(roomCountField.getText());
@@ -434,7 +430,7 @@ public class CruiseShipGUI extends Application {
 					throw new IllegalArgumentException("msg");
 				}
 				rooms = new EnumMap<RoomType, Integer>(RoomType.class);
-				rooms.put(roomTypeSelectedForShip, roomCount);
+				rooms.put(listRoom.getValue(), roomCount);
 				labelCreateShip.setText("Succesfully added room count");
 			}
 			else if (event.getSource() == addShipButton) {
@@ -490,8 +486,8 @@ public class CruiseShipGUI extends Application {
 			try {
 				roomCost = Double.parseDouble(roomCostField.getText());
 				serviceCost = Double.parseDouble(serviceCostField.getText());
-				tripBuilder.addCost(roomTypeSelectedForTrip, roomCost);
-				tripBuilder.addCost(serviceSelectedForTrip, serviceCost);
+				tripBuilder.addCost(roomSelection.getValue(), roomCost);
+				tripBuilder.addCost(serviceSelection.getValue(), serviceCost);
 				warningLabelCost.setText("Succesfully added cost");
 			}
 			catch(NumberFormatException nfe) {
