@@ -324,7 +324,7 @@ public class CruiseShipGUI extends Application {
 		Label addShipLabel = new Label("Your selected ship:  " + selectedShip);
         //Label addShipLabel = new Label("Your selected ship: " + conn.selectedShip.toString());
 		Label portLabel = new Label("Add a port  -  A trip must have at least 2 ports");
-        Label titleLabel = new Label("Arrival Date\t         \t" + "  \tDeparture Date"
+        Label titleLabel = new Label("Arrival Date\t         \t" + "    \tDeparture Date"
 		+"\t                       Location" +"\t                          \tTime Zone ID");
 		costLabel = new Label("Add cost for available room types" +
 										" and services in your trip");
@@ -527,6 +527,7 @@ public class CruiseShipGUI extends Application {
     public void switchToChooseShipScene (ActionEvent event) {
 
         Button button = new Button("Done");
+		button.setPrefWidth(200);
         Label label = new Label("Choose a ship");
 
         //combo box to store ships from db
@@ -552,7 +553,7 @@ public class CruiseShipGUI extends Application {
         VBox arrange = new VBox(30, label, placeHolder, button);
         FlowPane pane = new FlowPane(arrange);
         pane.setAlignment(Pos.CENTER);
-        Scene scene = new Scene(pane, 300, 300);
+        Scene scene = new Scene(pane, 450, 350);
         stage.setScene(scene);
         stage.setTitle("Choose a ship for the trip");
     }
