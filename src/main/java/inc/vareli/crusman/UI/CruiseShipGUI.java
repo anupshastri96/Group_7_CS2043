@@ -27,10 +27,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.EnumMap;
+import java.util.ArrayList;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
-//test
-import java.util.ArrayList;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 /**
  * The main entry point to CrusMan, where users will interact with the data and buy tickets etc
@@ -58,9 +61,18 @@ public class CruiseShipGUI extends Application {
 	private Button prevButton;
 	private Button bookButton;
 	private String booked;
+	private List<Trip> trips;
 
-	//creating
+	//booking
+	private Button confirmBookingButton;
+	private TextField customerNameField;
+
+	//admin password
+	private Label welcomeLabel;
+
+	//creating - trips
 	private int numTrips;
+	private int forArrayInTrip;
 	private TextField dateArrivalField;
 	private TextField dateDepartureField;
 	private TextField locationField;
@@ -70,9 +82,9 @@ public class CruiseShipGUI extends Application {
 	private Button createATripButton;
 	private Button createAShipButton;
 	private Button createTripButton;
-	private Button confirmBookingButton;
 	private TextField roomCountField;
     private Label warningLabel;
+
 	private Label labelCreateShip;
 	private Label costLabel;
     //private Ship selectedShip;
@@ -81,6 +93,7 @@ public class CruiseShipGUI extends Application {
     private RoomType roomTypeSelectedForShip;
     private Service serviceSelectedForTrip;
 	private ComboBox<RoomType> listRoom;
+	private ComboBox<String> drinkSelection;
 	private Map<RoomType, Integer> rooms;
 
 
@@ -156,14 +169,16 @@ public class CruiseShipGUI extends Application {
 		adminButton.setVisible(false);
 		adminButton.setOnAction(this::printTicketToFile);
 
-		Label welcomeLabel = new Label("Enter Password");
+		welcomeLabel = new Label("Enter Password");
 		TextField adminPasswordField = new TextField("Hit enter to submit");
 		adminPasswordField.setOnMouseClicked(m -> adminPasswordField.clear());
 
 		if (event.getSource() == createATripButton) {
 			adminPasswordField.setOnAction(this::switchToChooseShipScene);
+
 		} else if (event.getSource() == createAShipButton) {
 			adminPasswordField.setOnAction(this::switchToCreateShipScene);
+
 		} else if (event.getSource() == confirmBookingButton) {
 			welcomeLabel.setText("Waiting for admin to confirm payment");
 			adminPasswordField.setText("");
@@ -246,8 +261,8 @@ public class CruiseShipGUI extends Application {
         Label drinkLabel = new Label("Drink Plan");
 		Label roomLabel = new Label("Room Plan");
 
-		TextField customerName = new TextField("Input Customer Name");
-		customerName.setOnMouseClicked(e -> customerName.clear());
+		customerNameField = new TextField("Input Customer Name");
+		customerNameField.setOnMouseClicked(e -> customerNameField.clear());
 
 		Button returnButton = new Button("Return");
 		returnButton.setPrefWidth(300);
@@ -265,11 +280,7 @@ public class CruiseShipGUI extends Application {
 		drinkSelection.getItems().add("Opt In");
 		drinkSelection.getItems().add("Opt Out");
 
-		ComboBox<RoomType> roomSelection = new ComboBox<RoomType>();
-
-		//TODO - trip info will show the occupancy,
-		//only allow them to pick room types that arent fully occupied
-		
+		ComboBox<RoomType> roomSelection = new ComboBox<RoomType>();		
 		for (RoomType roomType : RoomType.values()) {
 			roomSelection.getItems().add(roomType);
 		}
@@ -281,7 +292,7 @@ public class CruiseShipGUI extends Application {
 		arrangeSelections.getChildren().addAll(mealSelection, drinkSelection, roomSelection);
 
 		VBox arrangeButtons = new VBox(20);
-		arrangeButtons.getChildren().addAll(customerName, 
+		arrangeButtons.getChildren().addAll(customerNameField, 
 				confirmBookingButton, returnButton);
 
 		FlowPane pane = new FlowPane(arrangeLabels, arrangeSelections, arrangeButtons);
@@ -320,13 +331,22 @@ public class CruiseShipGUI extends Application {
         addPortButton.setOnAction(this::addPort);
         addCostButton.setOnAction(this::addCost);
 
+		/* 
 		dateArrivalField.setOnMouseClicked(e -> dateArrivalField.clear());
         dateDepartureField.setOnMouseClicked(e -> dateDepartureField.clear());
         locationField.setOnMouseClicked(e -> locationField.clear());
         zoneIdField.setOnMouseClicked(e -> zoneIdField.clear());
         roomCostField.setOnMouseClicked(e -> roomCostField.clear());
         serviceCostField.setOnMouseClicked(e -> serviceCostField.clear());
-        
+        */
+
+		TextField[] arrTextFields = {dateArrivalField, dateDepartureField, locationField,
+											zoneIdField, roomCostField, serviceCostField};
+
+		for (forArrayInTrip = 0; forArrayInTrip < arrTextFields.length; forArrayInTrip++) {
+			arrTextFields[forArrayInTrip].setOnMouseClicked(e -> arrTextFields[forArrayInTrip].clear());
+		}									
+
         ComboBox<RoomType> roomSelection = new ComboBox<RoomType>();
 		for (RoomType roomType : RoomType.values()) {
 			roomSelection.getItems().add(roomType);
@@ -487,9 +507,19 @@ public class CruiseShipGUI extends Application {
         stage.setScene(scene);
         stage.setTitle("Choose a ship for the trip");
     }
-	
+
 	public void printTicketToFile (ActionEvent event){
 		//..print ticket out to file
+
+		String ticketContents = booked + "\n" + customerNameField;
+		Path filePath = Path.of("ticket.txt");
+
+		try {
+			Files.writeString(filePath, ticketContents, StandardOpenOption.CREATE);
+			welcomeLabel.setText("Successfully created ticket");
+		}catch(IOException e) {
+			welcomeLabel.setText("Could not create ticket");
+		}
 	}
 
 	
