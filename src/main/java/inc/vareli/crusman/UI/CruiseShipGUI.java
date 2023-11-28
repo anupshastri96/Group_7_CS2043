@@ -479,7 +479,7 @@ public class CruiseShipGUI extends Application {
 			{
 				arrivalDate = sdf.parse(dateArrivalField.getText());
 				departureDate = sdf.parse(dateDepartureField.getText());
-				//tripBuilder.addPort(arrivalDate, departureDate, locationField.getText(), timeZone.value());
+				//tripBuilder.addPort(arrivalDate, departureDate, locationField.getText(), timeZone.getValue());
 				warningLabelPort.setText("Port Added Succesfully");
 				numTrips++;
 			}
