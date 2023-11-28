@@ -108,10 +108,14 @@ public class CruiseShipGUI extends Application {
 		submit.setPrefWidth(75);
 		submit.setOnAction(this::submitLogin);
 
-		loginError = new Label("Error Label");
+		loginError = new Label();
 		loginURLField = new TextField("Enter URL");
 		loginIDField = new TextField("Enter ID");
 		loginPassField = new TextField("Enter Password");
+
+		loginURLField.setOnMouseClicked(e -> loginURLField.clear());
+		loginIDField.setOnMouseClicked(e -> loginIDField.clear());
+		loginPassField.setOnMouseClicked(e -> loginPassField.clear());
 
 		loginFieldsArrangement.getChildren().addAll(loginURLField, loginIDField,
 			       			loginPassField, submit, loginError);
@@ -144,15 +148,15 @@ public class CruiseShipGUI extends Application {
 		Label menuLabel = new Label("Welcome!");
 
 		Button browseButton = new Button("Book Trips");
-		browseButton.setPrefWidth(90);
+		browseButton.setPrefWidth(200);
 		browseButton.setOnAction(this::switchToBrowseScene);
 
 		createATripButton = new Button("Create a trip");
-		createATripButton.setPrefWidth(90);
+		createATripButton.setPrefWidth(200);
 		createATripButton.setOnAction(this::switchToAdminPassword);
 
 		createAShipButton = new Button("Create a ship");
-		createAShipButton.setPrefWidth(90);
+		createAShipButton.setPrefWidth(200);
 		createAShipButton.setOnAction(this::switchToAdminPassword);
 
 		VBox arrangeMenu =  new VBox(10);
@@ -162,7 +166,7 @@ public class CruiseShipGUI extends Application {
 		FlowPane pane = new FlowPane(arrangeMenu);
 		pane.setAlignment(Pos.CENTER);
 
-		Scene mainMenuScene = new Scene(pane, 250, 300);
+		Scene mainMenuScene = new Scene(pane, 300, 350);
 		stage.setScene(mainMenuScene);
 		stage.setTitle("Crusman cruise ship application");
 	}
@@ -430,7 +434,6 @@ public class CruiseShipGUI extends Application {
 		roomTypeSelectedForShip = listRoom.getValue();
         try {
 			if (event.getSource() == addRoomCountButton) {
-
 				roomCount = Integer.parseInt(roomCountField.getText());
 				if (roomCount < 0) {
 					throw new IllegalArgumentException("msg");
@@ -451,7 +454,7 @@ public class CruiseShipGUI extends Application {
 		catch(NullPointerException ne) {
 			labelCreateShip.setText("Invalid, please fill both room type " 
 			                + " and count\n or add at least one room count"  
-			 			    + " before adding ship");
+			 			    + " before finalizing ship");
 		}
 		catch (IllegalArgumentException iae) {
 			labelCreateShip.setText("No negative numbers allowed");
