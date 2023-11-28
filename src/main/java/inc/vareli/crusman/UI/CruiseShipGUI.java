@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Date;
 import java.util.Map;
 import java.util.EnumMap;
+import java.util.TimeZone;
 import java.util.ArrayList;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
@@ -74,7 +75,6 @@ public class CruiseShipGUI extends Application {
 	private TextField dateArrivalField;
 	private TextField dateDepartureField;
 	private TextField locationField;
-	private TextField zoneIdField;
 	private TextField roomCostField;
     private TextField serviceCostField;
 	private Button createATripButton;
@@ -86,6 +86,7 @@ public class CruiseShipGUI extends Application {
     private Label warningLabelPort;
 	private Label warningLabelCost;
 	private Label tripLabel;
+	ComboBox<String> timeZone;
 
 	private Button addRoomCountButton;
 	private Button addShipButton;
@@ -323,7 +324,8 @@ public class CruiseShipGUI extends Application {
 		Label addShipLabel = new Label("Your selected ship:  " + selectedShip);
         //Label addShipLabel = new Label("Your selected ship: " + conn.selectedShip.toString());
 		Label portLabel = new Label("Add a port  -  A trip must have at least 2 ports");
-        Label titleLabel = new Label("Arrival Date\t         \t" + "  \tDeparture Date");
+        Label titleLabel = new Label("Arrival Date\t         \t" + "  \tDeparture Date"
+		+"\t                       Location" +"\t                          \tTime Zone ID");
 		costLabel = new Label("Add cost for available room types" +
 										" and services in your trip");
         warningLabelPort = new Label();
@@ -333,7 +335,6 @@ public class CruiseShipGUI extends Application {
 		dateArrivalField = new TextField("dd-MM-yyyy hh:mm");
         dateDepartureField = new TextField("dd-MM-yyyy hh:mm");
         locationField = new TextField("location");
-        zoneIdField = new TextField("zone id");
         roomCostField = new TextField("Room Cost");
         serviceCostField = new TextField("Service Cost");
 
@@ -352,10 +353,15 @@ public class CruiseShipGUI extends Application {
 		}
 
 		TextField[] arr = {dateArrivalField, dateDepartureField, locationField,
-						zoneIdField, roomCostField, serviceCostField};
+						 roomCostField, serviceCostField};
 		for (int i = 0; i < arr.length; i++) {
 			TextField field = arr[i];
 			field.setOnMouseClicked(e -> field.clear());
+		}
+
+		timeZone = new ComboBox<>();
+		for (String timeZoneIDs : TimeZone.getAvailableIDs()) {
+			timeZone.getItems().add(timeZoneIDs);
 		}
 
         ComboBox<RoomType> roomSelection = new ComboBox<RoomType>();
@@ -372,7 +378,7 @@ public class CruiseShipGUI extends Application {
 
 		HBox arrangeTripPortButton = new HBox(10, addPortButton, warningLabelPort);
 		HBox arrangeTripPortInfo = new HBox(20, dateArrivalField, dateDepartureField, locationField,
-                                            zoneIdField);
+                                            timeZone);
 		HBox arrangeTripRoomCosts = new HBox(20, roomSelection, roomCostField);
         HBox arrangeTripServiceCosts = new HBox(20, serviceSelection, serviceCostField);
 		HBox arrangeTripCostButton = new HBox(10, addCostButton, warningLabelCost);
@@ -473,7 +479,7 @@ public class CruiseShipGUI extends Application {
 			{
 				arrivalDate = sdf.parse(dateArrivalField.getText());
 				departureDate = sdf.parse(dateDepartureField.getText());
-				//tripBuilder.addPort(arrivalDate, departureDate, locationField.getText(), zoneIdField.getText());
+				//tripBuilder.addPort(arrivalDate, departureDate, locationField.getText(), timeZone.value());
 				warningLabelPort.setText("Port Added Succesfully");
 				numTrips++;
 			}
