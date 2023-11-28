@@ -36,7 +36,9 @@ import java.nio.file.StandardOpenOption;
 /**
  * The main entry point to CrusMan, where users will interact with the data and buy tickets etc
  *
- * @author Mart Palamine
+ * @author Mart Cesar Palamine
+ * Student ID: 3732933
+ * Email: MartC.Palamine@unb.ca
  */
 public class CruiseShipGUI extends Application {
 
@@ -52,7 +54,6 @@ public class CruiseShipGUI extends Application {
 	private Label loginError;
 
 	//browsing
-	private ArrayList<String> demo;
 	private Text text;
 	private int i;
 	private Button nextButton;
@@ -91,13 +92,12 @@ public class CruiseShipGUI extends Application {
 	private Button addRoomCountButton;
 	private Button addShipButton;
 	private Label labelCreateShip;
-	private Label costLabel;
-    //private Ship selectedShip; --use this for db
-    private String selectedShip;
+	private Label costLabel; 
     private RoomType roomTypeSelectedForTrip;
     private RoomType roomTypeSelectedForShip;
     private Service serviceSelectedForTrip;
 	private ComboBox<RoomType> listRoom;
+	private ComboBox<Ship> cbShip;
 	private Map<RoomType, Integer> rooms;
 	
 
@@ -138,7 +138,7 @@ public class CruiseShipGUI extends Application {
 		String ID = loginIDField.getText();
 		String pass = loginPassField.getText();
 		try {
-			//conn = new CMConnection(url, ID, pass);
+			conn = new CMConnection(url, ID, pass);
 			switchToMainMenuScene(event);
 		} catch (IllegalArgumentException iae) {
 			loginError.setText(iae.getMessage());
@@ -214,19 +214,13 @@ public class CruiseShipGUI extends Application {
 	}
 
 	public void switchToBrowseScene(ActionEvent event) {
-		/* 
-		  List<Trip> trips = conn.queryTrip();
-		 */
-		demo = new ArrayList<>();
-		demo.add("Trip1"); 
-		demo.add("Trip2"); 
-		demo.add("Trip3"); 
+
+		List<Trip> trips = conn.queryTrip();
 		
 		//stores index for trips
 		i = 0;
 
-		text = new Text(demo.get(i));
-		//text = new Text(trips.get(i).toString());
+		text = new Text(trips.get(i).toString());
 
 		bookButton = new Button("Book");
 		nextButton = new Button("Next");
@@ -253,18 +247,14 @@ public class CruiseShipGUI extends Application {
 	public void browseAction (ActionEvent event)  {
 		try {
 		if (event.getSource() == nextButton) {
-			text.setText(demo.get(++i));
-			//text.setText(trips.get(++i).toString());
+			text.setText(trips.get(++i).toString());
 		}
 		else if (event.getSource() == prevButton) {
-			text.setText(demo.get(--i));
-			//text.setText(trips.get(--1).toString());
+			text.setText(trips.get(--i).toString());
 		}
 		else if (event.getSource() == bookButton) {
-			booked = demo.get(i);
+			booked = trips.get(i).toString();
 			switchToBookingScene(event);
-			//booked = trips.get(i).toString();
-			//Trip trip = trip.get(i);
 		}
 		} catch(IndexOutOfBoundsException e) {
 			text.setText("None");
@@ -321,8 +311,7 @@ public class CruiseShipGUI extends Application {
 	}
 
 	public void switchToCreateTripsScene (ActionEvent event) {
-		Label addShipLabel = new Label("Your selected ship:  " + selectedShip);
-        //Label addShipLabel = new Label("Your selected ship: " + conn.selectedShip.toString());
+        Label addShipLabel = new Label("Your selected ship: " + cbShip.getValue().toString());
 		Label portLabel = new Label("Add a port  -  A trip must have at least 2 ports");
         Label titleLabel = new Label("Arrival Date\t         \t" + "    \tDeparture Date"
 		+"\t                       Location" +"\t                          \tTime Zone ID");
@@ -449,7 +438,7 @@ public class CruiseShipGUI extends Application {
 				labelCreateShip.setText("Succesfully added room count");
 			}
 			else if (event.getSource() == addShipButton) {
-				//conn.createShip(rooms);
+				conn.createShip(rooms);
 				labelCreateShip.setText("Successfully added a ship");
 			}
 
@@ -479,7 +468,7 @@ public class CruiseShipGUI extends Application {
 			{
 				arrivalDate = sdf.parse(dateArrivalField.getText());
 				departureDate = sdf.parse(dateDepartureField.getText());
-				//tripBuilder.addPort(arrivalDate, departureDate, locationField.getText(), timeZone.getValue());
+				tripBuilder.addPort(arrivalDate, departureDate, locationField.getText(), timeZone.getValue());
 				warningLabelPort.setText("Port Added Succesfully");
 				numTrips++;
 			}
@@ -501,8 +490,8 @@ public class CruiseShipGUI extends Application {
 			try {
 				roomCost = Double.parseDouble(roomCostField.getText());
 				serviceCost = Double.parseDouble(serviceCostField.getText());
-				//tripBuilder.addCost(roomTypeSelectedForTrip, roomCost);
-				//tripBuilder.addCost(serviceSelectedForTrip, serviceCost);
+				tripBuilder.addCost(roomTypeSelectedForTrip, roomCost);
+				tripBuilder.addCost(serviceSelectedForTrip, serviceCost);
 				warningLabelCost.setText("Succesfully added cost");
 			}
 			catch(NumberFormatException nfe) {
@@ -515,7 +504,7 @@ public class CruiseShipGUI extends Application {
 		}
 		else if (event.getSource() == createTripButton) {
 			try {
-			//conn.createTrip(tripBuilder);
+			conn.createTrip(tripBuilder);
 			tripLabel.setText("Succesfully created Trip");
 			} catch(NullPointerException e) {
 				tripLabel.setText("Invalid, add at least one cost");
@@ -530,27 +519,17 @@ public class CruiseShipGUI extends Application {
 		button.setPrefWidth(200);
         Label label = new Label("Choose a ship");
 
-        //combo box to store ships from db
-		/* 
-		//List<Ship> shipList = conn.queryShip();
-		ComboBox<Ship> cbShip = new ComboBox<>();
+		List<Ship> shipList = conn.queryShip();
+		cbShip = new ComboBox<>();
 		for (Ship ship : shipList) {
 		cbShip.getItems().add(ship);
 		   }
-		   */
-		
-        ComboBox<String> placeHolder = new ComboBox<>();
-        placeHolder.getItems().add("Ship1");
-        placeHolder.getItems().add("Ship2");
 
-        //cbShip.setOnAction(e -> selectedShip = cbShip.getValue());
-        placeHolder.setOnAction(e -> selectedShip = placeHolder.getValue());
-
-        //tripBuilder = new TripBuilder(selectedShip);
+        tripBuilder = new TripBuilder(cbShip.getValue());
 
         button.setOnAction(this::switchToCreateTripsScene);
         
-        VBox arrange = new VBox(30, label, placeHolder, button);
+        VBox arrange = new VBox(30, label, cbShip, button);
         FlowPane pane = new FlowPane(arrange);
         pane.setAlignment(Pos.CENTER);
         Scene scene = new Scene(pane, 450, 350);
