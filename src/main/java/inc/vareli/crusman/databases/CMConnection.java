@@ -63,7 +63,7 @@ public class CMConnection {
 	 */
 	public Ship createShip(Map<RoomType,Integer> roomCounts) throws IllegalArgumentException {
 		String retrieveID = "select shipID from CruiseShip";
-		int id = 1000;
+		long id = 1000;
 		try {
 			PreparedStatement retrieveStatement = connector.prepareStatement(retrieveID);
 			ResultSet idSet = retrieveStatement.executeQuery();
@@ -77,7 +77,7 @@ public class CMConnection {
 		try {
 			String insert = "insert into CruiseShip values (?,?,?,?,?)";
 			PreparedStatement insertStatement = connector.prepareStatement(insert);
-			insertStatement.setInt(1, id);
+			insertStatement.setLong(1, id);
 			insertStatement.setInt(2, roomCounts.get(RoomType.INTERIOR));
 			insertStatement.setInt(3, roomCounts.get(RoomType.OUTSIDE));
 			insertStatement.setInt(4, roomCounts.get(RoomType.BALCONY));
@@ -111,8 +111,8 @@ public class CMConnection {
 	}
 
 	public Trip createTrip(TripBuilder temp) {
-		Trip toReturn = temp.build();
-		int id = 3000;
+		long id = 3000;
+		Trip toReturn = temp.build(id);
 		String retrieveID = "select tripID from Trip";
 		try {
 			PreparedStatement retrieveStatement = connector.prepareStatement(retrieveID);
@@ -126,17 +126,17 @@ public class CMConnection {
 		try {
 			String insert = "insert into Trip values (?,?,?,?,?,?,?,?)";
 			PreparedStatement insertStatement = connector.prepareStatement(insert);
-			insertStatement.setInt(1, id);
-			insertStatement.setInt(2, toReturn.SHIP.ID);
+			insertStatement.setLong(1, id);
+			insertStatement.setLong(2, toReturn.SHIP.ID);
 			insertStatement.setDouble(3, toReturn.COSTS.get(Service.DRINKS));
 			insertStatement.setDouble(4, toReturn.COSTS.get(Service.MEALS));
 			int affectedRows = insertStatement.executeUpdate();
-			
+	
 			for(int i = 0; i < toReturn.PORTS.size(); i++) {
 				insert = "insert into Port values (?,?,?,?)";
 				insertStatement = connector.prepareStatement(insert);
 				insertStatement.setString(1, toReturn.PORTS.get(i).location);
-				insertStatement.setInt(2, id);
+				insertStatement.setLong(2, id);
 				if(i == 0) {
 					insertStatement.setInt(3,  0); //startEndFlag: 0 = starting port, 1 = ending port, 2 = other
 				}else if(i == toReturn.PORTS.size() - 1) {
@@ -152,7 +152,7 @@ public class CMConnection {
 				RoomType currentType = toReturn.SHIP.rooms[i].type;
 				insert = "insert into RoomInfo values (?,?,?,?)";
 				insertStatement.setString(1, currentType.name());
-				insertStatement.setInt(2, id);
+				insertStatement.setLong(2, id);
 				insertStatement.setDouble(3, toReturn.COSTS.get(currentType));
 				insertStatement.setInt(4, toReturn.SHIP.getTotalOccupancy(currentType));
 				affectedRows = insertStatement.executeUpdate();
