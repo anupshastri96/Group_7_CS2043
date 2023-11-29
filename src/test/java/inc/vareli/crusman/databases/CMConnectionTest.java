@@ -33,13 +33,13 @@ public class CMConnectionTest {
 		roomCounts.put(RoomType.INTERIOR, 1);
 		roomCounts.put(RoomType.OUTSIDE, 1);
 		roomCounts.put(RoomType.BALCONY, 1);
-		roomCounts.put(RoomType.SUITE, 2);
+		roomCounts.put(RoomType.SUITE, 3);
 		
 		EnumMap<RoomType,Integer> roomCounts2 =
 								new EnumMap<RoomType,Integer>(RoomType.class);
 		roomCounts2.put(RoomType.INTERIOR, 2);
-		roomCounts2.put(RoomType.OUTSIDE, 1);
-		roomCounts2.put(RoomType.BALCONY, 1);
+		roomCounts2.put(RoomType.OUTSIDE, 3);
+		roomCounts2.put(RoomType.BALCONY, 4);
 		roomCounts2.put(RoomType.SUITE, 2);
 
 		try {
@@ -57,7 +57,7 @@ public class CMConnectionTest {
 			CMConnection testConnection = new CMConnection("jdbc:mysql://cs1103.cs.unb.ca:3306/j3zh5", "j3zh5", "rGR45WHX");
 			List<Ship> shipList = testConnection.queryShip();
 			for(int i = 0; i<shipList.size(); i++){
-				System.out.println(shipList.get(i).toString() + "\n");
+				System.out.println(shipList.get(i).toString());
 			}
 		}catch(IllegalArgumentException e) {
 			System.out.println(e.getMessage());
@@ -78,12 +78,29 @@ public class CMConnectionTest {
 		tb.addCost(RoomType.SUITE, 110);
 		try {
 			tb.addPort(dateFormat.parse("2023-11-23"), dateFormat.parse("2023-11-24"), "Rome", "GMT");
-			tb.addPort(dateFormat.parse("2023-11-24"), dateFormat.parse("2023-11-25"), "Pisa", "GMT");
+			tb.addPort(dateFormat.parse("2023-11-25"), dateFormat.parse("2023-11-26"), "Pisa", "GMT");
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		Trip trip1 = testConnection.createTrip(tb);
+
+		TripBuilder tb2 = new TripBuilder(testConnection.queryShip().get(1));
+		tb2.addCost(Service.MEALS, 150);
+		tb2.addCost(Service.DRINKS, 160);
+		tb2.addCost(RoomType.BALCONY, 170);
+		tb2.addCost(RoomType.INTERIOR, 180);
+		tb2.addCost(RoomType.OUTSIDE, 190);
+		tb2.addCost(RoomType.SUITE, 200);
+		try {
+			tb2.addPort(dateFormat.parse("2023-10-20"), dateFormat.parse("2023-10-23"), "Cannes", "GMT");
+			tb2.addPort(dateFormat.parse("2023-10-25"), dateFormat.parse("2023-10-26"), "Pisa", "GMT");
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Trip trip2 = testConnection.createTrip(tb2);
 	}
 
 	@Test
@@ -92,7 +109,7 @@ public class CMConnectionTest {
 			CMConnection testConnection = new CMConnection("jdbc:mysql://cs1103.cs.unb.ca:3306/j3zh5", "j3zh5", "rGR45WHX");
 			List<Trip> tripList = testConnection.queryTrip();
 			for(int i = 0; i<tripList.size(); i++ ){
-				System.out.println(tripList.get(i) + "\n");
+				System.out.println(tripList.get(i).toString());
 			}
 		}catch(IllegalArgumentException e) {
 			System.out.println(e.getMessage());

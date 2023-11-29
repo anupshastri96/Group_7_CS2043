@@ -72,7 +72,7 @@ public class Ship {
 
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("ID: " + ID + " \n");
+		builder.append("Ship ID: " + ID + " \n");
 		for (RoomType type : RoomType.values()) {
 			int typeCount = 0;
 			for (Room r : rooms) {

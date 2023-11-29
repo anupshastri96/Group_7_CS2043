@@ -180,8 +180,8 @@ public class Trip {
 		 * everything is written to the DB
 		 * @return the Trip built
 		 */
-		protected Trip build() {
-			return new Trip(ID, ship, ports, costs);
+		protected Trip build(int tripID) {
+			return new Trip(tripID, ship, ports, costs);
 		}
 	}
 }
