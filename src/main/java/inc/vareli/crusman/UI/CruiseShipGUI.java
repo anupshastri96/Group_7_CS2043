@@ -45,7 +45,6 @@ public class CruiseShipGUI extends Application {
 	//global
 	private Stage stage;
 	private CMConnection conn;
-    private TripBuilder tripBuilder;
 
 	//loggin in
 	private TextField loginURLField;
@@ -55,7 +54,7 @@ public class CruiseShipGUI extends Application {
 
 	//browsing
 	private Text text;
-	private int i;
+	private int tripIndex;
 	private Button nextButton;
 	private Button prevButton;
 	private Button bookButton;
@@ -90,14 +89,16 @@ public class CruiseShipGUI extends Application {
 	ComboBox<String> timeZone;
 	ComboBox<RoomType> roomSelection;
 	ComboBox<Service> serviceSelection;
+	private TripBuilder tripBeingBuilt;
 
+	//creating - Ships
 	private Button addRoomCountButton;
 	private Button addShipButton;
 	private Label labelCreateShip;
 	private Label costLabel; 
 	private ComboBox<RoomType> listRoom;
-	private ComboBox<Ship> cbShip;
-	private Map<RoomType, Integer> rooms;
+	private ComboBox<Ship> listOfShipsToChoose;
+	private Map<RoomType, Integer> roomCount;
 	
 
 	public void start(Stage stage) {
@@ -144,7 +145,7 @@ public class CruiseShipGUI extends Application {
 		}
 	}
 
-	public void switchToMainMenuScene (ActionEvent event) {
+	public void switchToMainMenuScene(ActionEvent event) {
 		Label menuLabel = new Label("Welcome!");
 
 		Button browseButton = new Button("Book Trips");
@@ -168,7 +169,7 @@ public class CruiseShipGUI extends Application {
 
 		Scene mainMenuScene = new Scene(pane, 300, 350);
 		stage.setScene(mainMenuScene);
-		stage.setTitle("Crusman cruise ship application");
+		stage.setTitle("Cruise ship booking system & admin manager");
 	}
 
 	public void switchToAdminPassword(ActionEvent event) {
@@ -188,17 +189,13 @@ public class CruiseShipGUI extends Application {
 
 		if (event.getSource() == createATripButton) {
 			adminPasswordField.setOnAction(this::switchToChooseShipScene);
-
 		} else if (event.getSource() == createAShipButton) {
 			adminPasswordField.setOnAction(this::switchToCreateShipScene);
-
 		} else if (event.getSource() == confirmBookingButton) {
 			welcomeLabel.setText("Waiting for admin to confirm payment");
 			adminPasswordField.setText("");
 			adminButton.setVisible(true);
-			
 		}
-
 		VBox arrangement = new VBox(20);
 		arrangement.getChildren().addAll(welcomeLabel, adminPasswordField, adminButton,
 										returnButton);
@@ -216,10 +213,9 @@ public class CruiseShipGUI extends Application {
 
 		List<Trip> trips = conn.queryTrip();
 		
-		//stores index for trips
-		i = 0;
+		tripIndex = 0;
 
-		text = new Text(trips.get(i).toString());
+		text = new Text(trips.get(tripIndex).toString());
 
 		bookButton = new Button("Book");
 		nextButton = new Button("Next");
@@ -227,10 +223,10 @@ public class CruiseShipGUI extends Application {
 		Button returnButton = new Button("Return");
 		returnButton.setOnAction(this::switchToMainMenuScene);
 
-		Button[] arr = {bookButton, nextButton, prevButton};
-		for (int i = 0; i < 3; i++) {
-			arr[i].setPrefWidth(120);
-			arr[i].setOnAction(this::browseAction);
+		Button[] setBrowseButtons = {bookButton, nextButton, prevButton};
+		for(int i = 0; i < setBrowseButtons.length; i++) {
+			setBrowseButtons[i].setPrefWidth(120);
+			setBrowseButtons[i].setOnAction(this::browseAction);
 		}
 
 		HBox arrangeButt = new HBox(10, prevButton, bookButton, nextButton);
@@ -243,18 +239,18 @@ public class CruiseShipGUI extends Application {
 		stage.setTitle("Crus, Man!");
 	}
 
-	public void browseAction (ActionEvent event)  {
+	public void browseAction(ActionEvent event) {
 		try {
-		if (event.getSource() == nextButton) {
-			text.setText(trips.get(++i).toString());
-		}
-		else if (event.getSource() == prevButton) {
-			text.setText(trips.get(--i).toString());
-		}
-		else if (event.getSource() == bookButton) {
-			booked = trips.get(i).toString();
-			switchToBookingScene(event);
-		}
+			if (event.getSource() == nextButton) {
+				text.setText(trips.get(++tripIndex).toString());
+			}
+			else if (event.getSource() == prevButton) {
+				text.setText(trips.get(--tripIndex).toString());
+			}
+			else if (event.getSource() == bookButton) {
+				booked = trips.get(tripIndex).toString();
+				switchToBookingScene(event);
+			}
 		} catch(IndexOutOfBoundsException e) {
 			text.setText("None");
 		}
@@ -285,7 +281,7 @@ public class CruiseShipGUI extends Application {
 		drinkSelection.getItems().add("Opt Out");
 
 		ComboBox<RoomType> roomSelection = new ComboBox<RoomType>();		
-		for (RoomType roomType : RoomType.values()) {
+		for(RoomType roomType : RoomType.values()) {
 			roomSelection.getItems().add(roomType);
 		}
 
@@ -309,8 +305,8 @@ public class CruiseShipGUI extends Application {
 		stage.setTitle("Print ticket");
 	}
 
-	public void switchToCreateTripsScene (ActionEvent event) {
-        Label addShipLabel = new Label("Your selected ship: " + cbShip.getValue().toString());
+	public void switchToCreateTripsScene(ActionEvent event) {
+        Label addShipLabel = new Label("Your selected ship: " + listOfShipsToChoose.getValue().toString());
 		Label portLabel = new Label("Add a port  -  A trip must have at least 2 ports");
         Label titleLabel = new Label("Arrival Date\t         \t" + "    \tDeparture Date"
 		+"\t                       Location" +"\t                          \tTime Zone ID");
@@ -334,31 +330,31 @@ public class CruiseShipGUI extends Application {
 		returnButton.setOnAction(this::switchToMainMenuScene);
 		returnButton.setPrefWidth(200);
 
-		Button[] arrButt = {createTripButton, addPortButton, addCostButton};
-		for(int i = 0; i < arrButt.length; i++) {
-			arrButt[i].setPrefWidth(200);
-			arrButt[i].setOnAction(this::addTrip);
+		Button[] setTripButtons = {createTripButton, addPortButton, addCostButton};
+		for(int i = 0; i < setTripButtons.length; i++) {
+			setTripButtons[i].setPrefWidth(200);
+			setTripButtons[i].setOnAction(this::addTrip);
 		}
 
-		TextField[] arr = {dateArrivalField, dateDepartureField, locationField,
+		TextField[] setTextFields = {dateArrivalField, dateDepartureField, locationField,
 						 roomCostField, serviceCostField};
-		for (int i = 0; i < arr.length; i++) {
-			TextField field = arr[i];
-			field.setOnMouseClicked(e -> field.clear());
+		for(int i = 0; i < setTextFields.length; i++) {
+			TextField field = setTextFields[i];
+			setTextFields[i].setOnMouseClicked(e -> field.clear());
 		}
 
 		timeZone = new ComboBox<>();
-		for (String timeZoneIDs : TimeZone.getAvailableIDs()) {
+		for(String timeZoneIDs : TimeZone.getAvailableIDs()) {
 			timeZone.getItems().add(timeZoneIDs);
 		}
 
         roomSelection = new ComboBox<RoomType>();
-		for (RoomType roomType : RoomType.values()) {
+		for(RoomType roomType : RoomType.values()) {
 			roomSelection.getItems().add(roomType);
 		}
 
         serviceSelection = new ComboBox<Service>();
-        for (Service service : Service.values()) {
+        for(Service service : Service.values()) {
             serviceSelection.getItems().add(service);
         }
 
@@ -422,27 +418,27 @@ public class CruiseShipGUI extends Application {
 	}
 
 	public void addShip(ActionEvent event) {
-		int roomCount = 0;
+		int parsedRoomCount = 0;
         try {
 			if (event.getSource() == addRoomCountButton) {
-				roomCount = Integer.parseInt(roomCountField.getText());
-				if (roomCount < 0) {
+				parsedRoomCount = Integer.parseInt(roomCountField.getText());
+				if (parsedRoomCount < 0) {
 					throw new IllegalArgumentException("msg");
 				}
-				rooms = new EnumMap<RoomType, Integer>(RoomType.class);
-				rooms.put(listRoom.getValue(), roomCount);
+				roomCount = new EnumMap<RoomType, Integer>(RoomType.class);
+				roomCount.put(listRoom.getValue(), parsedRoomCount);
 				labelCreateShip.setText("Succesfully added room count");
 			}
 			else if (event.getSource() == addShipButton) {
-				conn.createShip(rooms);
+				conn.createShip(roomCount);
 				labelCreateShip.setText("Successfully added a ship");
 			}
 
         }
-        catch(NumberFormatException nfe) {
+        catch (NumberFormatException nfe) {
             labelCreateShip.setText("Please only input integer values");
         }
-		catch(NullPointerException ne) {
+		catch (NullPointerException ne) {
 			labelCreateShip.setText("Invalid, please fill both room type " 
 			                + " and count\n or add at least one room count"  
 			 			    + " before finalizing ship");
@@ -455,7 +451,7 @@ public class CruiseShipGUI extends Application {
 
 	public void addTrip(ActionEvent event) {
 		
-		if(event.getSource() == addPortButton) 	{
+		if (event.getSource() == addPortButton) 	{
 			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm");
 			Date arrivalDate = new Date();
 			Date departureDate = new Date();
@@ -464,7 +460,7 @@ public class CruiseShipGUI extends Application {
 			{
 				arrivalDate = sdf.parse(dateArrivalField.getText());
 				departureDate = sdf.parse(dateDepartureField.getText());
-				tripBuilder.addPort(arrivalDate, departureDate, locationField.getText(), timeZone.getValue());
+				tripBeingBuilt.addPort(arrivalDate, departureDate, locationField.getText(), timeZone.getValue());
 				warningLabelPort.setText("Port Added Succesfully");
 				numTrips++;
 			}
@@ -486,8 +482,8 @@ public class CruiseShipGUI extends Application {
 			try {
 				roomCost = Double.parseDouble(roomCostField.getText());
 				serviceCost = Double.parseDouble(serviceCostField.getText());
-				tripBuilder.addCost(roomSelection.getValue(), roomCost);
-				tripBuilder.addCost(serviceSelection.getValue(), serviceCost);
+				tripBeingBuilt.addCost(roomSelection.getValue(), roomCost);
+				tripBeingBuilt.addCost(serviceSelection.getValue(), serviceCost);
 				warningLabelCost.setText("Succesfully added cost");
 			}
 			catch(NumberFormatException nfe) {
@@ -500,7 +496,7 @@ public class CruiseShipGUI extends Application {
 		}
 		else if (event.getSource() == createTripButton) {
 			try {
-			conn.createTrip(tripBuilder);
+			conn.createTrip(tripBeingBuilt);
 			tripLabel.setText("Succesfully created Trip");
 			} catch(NullPointerException e) {
 				tripLabel.setText("Invalid, add at least one cost");
@@ -509,23 +505,23 @@ public class CruiseShipGUI extends Application {
 		}
 	}
 
-    public void switchToChooseShipScene (ActionEvent event) {
+    public void switchToChooseShipScene(ActionEvent event) {
 
         Button button = new Button("Done");
 		button.setPrefWidth(200);
         Label label = new Label("Choose a ship");
 
 		List<Ship> shipList = conn.queryShip();
-		cbShip = new ComboBox<>();
+		listOfShipsToChoose = new ComboBox<>();
 		for (Ship ship : shipList) {
-		cbShip.getItems().add(ship);
+		listOfShipsToChoose.getItems().add(ship);
 		   }
 
-        cbShip.setOnAction(e -> tripBuilder = new TripBuilder(cbShip.getValue()));
+        listOfShipsToChoose.setOnAction(e -> tripBeingBuilt = new TripBuilder(listOfShipsToChoose.getValue()));
 
         button.setOnAction(this::switchToCreateTripsScene);
         
-        VBox arrange = new VBox(30, label, cbShip, button);
+        VBox arrange = new VBox(30, label, listOfShipsToChoose, button);
         FlowPane pane = new FlowPane(arrange);
         pane.setAlignment(Pos.CENTER);
         Scene scene = new Scene(pane, 450, 350);
@@ -533,7 +529,7 @@ public class CruiseShipGUI extends Application {
         stage.setTitle("Choose a ship for the trip");
     }
 
-	public void printTicketToFile (ActionEvent event){
+	public void printTicketToFile(ActionEvent event){
 
 		String ticketContents = "Trip booked:\t" + booked 
 							+"\nCustomer Name: " + customerNameField.getText() 
