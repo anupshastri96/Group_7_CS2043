@@ -180,5 +180,9 @@ public class CMConnection {
 		}
 		return tripList;
 	}
+
+	public String bookTrip(Trip t, String name, boolean a, boolean b, RoomType type) {
+		return t.toString();
+	}
 	
 }

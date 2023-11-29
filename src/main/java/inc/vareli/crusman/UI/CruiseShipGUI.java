@@ -517,10 +517,10 @@ public class CruiseShipGUI extends Application {
 							+"\nCustomer Name: " + customerNameField.getText() 
 							+"\nMeal Plan: " + mealSelection.getValue()
 							+ "\nDrink plan: " + drinkSelection.getValue();
-			String ticketContents = conn.bookTrip(booked, customerNameField.getText(),
-							mealSelection.getText().equals("Opt In"),
-							drinkSelection.getText().equals("Opt In"),
-							bookingRoomSelection.getvalue());
+			 ticketContents = conn.bookTrip(booked, customerNameField.getText(),
+							mealSelection.getValue().equals("Opt In"),
+							drinkSelection.getValue().equals("Opt In"),
+							bookingRoomSelection.getValue());
 			Path filePath = Path.of("ticket.txt");
 			Files.writeString(filePath, ticketContents, StandardOpenOption.CREATE);
 			welcomeLabel.setText("Successfully created ticket");
