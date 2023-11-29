@@ -43,7 +43,5 @@ public class AppTest {
 		assertTrue(!s.addPerson(RoomType.SUITE, 1));
 		assertTrue(s.getTotalOccupancy(RoomType.INTERIOR) == 3);
 		assertTrue(s.getTotalOccupancy(RoomType.OUTSIDE) == 1);
-
-		System.out.print(s);
 	}
 }

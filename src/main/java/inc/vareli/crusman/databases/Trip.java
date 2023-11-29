@@ -68,9 +68,9 @@ public class Trip {
 	public long getDuration() {
 		int z = PORTS.size()-1;
 		return Duration.between(
-							PORTS.get(0).departure.toInstant(),
-							PORTS.get(z).arrival.toInstant()
-						).toDays();
+						PORTS.get(0).departure.toInstant(),
+						PORTS.get(z).arrival.toInstant()
+					).toDays();
 	}
 
 	public double getTotalFees() {
@@ -104,7 +104,7 @@ public class Trip {
 	 * correct timezone for the situation.
 	 * Calculations and stuff use UTC-0 (unix time)
 	 */
-	private static class Port { 
+	protected static class Port { 
 		public String location;
 		public TimeZone zone;
 		public Date arrival;
@@ -142,7 +142,6 @@ public class Trip {
 	 * a simple constructor
 	 */
 	public static class TripBuilder {
-		private long ID;
 		private Ship ship;
 		private List<Port> ports;
 		private Map<CostType,Double> costs;
@@ -190,7 +189,7 @@ public class Trip {
 		 * everything is written to the DB
 		 * @return the Trip built
 		 */
-		protected Trip build() {
+		protected Trip build(long ID) {
 			return new Trip(ID, ship, ports, costs);
 		}
 	}
