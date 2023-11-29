@@ -463,11 +463,10 @@ public class CruiseShipGUI extends Application {
 
 	public void addTrip(ActionEvent event) {
 		
-		if (event.getSource() == addPortButton) 	{
+		if (event.getSource() == addPortButton) {
 			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm");
 			Date arrivalDate = new Date();
 			Date departureDate = new Date();
-
 			try 
 			{
 				arrivalDate = sdf.parse(dateArrivalField.getText());
@@ -484,7 +483,7 @@ public class CruiseShipGUI extends Application {
 			}
 
 			if (numTrips >= 2)
-			createTripButton.setVisible(true);
+				createTripButton.setVisible(true);
 		}
 
 		else if (event.getSource() == addCostButton) {
@@ -504,16 +503,14 @@ public class CruiseShipGUI extends Application {
 			catch(NullPointerException npe) {
 				warningLabelCost.setText("Try again, fill each boxes");
 			}   
-
 		}
 		else if (event.getSource() == createTripButton) {
 			try {
-			conn.createTrip(tripBeingBuilt);
-			tripLabel.setText("Succesfully created Trip");
+				conn.createTrip(tripBeingBuilt);
+				tripLabel.setText("Succesfully created Trip");
 			} catch(NullPointerException e) {
 				tripLabel.setText("Invalid, add at least one cost");
 			}
-
 		}
 	}
 
@@ -525,9 +522,9 @@ public class CruiseShipGUI extends Application {
 
 		List<Ship> shipList = conn.queryShip();
 		listOfShipsToChoose = new ComboBox<>();
-		for (Ship ship : shipList) {
+		for(Ship ship : shipList) {
 		listOfShipsToChoose.getItems().add(ship);
-		   }
+		}
 
         listOfShipsToChoose.setOnAction(e -> tripBeingBuilt = new TripBuilder(listOfShipsToChoose.getValue()));
 
