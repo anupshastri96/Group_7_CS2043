@@ -196,9 +196,10 @@ public class CruiseShipGUI extends Application {
 			adminPasswordField.setText("");
 			adminButton.setVisible(true);
 		}
+
 		VBox arrangement = new VBox(20);
-		arrangement.getChildren().addAll(welcomeLabel, adminPasswordField, adminButton,
-										returnButton);
+		arrangement.getChildren().addAll(welcomeLabel, adminPasswordField,
+			       				adminButton, returnButton);
 
 		FlowPane pane = new FlowPane(arrangement);
 		pane.setAlignment(Pos.CENTER);
@@ -210,7 +211,6 @@ public class CruiseShipGUI extends Application {
 	}
 
 	public void switchToBrowseScene(ActionEvent event) {
-
 		List<Trip> trips = conn.queryTrip();
 		
 		tripIndex = 0;
@@ -258,7 +258,7 @@ public class CruiseShipGUI extends Application {
 
 	public void switchToBookingScene(ActionEvent event) {
 		Label mealLabel = new Label("Meal Plan");
-        Label drinkLabel = new Label("Drink Plan");
+		Label drinkLabel = new Label("Drink Plan");
 		Label roomLabel = new Label("Room Plan");
 
 		customerNameField = new TextField("Input Customer Name");
@@ -289,8 +289,7 @@ public class CruiseShipGUI extends Application {
 		arrangeLabels.getChildren().addAll(mealLabel, drinkLabel, roomLabel);
 
 		HBox arrangeSelections = new HBox(30);
-		arrangeSelections.getChildren().addAll(mealSelection, drinkSelection,
-											 bookingRoomSelection);
+		arrangeSelections.getChildren().addAll(mealSelection, drinkSelection, bookingRoomSelection);
 
 		VBox arrangeButtons = new VBox(20);
 		arrangeButtons.getChildren().addAll(customerNameField, 
@@ -306,37 +305,24 @@ public class CruiseShipGUI extends Application {
 		stage.setTitle("Print ticket");
 	}
 
-	public boolean parseStringToBoolean(String str) {
-		if (str.equals("Opt In")) {
-			return true;
-		}
-		else if (str.equals("Opt Out")) {
-			return false;
-		}
-		return false;
-	}
-
 	public void switchToCreateTripsScene(ActionEvent event) {
-        Label addShipLabel = new Label("Your selected ship: " + listOfShipsToChoose.getValue().toString());
+		Label addShipLabel = new Label("Your selected ship: " +
+			       			listOfShipsToChoose.getValue().toString());
 		Label portLabel = new Label("Add a port  -  A trip must have at least 2 ports");
-        Label titleLabel = new Label("Arrival Date\t         \t" + "    \tDeparture Date"
-		+"\t                       Location" +"\t                          \tTime Zone ID");
-		costLabel = new Label("Add cost for available room types" +
-										" and services in your trip");
-        warningLabelPort = new Label();
+		Label titleLabel = new Label("Arrival Date\t\t\tDeparture Date\tLocation\t\tTime Zone ID");
+		costLabel = new Label("Add cost for available room types and services in your trip");
+		warningLabelPort = new Label();
 		warningLabelCost = new Label();
-		tripLabel    = new Label();
-
+		tripLabel = new Label();
 		dateArrivalField = new TextField("dd-MM-yyyy hh:mm");
-        dateDepartureField = new TextField("dd-MM-yyyy hh:mm");
-        locationField = new TextField("location");
-        roomCostField = new TextField("Room Cost");
-        serviceCostField = new TextField("Service Cost");
-
-        createTripButton = new Button("Add trip");
+		dateDepartureField = new TextField("dd-MM-yyyy hh:mm");
+		locationField = new TextField("location");
+		roomCostField = new TextField("Room Cost");
+		serviceCostField = new TextField("Service Cost");
+		createTripButton = new Button("Add trip");
 		createTripButton.setVisible(false);
-        addPortButton = new Button("Add Port");
-        addCostButton = new Button("Add Cost");
+		addPortButton = new Button("Add Port");
+		addCostButton = new Button("Add Cost");
 		Button returnButton = new Button("Return");
 		returnButton.setOnAction(this::switchToMainMenuScene);
 		returnButton.setPrefWidth(200);
@@ -359,28 +345,28 @@ public class CruiseShipGUI extends Application {
 			timeZone.getItems().add(timeZoneIDs);
 		}
 
-        roomSelection = new ComboBox<RoomType>();
+		roomSelection = new ComboBox<RoomType>();
 		for(RoomType roomType : RoomType.values()) {
 			roomSelection.getItems().add(roomType);
 		}
 
-        serviceSelection = new ComboBox<Service>();
-        for(Service service : Service.values()) {
-            serviceSelection.getItems().add(service);
-        }
-
+		serviceSelection = new ComboBox<Service>();
+		for(Service service : Service.values()) {
+		    serviceSelection.getItems().add(service);
+		}
 		HBox arrangeTripPortButton = new HBox(10, addPortButton, warningLabelPort);
 		HBox arrangeTripPortInfo = new HBox(20, dateArrivalField, dateDepartureField, locationField,
-                                            timeZone);
+						    timeZone);
 		HBox arrangeTripRoomCosts = new HBox(20, roomSelection, roomCostField);
-        HBox arrangeTripServiceCosts = new HBox(20, serviceSelection, serviceCostField);
+		HBox arrangeTripServiceCosts = new HBox(20, serviceSelection, serviceCostField);
 		HBox arrangeTripCostButton = new HBox(10, addCostButton, warningLabelCost);
 		HBox arrangeAddTripButton = new HBox(10, createTripButton, tripLabel);
 		VBox arrangeTripVertical = new VBox(20);
 
 		arrangeTripVertical.getChildren().addAll(addShipLabel, portLabel, titleLabel,
-		            arrangeTripPortInfo, arrangeTripPortButton, costLabel, arrangeTripRoomCosts,
-                 arrangeTripServiceCosts, arrangeTripCostButton, arrangeAddTripButton, returnButton);   
+				arrangeTripPortInfo, arrangeTripPortButton, costLabel, arrangeTripRoomCosts,
+				arrangeTripServiceCosts, arrangeTripCostButton,
+			       	arrangeAddTripButton, returnButton);   
 
 		FlowPane pane = new FlowPane(arrangeTripVertical);
 		pane.setAlignment(Pos.CENTER);
@@ -392,11 +378,11 @@ public class CruiseShipGUI extends Application {
 
 	public void switchToCreateShipScene(ActionEvent event) { 
 		labelCreateShip = new Label("Choose the number of rooms available for"+
-									 "\neach room type, finalize ship once complete");
+						 "\neach room type, finalize ship once complete");
 		labelCreateShip.setMaxSize(500, 500);
 
 		roomCountField = new TextField("Number Of Rooms");
-	    roomCountField.setMaxSize(300, 20);
+		roomCountField.setMaxSize(300, 20);
 		roomCountField.setOnMouseClicked(e -> roomCountField.clear());
 
 		addRoomCountButton = new Button("Add room count");
@@ -429,55 +415,49 @@ public class CruiseShipGUI extends Application {
 
 	public void addShip(ActionEvent event) {
 		int parsedRoomCount = 0;
-        try {
+		try {
 			if (event.getSource() == addRoomCountButton) {
 				parsedRoomCount = Integer.parseInt(roomCountField.getText());
 				if (parsedRoomCount < 0) {
-					throw new IllegalArgumentException("msg");
+					throw new IllegalArgumentException();
 				}
 				roomCount = new EnumMap<RoomType, Integer>(RoomType.class);
 				roomCount.put(listRoom.getValue(), parsedRoomCount);
 				labelCreateShip.setText("Succesfully added room count");
-			}
-			else if (event.getSource() == addShipButton) {
+			} else if (event.getSource() == addShipButton) {
 				conn.createShip(roomCount);
 				labelCreateShip.setText("Successfully added a ship");
 			}
-        }
-        catch (NumberFormatException nfe) {
-            labelCreateShip.setText("Please only input integer values");
-        }
-		catch (NullPointerException ne) {
+		} catch (NumberFormatException nfe) {
+			    labelCreateShip.setText("Please only input integer values");
+		} catch (NullPointerException ne) {
 			labelCreateShip.setText("Invalid, please fill both room type " 
-			                + " and count\n or add at least one room count"  
-			 			    + " before finalizing ship");
-		}
-		catch (IllegalArgumentException iae) {
+					+ " and count\n or add at least one room count"  
+						    + " before finalizing ship");
+		} catch (IllegalArgumentException iae) {
 			labelCreateShip.setText("No negative numbers allowed");
 		}
 	}
 
 	public void addTrip(ActionEvent event) {
-		
 		if (event.getSource() == addPortButton) {
 			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm");
 			Date arrivalDate = new Date();
 			Date departureDate = new Date();
-			try 
-			{
+			try {
 				arrivalDate = sdf.parse(dateArrivalField.getText());
 				departureDate = sdf.parse(dateDepartureField.getText());
-				tripBeingBuilt.addPort(arrivalDate, departureDate, locationField.getText(), timeZone.getValue());
+				tripBeingBuilt.addPort(arrivalDate, departureDate, 
+						locationField.getText(), timeZone.getValue());
 				warningLabelPort.setText("Port Added Succesfully");
 				numTrips++;
+			} catch(ParseException pe) {
+				warningLabelPort.setText(
+						"Failed to input date(s), please check if format is correct");
+			} catch(NullPointerException npe) {
+				warningLabelPort.setText(
+						"Failed to add a port, please fill all boxes before adding.");
 			}
-			catch(ParseException pe) {
-				warningLabelPort.setText("Failed to input date(s), please check if format is correct");
-			}
-			catch(NullPointerException npe) {
-				warningLabelPort.setText("Failed to add a port, please fill all boxes before adding.");
-			}
-
 			if (numTrips >= 2)
 				createTripButton.setVisible(true);
 		}
@@ -485,19 +465,18 @@ public class CruiseShipGUI extends Application {
 		else if (event.getSource() == addCostButton) {
 			double roomCost = 0;
 			double serviceCost = 0;
-
 			try {
 				roomCost = Double.parseDouble(roomCostField.getText());
 				serviceCost = Double.parseDouble(serviceCostField.getText());
 				tripBeingBuilt.addCost(roomSelection.getValue(), roomCost);
 				tripBeingBuilt.addCost(serviceSelection.getValue(), serviceCost);
-				warningLabelCost.setText("Succesfully added cost");
+				warningLabelCost.setText("Succesfully added cost!");
 			}
 			catch(NumberFormatException nfe) {
-				warningLabelCost.setText("Try again, no alphabetic characters for cost");
+				warningLabelCost.setText("Try again, no alphabetic characters for cost.");
 			} 
 			catch(NullPointerException npe) {
-				warningLabelCost.setText("Try again, fill each boxes");
+				warningLabelCost.setText("Try again, fill each box.");
 			}   
 		}
 		else if (event.getSource() == createTripButton) {
@@ -511,16 +490,14 @@ public class CruiseShipGUI extends Application {
 	}
 
     public void switchToChooseShipScene(ActionEvent event) {
-
         Button button = new Button("Done");
-		button.setPrefWidth(200);
+	button.setPrefWidth(200);
         Label label = new Label("Choose a ship");
-
-		List<Ship> shipList = conn.queryShip();
-		listOfShipsToChoose = new ComboBox<>();
-		for(Ship ship : shipList) {
+	List<Ship> shipList = conn.queryShip();
+	listOfShipsToChoose = new ComboBox<>();
+	for(Ship ship : shipList) {
 		listOfShipsToChoose.getItems().add(ship);
-		}
+	}
 
         listOfShipsToChoose.setOnAction(e -> tripBeingBuilt = new TripBuilder(listOfShipsToChoose.getValue()));
 
@@ -537,22 +514,18 @@ public class CruiseShipGUI extends Application {
 	public void printTicketToFile(ActionEvent event){
 		try {
 			String ticketContents = "Trip booked:\t" + booked 
-								+"\nCustomer Name: " + customerNameField.getText() 
-								+"\nMeal Plan: " + mealSelection.getValue()
-								+ "\nDrink plan: " + drinkSelection.getValue();
-			/*
+							+"\nCustomer Name: " + customerNameField.getText() 
+							+"\nMeal Plan: " + mealSelection.getValue()
+							+ "\nDrink plan: " + drinkSelection.getValue();
 			String ticketContents = conn.bookTrip(booked, customerNameField.getText(),
-							parseStringToBoolean(mealSelection.getText()),
-							parseStringToBoolean(drinkSelection.getText()),
+							mealSelection.getText().equals("Opt In"),
+							drinkSelection.getText().equals("Opt In"),
 							bookingRoomSelection.getvalue());
-			*/
 			Path filePath = Path.of("ticket.txt");
-				Files.writeString(filePath, ticketContents, StandardOpenOption.CREATE);
-				welcomeLabel.setText("Successfully created ticket");
-		}catch (IOException e) {
-			welcomeLabel.setText("Could not create ticket");
-		}//catch (IllegalArgumentException iae) {
-		//welcomeLabel.setText("Error: Please fill all boxes in booking");
-		//}
+			Files.writeString(filePath, ticketContents, StandardOpenOption.CREATE);
+			welcomeLabel.setText("Successfully created ticket");
+		}catch (Exception e) {
+			welcomeLabel.setText("Error: Please fill all boxes in booking");
+		}
 	}
 }
