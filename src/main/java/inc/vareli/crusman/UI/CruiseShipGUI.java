@@ -545,7 +545,7 @@ public class CruiseShipGUI extends Application {
 								+"\nMeal Plan: " + mealSelection.getValue()
 								+ "\nDrink plan: " + drinkSelection.getValue();
 			/*
-			String ticketContents = conn.bookTrip(booked, customerNameField.getText()
+			String ticketContents = conn.bookTrip(booked, customerNameField.getText(),
 							parseStringToBoolean(mealSelection.getText()),
 							parseStringToBoolean(drinkSelection.getText()),
 							bookingRoomSelection.getvalue());
