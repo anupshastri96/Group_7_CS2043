@@ -101,7 +101,6 @@ public class CruiseShipGUI extends Application {
 	private ComboBox<Ship> listOfShipsToChoose;
 	private Map<RoomType, Integer> roomCount;
 	
-
 	public void start(Stage stage) {
 		this.stage = stage;
 		VBox loginFieldsArrangement = new VBox(20);
@@ -389,7 +388,6 @@ public class CruiseShipGUI extends Application {
 		Scene createTripsScene = new Scene(pane, 800, 600);
 		stage.setScene(createTripsScene);
 		stage.setTitle("Add a trip");
-
 	}
 
 	public void switchToCreateShipScene(ActionEvent event) { 
@@ -417,7 +415,7 @@ public class CruiseShipGUI extends Application {
 		for (RoomType roomType : RoomType.values()) {
 			listRoom.getItems().add(roomType);
 		}
-		
+
 		VBox arrangeText = new VBox(20, labelCreateShip, listRoom, roomCountField,
 			 addRoomCountButton, addShipButton, returnButton);
 
@@ -445,7 +443,6 @@ public class CruiseShipGUI extends Application {
 				conn.createShip(roomCount);
 				labelCreateShip.setText("Successfully added a ship");
 			}
-
         }
         catch (NumberFormatException nfe) {
             labelCreateShip.setText("Please only input integer values");
@@ -458,7 +455,6 @@ public class CruiseShipGUI extends Application {
 		catch (IllegalArgumentException iae) {
 			labelCreateShip.setText("No negative numbers allowed");
 		}
-
 	}
 
 	public void addTrip(ActionEvent event) {
@@ -559,5 +555,4 @@ public class CruiseShipGUI extends Application {
 		//welcomeLabel.setText("Error: Please fill all boxes in booking");
 		//}
 	}
-
 }
