@@ -58,7 +58,7 @@ public class CruiseShipGUI extends Application {
 	private Button nextButton;
 	private Button prevButton;
 	private Button bookButton;
-	private String booked;
+	private Trip booked;
 	private List<Trip> trips;
 
 	//booking
@@ -66,6 +66,7 @@ public class CruiseShipGUI extends Application {
 	private TextField customerNameField;
 	ComboBox<String> mealSelection;
 	ComboBox<String> drinkSelection;
+	ComboBox<RoomType> bookingRoomSelection;
 
 	//admin password
 	private Label welcomeLabel;
@@ -248,7 +249,7 @@ public class CruiseShipGUI extends Application {
 				text.setText(trips.get(--tripIndex).toString());
 			}
 			else if (event.getSource() == bookButton) {
-				booked = trips.get(tripIndex).toString();
+				booked = trips.get(tripIndex);
 				switchToBookingScene(event);
 			}
 		} catch(IndexOutOfBoundsException e) {
@@ -280,7 +281,7 @@ public class CruiseShipGUI extends Application {
 		drinkSelection.getItems().add("Opt In");
 		drinkSelection.getItems().add("Opt Out");
 
-		ComboBox<RoomType> roomSelection = new ComboBox<RoomType>();		
+		bookingRoomSelection = new ComboBox<RoomType>();		
 		for(RoomType roomType : RoomType.values()) {
 			roomSelection.getItems().add(roomType);
 		}
@@ -289,7 +290,8 @@ public class CruiseShipGUI extends Application {
 		arrangeLabels.getChildren().addAll(mealLabel, drinkLabel, roomLabel);
 
 		HBox arrangeSelections = new HBox(30);
-		arrangeSelections.getChildren().addAll(mealSelection, drinkSelection, roomSelection);
+		arrangeSelections.getChildren().addAll(mealSelection, drinkSelection,
+											 bookingRoomSelection);
 
 		VBox arrangeButtons = new VBox(20);
 		arrangeButtons.getChildren().addAll(customerNameField, 
@@ -303,6 +305,16 @@ public class CruiseShipGUI extends Application {
 		Scene bookingScene = new Scene(pane, 400, 500);
 		stage.setScene(bookingScene);
 		stage.setTitle("Print ticket");
+	}
+
+	public boolean parseStringToBoolean(String str) {
+		if (str.equals("Opt In")) {
+			return true;
+		}
+		else if (str.equals("Opt Out")) {
+			return false;
+		}
+		return false;
 	}
 
 	public void switchToCreateTripsScene(ActionEvent event) {
@@ -530,20 +542,25 @@ public class CruiseShipGUI extends Application {
     }
 
 	public void printTicketToFile(ActionEvent event){
-
-		String ticketContents = "Trip booked:\t" + booked 
-							+"\nCustomer Name: " + customerNameField.getText() 
-							+"\nMeal Plan: " + mealSelection.getValue()
-							+ "\nDrink plan: " + drinkSelection.getValue();
-
-		Path filePath = Path.of("ticket.txt");
-
 		try {
-			Files.writeString(filePath, ticketContents, StandardOpenOption.CREATE);
-			welcomeLabel.setText("Successfully created ticket");
-		}catch(IOException e) {
+			String ticketContents = "Trip booked:\t" + booked 
+								+"\nCustomer Name: " + customerNameField.getText() 
+								+"\nMeal Plan: " + mealSelection.getValue()
+								+ "\nDrink plan: " + drinkSelection.getValue();
+			/*
+			String ticketContents = conn.bookTrip(booked, customerNameField.getText()
+							parseStringToBoolean(mealSelection.getText()),
+							parseStringToBoolean(drinkSelection.getText()),
+							bookingRoomSelection.getvalue());
+			*/
+			Path filePath = Path.of("ticket.txt");
+				Files.writeString(filePath, ticketContents, StandardOpenOption.CREATE);
+				welcomeLabel.setText("Successfully created ticket");
+		}catch (IOException e) {
 			welcomeLabel.setText("Could not create ticket");
-		}
+		}//catch (IllegalArgumentException iae) {
+		//welcomeLabel.setText("Error: Please fill all boxes in booking");
+		//}
 	}
 
 }
