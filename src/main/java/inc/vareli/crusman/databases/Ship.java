@@ -81,7 +81,7 @@ public class Ship {
 		return builder.toString();
 	}
 
-	protected static class Room {
+	private static class Room {
 		public RoomType type;
 		public int count;
 
