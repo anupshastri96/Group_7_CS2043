@@ -294,6 +294,38 @@ public class CMConnection {
 		}catch(SQLException e){
 			throw new IllegalArgumentException(e.getMessage());
 		}
-		return toReturn;
+      return toReturn;
+      }
+
+
+	public void updateFees(int tripID, CostType type, double amount) {
+		try {
+			// Update the fees in the Trip table
+			String updateStatement = "UPDATE Trip SET " +
+					((type == Service.DRINKS) ? "drinkFees" : "mealFees") + " = ? " +
+					"WHERE tripID = ?";
+
+			PreparedStatement updateFeesStatement = connector.prepareStatement(updateStatement);
+			updateFeesStatement.setDouble(1, amount);
+			updateFeesStatement.setInt(2, tripID);
+
+			int affectedRows = updateFeesStatement.executeUpdate();
+
+			if (affectedRows == 0) {
+				// Handle the case where no rows were updated (perhaps tripID does not exist)
+				System.out.println("No trip found with ID: " + tripID);
+			} else {
+				System.out.println("Fees updated successfully for Trip ID: " + tripID);
+			}
+			}
+			catch (SQLException e) {
+			// Handle SQL exceptions
+			throw new IllegalArgumentException(e.getMessage());
+		}
+	
+   
 	}
+
+
 }
+
