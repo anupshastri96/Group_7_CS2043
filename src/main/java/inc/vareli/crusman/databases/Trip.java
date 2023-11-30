@@ -23,7 +23,7 @@ public class Trip {
 	 * A unique identifier for the Trip.
 	 * Protected so CMConnection can write it to the DB
 	 */
-	protected final int ID;
+	protected final long ID;
 
 	/**
 	 * The ship that this trip ison.
@@ -44,7 +44,7 @@ public class Trip {
 	 */
 	protected final Map<CostType,Double> COSTS;
 
-	private Trip(int ID, Ship ship, List<Port> ports, Map<CostType,Double> costs) {
+	private Trip(long ID, Ship ship, List<Port> ports, Map<CostType,Double> costs) {
 		this.ID = ID;
 		this.SHIP = ship;
 		this.PORTS = ports;
@@ -182,7 +182,7 @@ public class Trip {
 		 * everything is written to the DB
 		 * @return the Trip built
 		 */
-		protected Trip build(int tripID) {
+		protected Trip build(long tripID) {
 			return new Trip(tripID, ship, ports, costs);
 		}
 	}

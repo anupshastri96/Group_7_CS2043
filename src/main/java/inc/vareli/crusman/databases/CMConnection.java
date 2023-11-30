@@ -6,9 +6,10 @@ import inc.vareli.crusman.databases.Trip.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.EnumMap;
-
 import java.util.Map;
+
 import java.sql.*;
+
 
 /**
  * A wrapper around java.sql.Connection to encapsulate it for use in CrusMan
@@ -17,8 +18,8 @@ import java.sql.*;
 public class CMConnection {
 	private Connection connector;
 	/**
-	 Creates a database connection, and sets up the tables to be used in all database operations. 
-	 If tables already exist, it does not create duplicates.
+	 * Creates a database connection, and sets up the tables to be used in all database operations. 
+	 * If tables already exist, it does not create duplicates.
 	 */
 	public CMConnection(String url, String loginID, String loginPass) throws IllegalArgumentException { 
 		try {
@@ -38,7 +39,6 @@ public class CMConnection {
 			String portCreator = "Create table Port (" +
 							"portName varchar(100) not null, " +
 							"tripID int unsigned not null, " + 
-							"startEndFlag int unsigned not null, " +
 							"arrivalDate date, departureDate date, " + 
 							"primary key(portName, tripID), " + 
 							"foreign key(tripID) references Trip(tripID))";
@@ -74,12 +74,13 @@ public class CMConnection {
 		}
 	}
 
-	/*Creates a ship object and enters its data into the database.
+	/**
+	 * Creates a ship object and enters its data into the database.
 	 * @param roomCounts The numbers of room of each type
-	 * @return A ship object with the ID and */
+	 * @return A ship object with the ID and specified room counts*/
 	public Ship createShip(Map<RoomType,Integer> roomCounts) throws IllegalArgumentException {
 		String retrieveID = "select shipID from CruiseShip";
-		int id = 1000;
+		long id = 1;
 		try {
 			PreparedStatement retrieveStatement = 
 								connector.prepareStatement(retrieveID);
@@ -94,19 +95,23 @@ public class CMConnection {
 		try {
 			String insert = "insert into CruiseShip values (?,?,?,?,?)";
 			PreparedStatement insertStatement = connector.prepareStatement(insert);
-			insertStatement.setInt(1, id);
+			insertStatement.setLong(1, id);
 			insertStatement.setInt(2, roomCounts.get(RoomType.INTERIOR));
 			insertStatement.setInt(3, roomCounts.get(RoomType.OUTSIDE));
 			insertStatement.setInt(4, roomCounts.get(RoomType.BALCONY));
 			insertStatement.setInt(5, roomCounts.get(RoomType.SUITE));
-			int affectedRows = insertStatement.executeUpdate();
+			insertStatement.executeUpdate();
 		} catch (SQLException sqle) {
 			throw new IllegalArgumentException("Invalid inputs for createShip()");
 		}
 		return new Ship(id, roomCounts);
 	}
 	
-	public List<Ship> queryShip() throws IllegalArgumentException{
+	/**
+	 * Queries the CruiseShip table to retrieve the list of ships in the database
+	 * @return A list that contains data of all ships in the database.
+	 */
+	public List<Ship> queryShip() throws IllegalArgumentException {
 		List<Ship> shipList = new ArrayList<Ship>();
 		String queryStatement = "select * from CruiseShip";
 		try {	
@@ -129,8 +134,13 @@ public class CMConnection {
 		return shipList;
 	}
 
+	/**
+	 * Creates a trip object, and enters data into Trip, Port and RoomInfo.
+	 * @param temp A TripBuilder that contains a Ship object for the Trip.
+	 * @return A trip object containing data from the tripBuilder.
+	 */
 	public Trip createTrip(TripBuilder temp) {
-		int tripID = 3000;
+		long tripID = 1;
 		String retrieveID = "select MAX(tripID) as maxTripID from Trip";
 		try {
 			PreparedStatement retrieveStatement = 
@@ -149,40 +159,32 @@ public class CMConnection {
 			String insert = "insert into Trip values (?,?,?,?)";
 			PreparedStatement insertStatement = 
 								connector.prepareStatement(insert);
-			insertStatement.setInt(1, tripID);
-			insertStatement.setInt(2, toReturn.SHIP.ID);
+			insertStatement.setLong(1, tripID);
+			insertStatement.setLong(2, toReturn.SHIP.ID);
 			insertStatement.setDouble(3, toReturn.COSTS.get(Service.DRINKS));
 			insertStatement.setDouble(4, toReturn.COSTS.get(Service.MEALS));
-			int affectedRows = insertStatement.executeUpdate();
+			insertStatement.executeUpdate();
 			
 			for(int i = 0; i < toReturn.PORTS.size(); i++) {
-				insert = "insert into Port values (?,?,?,?,?)";
+				insert = "insert into Port values (?,?,?,?)";
 				insertStatement = connector.prepareStatement(insert);
 				insertStatement.setString(1, toReturn.PORTS.get(i).location);
-				insertStatement.setInt(2, tripID);
-				if(i == 0) { 
-					//startEndFlag: 0 = starting port, 1 = ending port, 2 = other
-					insertStatement.setInt(3,  0); 
-				}else if(i == toReturn.PORTS.size() - 1) {
-					insertStatement.setInt(3, 1);
-				}else {
-					insertStatement.setInt(3, 2);
-				}
-				insertStatement.setDate(4, new java.sql.Date(
+				insertStatement.setLong(2, tripID);
+				insertStatement.setDate(3, new java.sql.Date(
 									toReturn.PORTS.get(i).arrival.getTime()));
-				insertStatement.setDate(5, new java.sql.Date(
+				insertStatement.setDate(4, new java.sql.Date(
 									toReturn.PORTS.get(i).departure.getTime()));
-				affectedRows = insertStatement.executeUpdate();
+				insertStatement.executeUpdate();
 			}
 
 			for(RoomType currentType : RoomType.values()){
 				insert = "insert into RoomInfo values (?,?,?,?)";
 				insertStatement = connector.prepareStatement(insert);
 				insertStatement.setString(1, currentType.name());
-				insertStatement.setInt(2, tripID);
+				insertStatement.setLong(2, tripID);
 				insertStatement.setDouble(3, toReturn.COSTS.get(currentType));
 				insertStatement.setInt(4, toReturn.SHIP.getTotalOccupancy(currentType));
-				affectedRows = insertStatement.executeUpdate();
+				insertStatement.executeUpdate();
 			}
 		} catch (SQLException e) {
 			throw new IllegalStateException(e);
@@ -190,18 +192,22 @@ public class CMConnection {
 		return toReturn;
 	}
 	
-
+	/**
+	 * Queries the CruiseShip, Trip, Port and RoomInfo tables to retrieve data to
+	 * retrieve data for all Trips in the database.
+	 * @return A list of all Trips in the database.
+	 */
 	public List<Trip> queryTrip(){
 		List<Trip> tripList = new ArrayList<Trip>();
-		int tripID;
+		long tripID;
 		try {
 			String retrieveTripDetails = "select * from Trip";	
 			PreparedStatement tripStatement = 
 								connector.prepareStatement(retrieveTripDetails);
 			ResultSet tripSet = tripStatement.executeQuery();
 			while(tripSet.next()) {
-				tripID = tripSet.getInt("tripID");
-				int shipId = tripSet.getInt("shipID");
+				tripID = tripSet.getLong("tripID");
+				long shipId = tripSet.getLong("shipID");
 				double drinkFee = tripSet.getDouble("drinkFees");
 				double mealFee = tripSet.getDouble("mealFees");
 
@@ -255,10 +261,20 @@ public class CMConnection {
 		return tripList;
 	}
 
+	/**
+	 * Utilised for booking a trip, enters booking data into the Ticket table 
+	 * and returns a ticket.
+	 * @param tripIn The trip to be booked
+	 * @param customerName The name of the customer
+	 * @param mealSelect Whether or not a meal package is selected
+	 * @param drinkSelect Whether or not a drink package is selected
+	 * @param roomSelect The type of room that is selected
+	 * @return A text output of the ticket details
+	 */
 	public String bookTrip(Trip tripIn, String customerName, boolean mealSelect, 
 						boolean drinkSelect, RoomType roomSelect){
 		String toReturn;
-		int ticketID = 5000;
+		long ticketID = 1;
 		int roomNumber = tripIn.addPerson(roomSelect);
 		String retrieveID = "select MAX(TicketID) as maxTicketID from Ticket";
 		try {
@@ -266,7 +282,7 @@ public class CMConnection {
 											connector.prepareStatement(retrieveID);
 			ResultSet idSet = retrieveStatement.executeQuery();
 			if(idSet.next()) {
-				if(idSet.getInt("maxTicketID") != 0){
+				if(idSet.getInt("maxTicketID") != 0) {
 					ticketID = idSet.getInt("maxTicketID") + 1;
 				}
 			}
@@ -277,20 +293,27 @@ public class CMConnection {
 			String createTicket = "insert into Ticket values(?, ?, ?, ?, ?, ?)";
 			PreparedStatement insertStatement = 
 										connector.prepareStatement(createTicket);
-			insertStatement.setInt(1, ticketID);
-			insertStatement.setInt(2, tripIn.ID);
+			insertStatement.setLong(1, ticketID);
+			insertStatement.setLong(2, tripIn.ID);
 			insertStatement.setString(3, customerName);
-			if(mealSelect){insertStatement.setInt(4, 1);}
-			else{insertStatement.setInt(4, 0);}
-			if(drinkSelect){insertStatement.setInt(5, 1);}
-			else{insertStatement.setInt(5, 0);}
+			
+			if(mealSelect) 
+				insertStatement.setInt(4, 1);
+			else
+				insertStatement.setInt(4, 0);
+			
+			if(drinkSelect) 
+				insertStatement.setInt(5, 1);
+			else
+				insertStatement.setInt(5, 0);
+			
 			insertStatement.setInt(6, roomNumber);
 			toReturn = "Ticket ID: " + ticketID + "\nTrip ID: " + tripIn.ID +
 						"\nRoom Number: " + roomNumber +
 						"\nCustomer Name: " + customerName + 
 						"\nMeal Package Selected: " + ((mealSelect) ? "Yes" : "No") +
 						"\nDrink Package Selected: " + ((drinkSelect) ? "Yes" : "No");
-			int affectedRows = insertStatement.executeUpdate();
+			insertStatement.executeUpdate();
 		}catch(SQLException e){
 			throw new IllegalArgumentException(e.getMessage());
 		}
