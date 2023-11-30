@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Date;
 import java.sql.*;
 
 /**
@@ -19,6 +20,10 @@ public class CMConnection {
 	 *Creates a database connection, and sets up the tables to be used in all database operations. If tables already exist, it does not create duplicates.
 	 */
 	public CMConnection(String url, String loginID, String loginPass) throws IllegalArgumentException { 
+		if (url.equals("DEMO")) {
+			connector = null;
+			return;
+		}
 		try {
 			connector = DriverManager.getConnection(url, loginID, loginPass);
 			String shipCreator = "Create table CruiseShip (shipID int unsigned not null primary key, " +
@@ -64,6 +69,9 @@ public class CMConnection {
 	public Ship createShip(Map<RoomType,Integer> roomCounts) throws IllegalArgumentException {
 		String retrieveID = "select shipID from CruiseShip";
 		long id = 1000;
+		if (connector == null) {
+			return new Ship(id, roomCounts);
+		}
 		try {
 			PreparedStatement retrieveStatement = connector.prepareStatement(retrieveID);
 			ResultSet idSet = retrieveStatement.executeQuery();
@@ -91,6 +99,26 @@ public class CMConnection {
 	
 	public List<Ship> queryShip() throws IllegalArgumentException{
 		List<Ship> shipList = new ArrayList<Ship>();
+		if (connector == null) {
+			Ship a, b, c;
+			Map<RoomType,Integer> d, e, f;
+			d = new EnumMap<RoomType,Integer>(RoomType.class);
+			e = new EnumMap<RoomType,Integer>(RoomType.class);
+			f = new EnumMap<RoomType,Integer>(RoomType.class);
+			d.put(RoomType.INTERIOR, 1);
+			e.put(RoomType.INTERIOR, 2);
+			f.put(RoomType.INTERIOR, 3);
+			d.put(RoomType.OUTSIDE, 2);
+			e.put(RoomType.BALCONY, 3);
+			f.put(RoomType.SUITE, 1);
+			a = new Ship(1, d);
+			b = new Ship(2, e);
+			c = new Ship(3, f);
+			shipList.add(a);
+			shipList.add(b);
+			shipList.add(c);
+			return shipList;
+		}
 		String queryStatement = "select * from CruiseShip";
 		try {	
 			PreparedStatement retrieveStatement = connector.prepareStatement(queryStatement);
@@ -113,6 +141,9 @@ public class CMConnection {
 	public Trip createTrip(TripBuilder temp) {
 		long id = 3000;
 		Trip toReturn = temp.build(id);
+		if (connector == null) {
+			return toReturn;
+		}
 		String retrieveID = "select tripID from Trip";
 		try {
 			PreparedStatement retrieveStatement = connector.prepareStatement(retrieveID);
@@ -144,8 +175,8 @@ public class CMConnection {
 				}else {
 					insertStatement.setInt(3, 2);
 				}
-				insertStatement.setDate(4, (Date)toReturn.PORTS.get(i).arrival);
-				insertStatement.setDate(5, (Date)toReturn.PORTS.get(i).departure);
+				insertStatement.setDate(4, (java.sql.Date)toReturn.PORTS.get(i).arrival);
+				insertStatement.setDate(5, (java.sql.Date)toReturn.PORTS.get(i).departure);
 				affectedRows = insertStatement.executeUpdate();
 			}
 			for(int i = 0; i<toReturn.SHIP.rooms.length; i++) {
@@ -165,6 +196,17 @@ public class CMConnection {
 	
 	public List<Trip> queryTrip(){
 		List<Trip> tripList = new ArrayList<Trip>();
+		if (connector == null) {
+			List<Ship> shipList = this.queryShip();
+			Trip a, b, c;
+			a = new TripBuilder(shipList.get(0)).addPort(new Date(), new Date(), "a", "").addPort(new Date(), new Date(), "a", "").build(1);
+			b = new TripBuilder(shipList.get(1)).addPort(new Date(), new Date(), "b", "").addPort(new Date(), new Date(), "b", "").build(2);
+			c = new TripBuilder(shipList.get(2)).addPort(new Date(), new Date(), "c", "").addPort(new Date(), new Date(), "c", "").build(3);
+			tripList.add(a);
+			tripList.add(b);
+			tripList.add(c);
+			return tripList;
+		}
 		String[] queryStatements = {"select * from Trip", "select * from Port", "select * from RoomInfo"};
 		ResultSet[] queryResults = new ResultSet[queryStatements.length];
 		try {	
