@@ -325,6 +325,10 @@ public class CMConnection {
 		return toReturn;
 	}
 
+	/**
+	 * Provides a string of occupancy per trip 
+	 * @return a string showing total occupancy for every trip.
+	 */
 	public String tripOccupancy(){
 		String outString = "";
 		List<Trip> tripList = this.queryTrip();
