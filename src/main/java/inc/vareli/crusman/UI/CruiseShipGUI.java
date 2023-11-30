@@ -59,7 +59,10 @@ public class CruiseShipGUI extends Application {
 	private Button prevButton;
 	private Button bookButton;
 	private Trip booked;
-	private List<Trip> trips;
+	//private List<Trip> trips;
+
+	//temp - browsing
+	private ArrayList<String> trips;
 
 	//booking
 	private Button confirmBookingButton;
@@ -91,6 +94,9 @@ public class CruiseShipGUI extends Application {
 	ComboBox<RoomType> roomSelection;
 	ComboBox<Service> serviceSelection;
 	private TripBuilder tripBeingBuilt;
+
+	//temp
+	private String selectedShip;
 
 	//creating - Ships
 	private Button addRoomCountButton;
@@ -138,7 +144,7 @@ public class CruiseShipGUI extends Application {
 		String ID = loginIDField.getText();
 		String pass = loginPassField.getText();
 		try {
-			conn = new CMConnection(url, ID, pass);
+			//conn = new CMConnection(url, ID, pass);
 			switchToMainMenuScene(event);
 		} catch (IllegalArgumentException iae) {
 			loginError.setText(iae.getMessage());
@@ -211,11 +217,15 @@ public class CruiseShipGUI extends Application {
 	}
 
 	public void switchToBrowseScene(ActionEvent event) {
-		List<Trip> trips = conn.queryTrip();
-		
+		//List<Trip> trips = conn.queryTrip();
+		trips = new ArrayList<>();
+		trips.add("trip1");
+		trips.add("trip2");
+
 		tripIndex = 0;
 
-		text = new Text(trips.get(tripIndex).toString());
+		//text = new Text(trips.get(tripIndex).toString());
+		text = new Text(trips.get(tripIndex));
 
 		bookButton = new Button("Book");
 		nextButton = new Button("Next");
@@ -242,13 +252,15 @@ public class CruiseShipGUI extends Application {
 	public void browseAction(ActionEvent event) {
 		try {
 			if (event.getSource() == nextButton) {
-				text.setText(trips.get(++tripIndex).toString());
+				//text.setText(trips.get(++tripIndex).toString());
+				text.setText(trips.get(++tripIndex));
 			}
 			else if (event.getSource() == prevButton) {
-				text.setText(trips.get(--tripIndex).toString());
+				//text.setText(trips.get(--tripIndex).toString());
+				text.setText(trips.get(--tripIndex));
 			}
 			else if (event.getSource() == bookButton) {
-				booked = trips.get(tripIndex);
+				//booked = trips.get(tripIndex);
 				switchToBookingScene(event);
 			}
 		} catch(IndexOutOfBoundsException e) {
@@ -306,8 +318,9 @@ public class CruiseShipGUI extends Application {
 	}
 
 	public void switchToCreateTripsScene(ActionEvent event) {
-		Label addShipLabel = new Label("Your selected ship: " +
-			       			listOfShipsToChoose.getValue().toString());
+		//Label addShipLabel = new Label("Your selected ship: " +
+			       			//listOfShipsToChoose.getValue().toString());
+		Label addShipLabel = new Label("Selected ship: " + selectedShip);
 		Label portLabel = new Label("Add a port  -  A trip must have at least 2 ports");
 		Label titleLabel = new Label("Arrival Date\t\t\tDeparture Date\tLocation\t\tTime Zone ID");
 		costLabel = new Label("Add cost for available room types and services in your trip");
@@ -425,7 +438,7 @@ public class CruiseShipGUI extends Application {
 				roomCount.put(listRoom.getValue(), parsedRoomCount);
 				labelCreateShip.setText("Succesfully added room count");
 			} else if (event.getSource() == addShipButton) {
-				conn.createShip(roomCount);
+				//conn.createShip(roomCount);
 				labelCreateShip.setText("Successfully added a ship");
 			}
 		} catch (NumberFormatException nfe) {
@@ -447,8 +460,8 @@ public class CruiseShipGUI extends Application {
 			try {
 				arrivalDate = sdf.parse(dateArrivalField.getText());
 				departureDate = sdf.parse(dateDepartureField.getText());
-				tripBeingBuilt.addPort(arrivalDate, departureDate, 
-						locationField.getText(), timeZone.getValue());
+				//tripBeingBuilt.addPort(arrivalDate, departureDate, 
+						//locationField.getText(), timeZone.getValue());
 				warningLabelPort.setText("Port Added Succesfully");
 				numTrips++;
 			} catch(ParseException pe) {
@@ -468,8 +481,8 @@ public class CruiseShipGUI extends Application {
 			try {
 				roomCost = Double.parseDouble(roomCostField.getText());
 				serviceCost = Double.parseDouble(serviceCostField.getText());
-				tripBeingBuilt.addCost(roomSelection.getValue(), roomCost);
-				tripBeingBuilt.addCost(serviceSelection.getValue(), serviceCost);
+				//tripBeingBuilt.addCost(roomSelection.getValue(), roomCost);
+				//tripBeingBuilt.addCost(serviceSelection.getValue(), serviceCost);
 				warningLabelCost.setText("Succesfully added cost!");
 			}
 			catch(NumberFormatException nfe) {
@@ -481,7 +494,7 @@ public class CruiseShipGUI extends Application {
 		}
 		else if (event.getSource() == createTripButton) {
 			try {
-				conn.createTrip(tripBeingBuilt);
+				//conn.createTrip(tripBeingBuilt);
 				tripLabel.setText("Succesfully created Trip");
 			} catch(NullPointerException e) {
 				tripLabel.setText("Invalid, add at least one cost");
@@ -491,15 +504,24 @@ public class CruiseShipGUI extends Application {
 
     public void switchToChooseShipScene(ActionEvent event) {
         Button button = new Button("Done");
-	button.setPrefWidth(200);
+		button.setPrefWidth(200);
         Label label = new Label("Choose a ship");
-	List<Ship> shipList = conn.queryShip();
-	listOfShipsToChoose = new ComboBox<>();
-	for(Ship ship : shipList) {
+		/* 
+		List<Ship> shipList = conn.queryShip();
+		listOfShipsToChoose = new ComboBox<>();
+		for(Ship ship : shipList) {
 		listOfShipsToChoose.getItems().add(ship);
 	}
+		*/
 
-        listOfShipsToChoose.setOnAction(e -> tripBeingBuilt = new TripBuilder(listOfShipsToChoose.getValue()));
+        //listOfShipsToChoose.setOnAction(e -> tripBeingBuilt = new TripBuilder(listOfShipsToChoose.getValue()));
+
+		ComboBox<String> listOfShipsToChoose = new ComboBox<>();
+        listOfShipsToChoose.getItems().add("Ship1");
+        listOfShipsToChoose.getItems().add("Ship2");
+
+		listOfShipsToChoose.setOnAction(e -> selectedShip = listOfShipsToChoose.getValue());
+													
 
         button.setOnAction(this::switchToCreateTripsScene);
         
