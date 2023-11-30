@@ -13,21 +13,19 @@ import java.text.SimpleDateFormat;
 import static org.junit.Assert.assertTrue;
 
 public class CMConnectionTest {
-
+	CMConnection testConnection = new CMConnection(
+								"jdbc:mysql://cs1103.cs.unb.ca:3306/j3zh5",
+								"j3zh5", "rGR45WHX");
 	@Test
 	public void testCMConnection() {
-		CMConnection testConnection = new CMConnection(
-										"jdbc:mysql://cs1103.cs.unb.ca:3306/j3zh5",
-										"j3zh5", "rGR45WHX");
+		testConnection = new CMConnection(
+						"jdbc:mysql://cs1103.cs.unb.ca:3306/j3zh5",
+						"j3zh5", "rGR45WHX");
 		assertTrue(testConnection != null);
 	}
 	
 	@Test
 	public void testCreateShip() {
-		CMConnection testConnection = new CMConnection(
-										"jdbc:mysql://cs1103.cs.unb.ca:3306/j3zh5",
-										"j3zh5", "rGR45WHX");
-
 		EnumMap<RoomType,Integer> roomCounts = 
 								new EnumMap<RoomType,Integer>(RoomType.class);
 		roomCounts.put(RoomType.INTERIOR, 1);
@@ -112,6 +110,16 @@ public class CMConnectionTest {
 				System.out.println(tripList.get(i).toString());
 			}
 		}catch(IllegalArgumentException e) {
+			System.out.println(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testBookTrip(){
+		try{
+			Trip ticketTrip = testConnection.queryTrip().get(0);
+			System.out.println(testConnection.bookTrip(ticketTrip, "John Doe", true, false, RoomType.INTERIOR));
+		}catch(IllegalArgumentException e){
 			System.out.println(e.getMessage());
 		}
 	}

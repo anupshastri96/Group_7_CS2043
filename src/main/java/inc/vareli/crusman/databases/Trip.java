@@ -23,7 +23,7 @@ public class Trip {
 	 * A unique identifier for the Trip.
 	 * Protected so CMConnection can write it to the DB
 	 */
-	protected final long ID;
+	protected final int ID;
 
 	/**
 	 * The ship that this trip ison.
@@ -44,7 +44,7 @@ public class Trip {
 	 */
 	protected final Map<CostType,Double> COSTS;
 
-	private Trip(long ID, Ship ship, List<Port> ports, Map<CostType,Double> costs) {
+	private Trip(int ID, Ship ship, List<Port> ports, Map<CostType,Double> costs) {
 		this.ID = ID;
 		this.SHIP = ship;
 		this.PORTS = ports;
@@ -57,9 +57,11 @@ public class Trip {
 	 * @param type - the type of the room
 	 * @returns if there was space for them or not
 	 */
-	public boolean addPerson(RoomType type) {
+	public int addPerson(RoomType type) {
+		int numRooms = 0;
 		long days = this.getDuration();
-		return SHIP.addPerson(type, (days <= 2) ? 5 : 4);
+		SHIP.addPerson(type, (days <= 2) ? 5 : 4);
+		return 2000 + numRooms;
 	}
 
 	/**
@@ -70,7 +72,7 @@ public class Trip {
 		int z = PORTS.size();
 		return Duration.between(
 							PORTS.get(0).arrival.toInstant(),
-							PORTS.get(z).departure.toInstant()
+							PORTS.get(z-1).departure.toInstant()
 						).toDays();
 	}
 

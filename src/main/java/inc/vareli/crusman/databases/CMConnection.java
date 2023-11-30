@@ -202,7 +202,7 @@ public class CMConnection {
 				PreparedStatement portStatement = connector.prepareStatement(retrievePortDetails);
 				ResultSet portSet = portStatement.executeQuery();
 				while(portSet.next()){
-					builder.addPort(portSet.getDate("arrivalDate"),portSet.getDate("departureDate"), 
+					builder.addPort(new java.util.Date(portSet.getDate("arrivalDate").getTime()),new java.util.Date(portSet.getDate("departureDate").getTime()), 
 								portSet.getString("portName"), portSet.getString("portName"));
 				}
 				builder.addCost(Service.MEALS, mealFee);
@@ -219,13 +219,15 @@ public class CMConnection {
 	public String bookTrip(Trip tripIn, String customerName, boolean mealSelect, boolean drinkSelect, RoomType roomSelect){
 		String toReturn;
 		int ticketID = 5000;
-		tripIn.addPerson(roomSelect);
+		int roomNumber = tripIn.addPerson(roomSelect);
 		String retrieveID = "select MAX(TicketID) as maxTicketID from Ticket";
 		try {
 			PreparedStatement retrieveStatement = connector.prepareStatement(retrieveID);
 			ResultSet idSet = retrieveStatement.executeQuery();
 			if(idSet.next()) {
-				ticketID = idSet.getInt("maxTicketID") + 1;
+				if(idSet.getInt("maxTicketID") != 0){
+					ticketID = idSet.getInt("maxTicketID") + 1;
+				}
 			}
 		} catch(SQLException e) {
 			throw new IllegalArgumentException(e.getMessage());
@@ -233,21 +235,23 @@ public class CMConnection {
 		try{
 			String createTicket = "insert into Ticket values(?, ?, ?, ?, ?, ?)";
 			PreparedStatement insertStatement	= connector.prepareStatement(createTicket);
-			insertStatement.setLong(1, ticketID);
-			insertStatement.setLong(2, tripIn.ID);
+			insertStatement.setInt(1, ticketID);
+			insertStatement.setInt(2, tripIn.ID);
 			insertStatement.setString(3, customerName);
 			if(mealSelect){insertStatement.setInt(4, 1);}
 			else{insertStatement.setInt(4, 0);}
 			if(drinkSelect){insertStatement.setInt(5, 1);}
 			else{insertStatement.setInt(5, 0);}
+			insertStatement.setInt(6, roomNumber);
 			toReturn = "Ticket ID: " + ticketID + "\nTrip ID: " + tripIn.ID +
+						"\nRoom Number: " + roomNumber +
 						"\nCustomer Name: " + customerName + 
 						"\nMeal Package Selected: " + ((mealSelect) ? "Yes" : "No") +
 						"\nDrink Package Selected: " + ((drinkSelect) ? "Yes" : "No");
+			int affectedRows = insertStatement.executeUpdate();
 		}catch(SQLException e){
 			throw new IllegalArgumentException(e.getMessage());
 		}
-
 		return toReturn;
 	}
 }
