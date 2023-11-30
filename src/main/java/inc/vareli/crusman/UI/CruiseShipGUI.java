@@ -58,11 +58,12 @@ public class CruiseShipGUI extends Application {
 	private Button nextButton;
 	private Button prevButton;
 	private Button bookButton;
-	private Trip booked;
+	//private Trip booked;
 	//private List<Trip> trips;
 
 	//temp - browsing
 	private ArrayList<String> trips;
+	private String booked;
 
 	//booking
 	private Button confirmBookingButton;
@@ -74,6 +75,11 @@ public class CruiseShipGUI extends Application {
 	//admin password
 	private Label welcomeLabel;
 
+	//main menu
+	private Button goToTripButton;
+	private Button goToShipButton;
+	private Button updateTicketButton;
+
 	//creating - trips
 	private int numTrips;
 	private TextField dateArrivalField;
@@ -81,8 +87,6 @@ public class CruiseShipGUI extends Application {
 	private TextField locationField;
 	private TextField roomCostField;
     private TextField serviceCostField;
-	private Button createATripButton;
-	private Button createAShipButton;
 	private Button createTripButton;
 	private Button addPortButton;
 	private Button addCostButton;
@@ -153,22 +157,25 @@ public class CruiseShipGUI extends Application {
 
 	public void switchToMainMenuScene(ActionEvent event) {
 		Label menuLabel = new Label("Welcome!");
-
 		Button browseButton = new Button("Book Trips");
-		browseButton.setPrefWidth(200);
+		goToTripButton = new Button("Create a trip");
+		goToShipButton = new Button("Create a ship");
+		updateTicketButton = new Button("Update Ticket Fees & Info");
+
+		Button[] arrButtons = {browseButton, goToShipButton, goToTripButton,
+													updateTicketButton};
+		for(int i = 0; i < arrButtons.length; i++) {
+			arrButtons[i].setPrefWidth(200);
+		}
+
 		browseButton.setOnAction(this::switchToBrowseScene);
-
-		createATripButton = new Button("Create a trip");
-		createATripButton.setPrefWidth(200);
-		createATripButton.setOnAction(this::switchToAdminPassword);
-
-		createAShipButton = new Button("Create a ship");
-		createAShipButton.setPrefWidth(200);
-		createAShipButton.setOnAction(this::switchToAdminPassword);
+		goToTripButton.setOnAction(this::switchToAdminPassword);
+		goToShipButton.setOnAction(this::switchToAdminPassword);
+		updateTicketButton.setOnAction(this::switchToAdminPassword);
 
 		VBox arrangeMenu =  new VBox(10);
 		arrangeMenu.getChildren().addAll(menuLabel, 
-				browseButton, createATripButton, createAShipButton);
+		browseButton, goToTripButton, goToShipButton, updateTicketButton);
 
 		FlowPane pane = new FlowPane(arrangeMenu);
 		pane.setAlignment(Pos.CENTER);
@@ -193,10 +200,12 @@ public class CruiseShipGUI extends Application {
 		adminPasswordField.setPrefWidth(300);
 		adminPasswordField.setOnMouseClicked(m -> adminPasswordField.clear());
 
-		if (event.getSource() == createATripButton) {
+		if (event.getSource() == goToTripButton) {
 			adminPasswordField.setOnAction(this::switchToChooseShipScene);
-		} else if (event.getSource() == createAShipButton) {
+		} else if (event.getSource() == goToShipButton) {
 			adminPasswordField.setOnAction(this::switchToCreateShipScene);
+		}else if (event.getSource() == updateTicketButton) {
+			adminPasswordField.setOnAction((this::switchToUpdateScene));
 		} else if (event.getSource() == confirmBookingButton) {
 			welcomeLabel.setText("Waiting for admin to confirm payment");
 			adminPasswordField.setText("");
@@ -265,7 +274,10 @@ public class CruiseShipGUI extends Application {
 			}
 		} catch(IndexOutOfBoundsException e) {
 			text.setText("None");
+		} catch(NullPointerException e) {
+			text.setText("There is no trip to book, browse again");
 		}
+
 	}
 
 	public void switchToBookingScene(ActionEvent event) {
@@ -533,7 +545,7 @@ public class CruiseShipGUI extends Application {
         stage.setTitle("Choose a ship for the trip");
     }
 
-	public void printTicketToFile(ActionEvent event){
+	public void printTicketToFile(ActionEvent event) {
 		try {
 			String ticketContents = "Trip booked:\t" + booked 
 							+"\nCustomer Name: " + customerNameField.getText() 
@@ -552,4 +564,68 @@ public class CruiseShipGUI extends Application {
 			welcomeLabel.setText("Error: Please fill all boxes in booking");
 		}
 	}
+
+    public void switchToUpdateScene(ActionEvent Event) {
+
+        Label updateTicketFeeLabel = new Label("Update the ticket fee for a trip");
+        Label updateTicketLabel = new Label ("Update a customer ticket");
+
+        //updating ticket fees for trips
+        TextField tripIDField = new TextField("Input Trip ID"); //global
+        TextField serviceCostUpdateField = new TextField("Input new cost for service"); //global    
+        TextField roomTypeCostUpdateField = new TextField("Input new cost for room type");      //global
+        Button ticketFeeButton = new Button("Update ticket fee");
+        Label statusLabelTicketFee = new Label();//needs to be global
+
+        ComboBox<Service> serviceSelectionUpdate = new ComboBox<>(); //global
+        for (Service serviceAdd : Service.values()) {
+            serviceSelectionUpdate.getItems().add(serviceAdd);
+        }
+
+        ComboBox<RoomType> roomTypeSelectionUpdate = new ComboBox<>(); //global
+        for (RoomType roomTypeAdd : RoomType.values()) {
+            roomTypeSelectionUpdate.getItems().add(roomTypeAdd);
+            }
+
+        //update customer name - update ticket
+        TextField updateCustomerNameField = new TextField("Input name here"); //global
+        TextField ticketIDField = new TextField("Ticket ID required");  //global
+
+        //update package - update ticket
+        ComboBox<Service> updatePackageServiceSelection = new ComboBox<>(); //global
+        for (Service serviceAdd : Service.values()) {
+            updatePackageServiceSelection.getItems().add(serviceAdd);
+        }
+        
+        ComboBox<String> updateServiceSelection = new ComboBox<>(); //global
+        updateServiceSelection.getItems().add("Opt In");
+        updateServiceSelection.getItems().add("Opt Out");
+
+        Button updateTicketButton = new Button("Finalize update for customer ticket");
+        updateTicketButton.setPrefWidth(200);
+
+        Label customerTicketLabel = new Label(); //global
+
+        //update ticket fee arrangement
+        HBox arrangeServiceUpdates = new HBox(10, serviceSelectionUpdate, serviceCostUpdateField);
+        HBox arrangeRoomUpdates = new HBox(10, roomTypeSelectionUpdate, roomTypeCostUpdateField);
+        HBox arrangeTicketFeeButt = new HBox(10, ticketFeeButton, statusLabelTicketFee);
+        VBox arrangeVerticalTicketFee = new VBox(20, updateTicketFeeLabel, tripIDField, 
+								arrangeServiceUpdates, arrangeRoomUpdates, arrangeTicketFeeButt);
+
+        //update customer ticket arrangement
+        HBox arrangeServiceCustomer = new HBox(10, updatePackageServiceSelection, updateServiceSelection);
+        HBox arrangeCustomerButton = new HBox(updateTicketButton, customerTicketLabel);
+        VBox arrangeCustomer = new VBox(20, arrangeVerticalTicketFee, updateTicketLabel, ticketIDField, 
+											arrangeServiceCustomer, arrangeCustomerButton);
+
+        FlowPane pane = new FlowPane(arrangeCustomer);
+        pane.setAlignment(Pos.CENTER);
+
+        Scene scene = new Scene(pane, 500, 500);
+        stage.setScene(scene);
+        stage.setTitle("Ticket management page");
+        
+    }
+		
 }
