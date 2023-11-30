@@ -211,7 +211,7 @@ public class CruiseShipGUI extends Application {
 	}
 
 	public void switchToBrowseScene(ActionEvent event) {
-		List<Trip> trips = conn.queryTrip();
+		trips = conn.queryTrip();
 		
 		tripIndex = 0;
 
@@ -282,7 +282,7 @@ public class CruiseShipGUI extends Application {
 
 		bookingRoomSelection = new ComboBox<RoomType>();		
 		for(RoomType roomType : RoomType.values()) {
-			roomSelection.getItems().add(roomType);
+			bookingRoomSelection.getItems().add(roomType);
 		}
 
 		HBox arrangeLabels = new HBox(70);
