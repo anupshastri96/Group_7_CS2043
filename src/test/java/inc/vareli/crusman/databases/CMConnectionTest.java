@@ -52,7 +52,6 @@ public class CMConnectionTest {
 	@Test
 	public void testQueryShip() {
 		try{
-			CMConnection testConnection = new CMConnection("jdbc:mysql://cs1103.cs.unb.ca:3306/j3zh5", "j3zh5", "rGR45WHX");
 			List<Ship> shipList = testConnection.queryShip();
 			for(int i = 0; i<shipList.size(); i++){
 				System.out.println(shipList.get(i).toString());
@@ -64,7 +63,6 @@ public class CMConnectionTest {
 	
 	@Test
 	public void testCreateTrip() {
-		CMConnection testConnection = new CMConnection("jdbc:mysql://cs1103.cs.unb.ca:3306/j3zh5", "j3zh5", "rGR45WHX");
 		TripBuilder tb = new TripBuilder(testConnection.queryShip().get(0));
 		String pattern = "yyyy-MM-dd";
 		SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
@@ -104,7 +102,6 @@ public class CMConnectionTest {
 	@Test
 	public void testQueryTrip() {
 		try{
-			CMConnection testConnection = new CMConnection("jdbc:mysql://cs1103.cs.unb.ca:3306/j3zh5", "j3zh5", "rGR45WHX");
 			List<Trip> tripList = testConnection.queryTrip();
 			for(int i = 0; i<tripList.size(); i++ ){
 				System.out.println(tripList.get(i).toString());
@@ -117,8 +114,19 @@ public class CMConnectionTest {
 	@Test
 	public void testBookTrip(){
 		try{
-			Trip ticketTrip = testConnection.queryTrip().get(0);
-			System.out.println(testConnection.bookTrip(ticketTrip, "John Doe", true, false, RoomType.INTERIOR));
+			if(testConnection.queryTrip() != null){
+				Trip ticketTrip = testConnection.queryTrip().get(0);
+				System.out.println(testConnection.bookTrip(ticketTrip, "Jane Doe", true, false, RoomType.INTERIOR));
+			}
+		}catch(IllegalArgumentException e){
+			System.out.println(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testTripOccupancy(){
+		try{
+			System.out.println(testConnection.tripOccupancy());
 		}catch(IllegalArgumentException e){
 			System.out.println(e.getMessage());
 		}

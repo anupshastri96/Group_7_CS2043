@@ -10,13 +10,13 @@ import java.util.Map;
 
 import java.sql.*;
 
+
 /**
  * A wrapper around java.sql.Connection to encapsulate it for use in CrusMan
  * @author Arhaan Sami 3751940
  */
 public class CMConnection {
 	private Connection connector;
-
 	/**
 	 * Creates a database connection, and sets up the tables to be used in all database operations. 
 	 * If tables already exist, it does not create duplicates.
@@ -80,7 +80,7 @@ public class CMConnection {
 	 * @return A ship object with the ID and specified room counts*/
 	public Ship createShip(Map<RoomType,Integer> roomCounts) throws IllegalArgumentException {
 		String retrieveID = "select shipID from CruiseShip";
-		long id = 0;
+		long id = 1;
 		try {
 			PreparedStatement retrieveStatement = 
 								connector.prepareStatement(retrieveID);
@@ -140,7 +140,7 @@ public class CMConnection {
 	 * @return A trip object containing data from the tripBuilder.
 	 */
 	public Trip createTrip(TripBuilder temp) {
-		long tripID = 0;
+		long tripID = 1;
 		String retrieveID = "select MAX(tripID) as maxTripID from Trip";
 		try {
 			PreparedStatement retrieveStatement = 
@@ -177,7 +177,7 @@ public class CMConnection {
 				insertStatement.executeUpdate();
 			}
 
-			for(RoomType currentType : RoomType.values()) {
+			for(RoomType currentType : RoomType.values()){
 				insert = "insert into RoomInfo values (?,?,?,?)";
 				insertStatement = connector.prepareStatement(insert);
 				insertStatement.setString(1, currentType.name());
@@ -197,7 +197,7 @@ public class CMConnection {
 	 * retrieve data for all Trips in the database.
 	 * @return A list of all Trips in the database.
 	 */
-	public List<Trip> queryTrip() {
+	public List<Trip> queryTrip(){
 		List<Trip> tripList = new ArrayList<Trip>();
 		long tripID;
 		try {
@@ -272,9 +272,9 @@ public class CMConnection {
 	 * @return A text output of the ticket details
 	 */
 	public String bookTrip(Trip tripIn, String customerName, boolean mealSelect, 
-						boolean drinkSelect, RoomType roomSelect) {
+						boolean drinkSelect, RoomType roomSelect){
 		String toReturn;
-		long ticketID = 0;
+		long ticketID = 1;
 		int roomNumber = tripIn.addPerson(roomSelect);
 		String retrieveID = "select MAX(TicketID) as maxTicketID from Ticket";
 		try {
@@ -289,7 +289,12 @@ public class CMConnection {
 		} catch(SQLException e) {
 			throw new IllegalArgumentException(e.getMessage());
 		}
-		try {
+		try{
+			Statement updateStatment = connector.createStatement();
+			String updateOccupancy = "update RoomInfo set occupancy = occupancy + 1 " +
+								"where roomType ='" + roomSelect.name() + 
+								"' AND tripID = " + tripIn.ID; 
+			updateStatment.executeUpdate(updateOccupancy);
 			String createTicket = "insert into Ticket values(?, ?, ?, ?, ?, ?)";
 			PreparedStatement insertStatement = 
 										connector.prepareStatement(createTicket);
@@ -297,17 +302,15 @@ public class CMConnection {
 			insertStatement.setLong(2, tripIn.ID);
 			insertStatement.setString(3, customerName);
 			
-			if(mealSelect) {
+			if(mealSelect) 
 				insertStatement.setInt(4, 1);
-			} else {
+			else
 				insertStatement.setInt(4, 0);
-			}
 			
-			if(drinkSelect) {
+			if(drinkSelect) 
 				insertStatement.setInt(5, 1);
-			} else {
+			else
 				insertStatement.setInt(5, 0);
-			}
 			
 			insertStatement.setInt(6, roomNumber);
 			toReturn = "Ticket ID: " + ticketID + "\nTrip ID: " + tripIn.ID +
@@ -320,5 +323,25 @@ public class CMConnection {
 			throw new IllegalArgumentException(e.getMessage());
 		}
 		return toReturn;
+	}
+
+	public String tripOccupancy(){
+		String outString = "";
+		List<Trip> tripList = this.queryTrip();
+		String retrieveStats = "select SUM(occupancy), TripID from RoomInfo where TripID = ";
+		try{
+			for(int i = 0; i<tripList.size(); i++){
+				PreparedStatement query = connector.prepareStatement(retrieveStats + 
+									tripList.get(i).ID);
+				ResultSet statSet = query.executeQuery();
+				while(statSet.next()){
+					outString += "\nTrip ID: " + statSet.getString("tripID") + 
+						"\nTotal occupancy: " + statSet.getInt("SUM(occupancy)") + "\n";
+				}
+			}
+		}catch(SQLException e){
+			throw new IllegalArgumentException(e.getMessage());
+		}
+		return outString;
 	}
 }
