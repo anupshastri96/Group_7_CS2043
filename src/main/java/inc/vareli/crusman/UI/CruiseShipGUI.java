@@ -110,6 +110,20 @@ public class CruiseShipGUI extends Application {
 	private ComboBox<RoomType> listRoom;
 	private ComboBox<Ship> listOfShipsToChoose;
 	private Map<RoomType, Integer> roomCount;
+
+	//update tickets
+	private TextField tripIDField;
+	private TextField newServiceCostsField;
+	private	TextField newRoomCostField;
+	private Label statusLabelTicketFee;
+	private ComboBox<RoomType> selectRoomUpdate;
+	private ComboBox<Service> selectServiceUpdate;
+	private TextField updateCustomerNameField;
+	private TextField ticketIDField;
+	private ComboBox<String> choosePackage;
+	private ComboBox<Service> customerUpdateServiceList;
+	private Label customerTicketLabel;
+	private Button ticketFeeButton;
 	
 	public void start(Stage stage) {
 		this.stage = stage;
@@ -180,7 +194,7 @@ public class CruiseShipGUI extends Application {
 		FlowPane pane = new FlowPane(arrangeMenu);
 		pane.setAlignment(Pos.CENTER);
 
-		Scene mainMenuScene = new Scene(pane, 300, 350);
+		Scene mainMenuScene = new Scene(pane, 400, 550);
 		stage.setScene(mainMenuScene);
 		stage.setTitle("Cruise ship booking system & admin manager");
 	}
@@ -205,7 +219,7 @@ public class CruiseShipGUI extends Application {
 		} else if (event.getSource() == goToShipButton) {
 			adminPasswordField.setOnAction(this::switchToCreateShipScene);
 		}else if (event.getSource() == updateTicketButton) {
-			adminPasswordField.setOnAction((this::switchToUpdateScene));
+			adminPasswordField.setOnAction((this::switchToUpdateTicketScene));
 		} else if (event.getSource() == confirmBookingButton) {
 			welcomeLabel.setText("Waiting for admin to confirm payment");
 			adminPasswordField.setText("");
@@ -227,13 +241,16 @@ public class CruiseShipGUI extends Application {
 
 	public void switchToBrowseScene(ActionEvent event) {
 		//List<Trip> trips = conn.queryTrip();
-		trips = new ArrayList<>();
-		trips.add("trip1");
-		trips.add("trip2");
-
+		
 		tripIndex = 0;
 
 		//text = new Text(trips.get(tripIndex).toString());
+		
+		trips = new ArrayList<>();
+		trips.add("trip1");
+		trips.add("trip2");
+		trips.add("trip3");
+		trips.add("trip4");
 		text = new Text(trips.get(tripIndex));
 
 		bookButton = new Button("Book");
@@ -528,7 +545,7 @@ public class CruiseShipGUI extends Application {
 
         //listOfShipsToChoose.setOnAction(e -> tripBeingBuilt = new TripBuilder(listOfShipsToChoose.getValue()));
 
-		ComboBox<String> listOfShipsToChoose = new ComboBox<>();
+		ComboBox<String> listOfShipsToChoose = new ComboBox<>(); 
         listOfShipsToChoose.getItems().add("Ship1");
         listOfShipsToChoose.getItems().add("Ship2");
 
@@ -565,67 +582,98 @@ public class CruiseShipGUI extends Application {
 		}
 	}
 
-    public void switchToUpdateScene(ActionEvent Event) {
-
+    public void switchToUpdateTicketScene(ActionEvent Event) {
         Label updateTicketFeeLabel = new Label("Update the ticket fee for a trip");
         Label updateTicketLabel = new Label ("Update a customer ticket");
+    	 tripIDField = new TextField("Trip ID required"); 
+        newServiceCostsField = new TextField("Input new cost");    
+        newRoomCostField = new TextField("Input new cost");      
+        ticketFeeButton = new Button("Update ticket fee");
+		ticketFeeButton.setOnAction(this::updateTicket);
+        statusLabelTicketFee = new Label();
 
-        //updating ticket fees for trips
-        TextField tripIDField = new TextField("Input Trip ID"); //global
-        TextField serviceCostUpdateField = new TextField("Input new cost for service"); //global    
-        TextField roomTypeCostUpdateField = new TextField("Input new cost for room type");      //global
-        Button ticketFeeButton = new Button("Update ticket fee");
-        Label statusLabelTicketFee = new Label();//needs to be global
-
-        ComboBox<Service> serviceSelectionUpdate = new ComboBox<>(); //global
+        selectServiceUpdate = new ComboBox<>(); 
         for (Service serviceAdd : Service.values()) {
-            serviceSelectionUpdate.getItems().add(serviceAdd);
+            selectServiceUpdate.getItems().add(serviceAdd);
         }
-
-        ComboBox<RoomType> roomTypeSelectionUpdate = new ComboBox<>(); //global
+        selectRoomUpdate = new ComboBox<>(); 
         for (RoomType roomTypeAdd : RoomType.values()) {
-            roomTypeSelectionUpdate.getItems().add(roomTypeAdd);
+            selectRoomUpdate.getItems().add(roomTypeAdd);
             }
-
-        //update customer name - update ticket
-        TextField updateCustomerNameField = new TextField("Input name here"); //global
-        TextField ticketIDField = new TextField("Ticket ID required");  //global
-
-        //update package - update ticket
-        ComboBox<Service> updatePackageServiceSelection = new ComboBox<>(); //global
-        for (Service serviceAdd : Service.values()) {
-            updatePackageServiceSelection.getItems().add(serviceAdd);
-        }
         
-        ComboBox<String> updateServiceSelection = new ComboBox<>(); //global
-        updateServiceSelection.getItems().add("Opt In");
-        updateServiceSelection.getItems().add("Opt Out");
+        updateCustomerNameField = new TextField("Input name here"); 
+        ticketIDField = new TextField("Ticket ID required");  
 
-        Button updateTicketButton = new Button("Finalize update for customer ticket");
-        updateTicketButton.setPrefWidth(200);
+        customerUpdateServiceList = new ComboBox<>(); 
+        for (Service serviceAdd : Service.values()) {
+            customerUpdateServiceList.getItems().add(serviceAdd);
+        }
+        choosePackage = new ComboBox<>(); 
+        choosePackage.getItems().add("Opt In");
+        choosePackage.getItems().add("Opt Out");
+        updateTicketButton = new Button("update customer ticket");
+		updateTicketButton.setOnAction(this::updateTicket);
+        customerTicketLabel = new Label(); 
+		
+		Button returnButton = new Button("Return");
+		returnButton.setOnAction(this::switchToMainMenuScene);
+		returnButton.setPrefWidth(300);
+		TextField[] textFieldArr = {updateCustomerNameField, ticketIDField, newRoomCostField, 
+				newServiceCostsField, tripIDField};
+				for (int i = 0; i < textFieldArr.length; i++) {
+					TextField tf = textFieldArr[i];
+					tf.setOnMouseClicked(e -> tf.clear());
+				}
 
-        Label customerTicketLabel = new Label(); //global
-
-        //update ticket fee arrangement
-        HBox arrangeServiceUpdates = new HBox(10, serviceSelectionUpdate, serviceCostUpdateField);
-        HBox arrangeRoomUpdates = new HBox(10, roomTypeSelectionUpdate, roomTypeCostUpdateField);
+        HBox arrangeServiceUpdates = new HBox(10, selectServiceUpdate, newServiceCostsField);
+        HBox arrangeRoomUpdates = new HBox(10, selectRoomUpdate, newRoomCostField);
         HBox arrangeTicketFeeButt = new HBox(10, ticketFeeButton, statusLabelTicketFee);
         VBox arrangeVerticalTicketFee = new VBox(20, updateTicketFeeLabel, tripIDField, 
 								arrangeServiceUpdates, arrangeRoomUpdates, arrangeTicketFeeButt);
-
-        //update customer ticket arrangement
-        HBox arrangeServiceCustomer = new HBox(10, updatePackageServiceSelection, updateServiceSelection);
+        HBox arrangeServiceCustomer = new HBox(10, customerUpdateServiceList, choosePackage);
         HBox arrangeCustomerButton = new HBox(updateTicketButton, customerTicketLabel);
         VBox arrangeCustomer = new VBox(20, arrangeVerticalTicketFee, updateTicketLabel, ticketIDField, 
-											arrangeServiceCustomer, arrangeCustomerButton);
-
+											arrangeServiceCustomer, arrangeCustomerButton, returnButton);
         FlowPane pane = new FlowPane(arrangeCustomer);
         pane.setAlignment(Pos.CENTER);
 
-        Scene scene = new Scene(pane, 500, 500);
+        Scene scene = new Scene(pane, 600, 500);
         stage.setScene(scene);
         stage.setTitle("Ticket management page");
         
     }
+
+	public void updateTicket(ActionEvent event) {
+		//update ticket fee
+		if(event.getSource() == ticketFeeButton){
+			try {
+			int tripID = Integer.parseInt(tripIDField.getText());
+			double newServiceCost = Double.parseDouble(newServiceCostsField.getText());
+			double newRoomCost = Double.parseDouble(newRoomCostField.getText()); 
+			//conn.updateFees(tripID, selectServiceUpdate.getValue(), newServiceCost);
+			//conn.updatesFees(tripID, selectRoomUpdate.getValue(), newRoomCost);
+			statusLabelTicketFee.setText("Succesfully updated ticket fee");
+			} catch (NumberFormatException pe) {
+				statusLabelTicketFee.setText("Numerical characters only");
+			} catch (NullPointerException npe) {
+				statusLabelTicketFee.setText("Fill in all boxes before updating.");
+			}
+		}
+		else if(event.getSource() == updateTicketButton) {
+			try {
+			int ticketID = Integer.parseInt(ticketIDField.getText());
+			//conn.updateCustomerName(ticketID, customerNameField.getText());
+			//conn.updatePackageSelection(ticketID, customerUpdateServiceList.getValue(),
+				//choosePackage.getValue().equals(("Opt in"));
+				customerTicketLabel.setText("Succesfully updated customer ticket");
+			} catch (NumberFormatException pe) {
+				customerTicketLabel.setText("Numerical characters only for ticket ID");
+			} catch (NullPointerException npe) {
+				customerTicketLabel.setText("Fill in all boxes before updating.");
+			}
+		}	
+
+
+	}
 		
 }
