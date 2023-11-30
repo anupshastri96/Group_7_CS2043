@@ -326,6 +326,40 @@ public class CMConnection {
    
 	}
 
+       public void updateCustomerName(int ticketID, String name) {
+        try {
+            String updateStatement = "UPDATE Ticket SET customerName = ? WHERE ticketID = ?";
+
+            PreparedStatement updateCustomerNameStatement = connector.prepareStatement(updateStatement);
+            updateCustomerNameStatement.setString(1, name);
+            updateCustomerNameStatement.setInt(2, ticketID);
+
+            int affectedRows = updateCustomerNameStatement.executeUpdate();
+
+            System.out.println((affectedRows > 0) ? "Customer name updated successfully for Ticket ID: " + ticketID :
+                                                    "No ticket found with ID: " + ticketID);
+        } catch (SQLException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+    }
+    
+       public void updatePackageSelection(int ticketID, Service chosenService, boolean selection) {
+        try {
+            String columnName = (chosenService == Service.DRINKS) ? "drinkPackageFlag" : "mealPackageFlag";
+            String updateStatement = "UPDATE Ticket SET " + columnName + " = ? WHERE ticketID = ?";
+
+            PreparedStatement updatePackageSelectionStatement = connector.prepareStatement(updateStatement);
+            updatePackageSelectionStatement.setInt(1, (selection ? 1 : 0));
+            updatePackageSelectionStatement.setInt(2, ticketID);
+
+            int affectedRows = updatePackageSelectionStatement.executeUpdate();
+
+            System.out.println((affectedRows > 0) ? chosenService + " package selection updated successfully for Ticket ID: " + ticketID :
+                                                    "No ticket found with ID: " + ticketID);
+        } catch (SQLException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+    }
 
 }
 

@@ -123,4 +123,47 @@ public class CMConnectionTest {
 			System.out.println(e.getMessage());
 		}
 	}
+   
+   @Test
+   public void testUpdateFees() {
+        String url = "jdbc:mysql://localhost:3306/testdb";
+        String loginID = "testuser";
+        String loginPass = "testpassword";
+
+        try {
+            CMConnection cmConnection = new CMConnection(url, loginID, loginPass);
+
+            int testTripID = 1;
+
+            // Initial fees
+            double initialDrinkFees = getFees(cmConnection, testTripID, Service.DRINKS);
+
+            // Update the drink fees
+            cmConnection.updateFees(testTripID, Service.DRINKS, 50.0);
+
+            // Check if the fees have been updated
+            double updatedDrinkFees = getFees(cmConnection, testTripID, Service.DRINKS);
+
+            assertEquals(50.0, updatedDrinkFees, 0.01);
+            assertNotEquals(initialDrinkFees, updatedDrinkFees, 0.01);
+
+        } catch (IllegalArgumentException e) {
+            fail("Exception thrown during test: " + e.getMessage());
+        }
+    }
+
+    private double getFees(CMConnection cmConnection, int tripID, CostType type) {
+        try {
+            List<Trip> trips = cmConnection.queryTrip();
+            for (Trip trip : trips) {
+                if (trip.ID == tripID) {
+                    return trip.COSTS.get(type);
+                }
+            }
+            fail("Trip with ID " + tripID + " not found.");
+        } catch (IllegalArgumentException e) {
+            fail("Exception thrown during test: " + e.getMessage());
+        }
+        return 0.0;
+    }
 }
