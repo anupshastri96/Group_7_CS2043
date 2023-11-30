@@ -17,33 +17,50 @@ import java.sql.*;
 public class CMConnection {
 	private Connection connector;
 	/**
-	 *Creates a database connection, and sets up the tables to be used in all database operations. If tables already exist, it does not create duplicates.
+	 Creates a database connection, and sets up the tables to be used in all database operations. 
+	 If tables already exist, it does not create duplicates.
 	 */
 	public CMConnection(String url, String loginID, String loginPass) throws IllegalArgumentException { 
 		try {
 			connector = DriverManager.getConnection(url, loginID, loginPass);
-			String shipCreator = "Create table CruiseShip (shipID int unsigned not null primary key, " +
-							"interiorRooms int unsigned not null, outsideRooms int unsigned not null, " + 
-							"balconyRooms int unsigned not null, suites int unsigned not null)";
-			String tripCreator = "Create table Trip (tripID int unsigned not null primary key, " + 
-							"shipID int unsigned not null, drinkFees float unsigned not null, " + 
+			String shipCreator = "Create table CruiseShip (" +
+							"shipID int unsigned not null primary key, " +
+							"interiorRooms int unsigned not null, " + 
+							"outsideRooms int unsigned not null, " + 
+							"balconyRooms int unsigned not null, " + 
+							"suites int unsigned not null)";
+			String tripCreator = "Create table Trip (" + 
+							"tripID int unsigned not null primary key, " + 
+							"shipID int unsigned not null, " + 
+							"drinkFees float unsigned not null, " + 
 							"mealFees float unsigned not null, " + 
 							"foreign key(shipID) references CruiseShip(shipID))";
-			String portCreator = "Create table Port (portName varchar(100) not null, " +
-							"tripID int unsigned not null, startEndFlag int unsigned not null, " +
+			String portCreator = "Create table Port (" +
+							"portName varchar(100) not null, " +
+							"tripID int unsigned not null, " + 
+							"startEndFlag int unsigned not null, " +
 							"arrivalDate date, departureDate date, " + 
 							"primary key(portName, tripID), " + 
 							"foreign key(tripID) references Trip(tripID))";
-			String ticketCreator = "Create table Ticket (ticketID int unsigned not null primary key, " + 
-							"tripID int unsigned not null, customerName varchar(255) not null, " + 
-							"mealPackageFlag int unsigned not null, drinkPackageFlag int unsigned not null, " + 
-							"roomNumber int unsigned not null, foreign key(tripID) references Trip(tripID))";
-			String roomCreator = "Create table RoomInfo (roomType varchar(100) not null, " + 
-							"tripID int unsigned not null, fees double unsigned not null, " + 
+			String ticketCreator = "Create table Ticket (" + 
+							"ticketID int unsigned not null primary key, " + 
+							"tripID int unsigned not null, " + 
+							"customerName varchar(255) not null, " + 
+							"mealPackageFlag int unsigned not null, " + 
+							"drinkPackageFlag int unsigned not null, " + 
+							"roomNumber int unsigned not null, " + 
+							"foreign key(tripID) references Trip(tripID))";
+			String roomCreator = "Create table RoomInfo (" + 
+							"roomType varchar(100) not null, " + 
+							"tripID int unsigned not null, " + 
+							"fees double unsigned not null, " + 
 							"occupancy int unsigned not null, " + 
-							"primary key(roomType, tripID), foreign key(tripID) references Trip(tripID))";
-			String[] createStatements = {shipCreator, tripCreator, portCreator, ticketCreator, roomCreator};
-			String[] tableNames = {"CruiseShip", "Trip", "Port", "Ticket", "RoomInfo"};
+							"primary key(roomType, tripID), " + 
+							"foreign key(tripID) references Trip(tripID))";
+			String[] createStatements = {shipCreator, tripCreator, 
+										portCreator, ticketCreator, roomCreator};
+			String[] tableNames = {"CruiseShip", "Trip", 
+										"Port", "Ticket", "RoomInfo"};
 			Statement stmt = connector.createStatement();
 			DatabaseMetaData dbm = connector.getMetaData();
 			for(int i = 0; i < createStatements.length; i++) {
@@ -64,7 +81,8 @@ public class CMConnection {
 		String retrieveID = "select shipID from CruiseShip";
 		int id = 1000;
 		try {
-			PreparedStatement retrieveStatement = connector.prepareStatement(retrieveID);
+			PreparedStatement retrieveStatement = 
+								connector.prepareStatement(retrieveID);
 			ResultSet idSet = retrieveStatement.executeQuery();
 			while(idSet.next()) {
 				id = idSet.getInt("shipID") + 1;
@@ -92,10 +110,12 @@ public class CMConnection {
 		List<Ship> shipList = new ArrayList<Ship>();
 		String queryStatement = "select * from CruiseShip";
 		try {	
-			PreparedStatement retrieveStatement = connector.prepareStatement(queryStatement);
+			PreparedStatement retrieveStatement = 
+								connector.prepareStatement(queryStatement);
 			ResultSet shipSet = retrieveStatement.executeQuery();			
 			while(shipSet.next()) {
-				EnumMap<RoomType,Integer> roomCounts = new EnumMap<RoomType,Integer>(RoomType.class);
+				EnumMap<RoomType,Integer> roomCounts = 
+									new EnumMap<RoomType,Integer>(RoomType.class);
 				int id = shipSet.getInt("shipID");
 				roomCounts.put(RoomType.INTERIOR, shipSet.getInt("interiorRooms"));
 				roomCounts.put(RoomType.OUTSIDE, shipSet.getInt("outsideRooms"));
@@ -113,7 +133,8 @@ public class CMConnection {
 		int tripID = 3000;
 		String retrieveID = "select MAX(tripID) as maxTripID from Trip";
 		try {
-			PreparedStatement retrieveStatement = connector.prepareStatement(retrieveID);
+			PreparedStatement retrieveStatement = 
+								connector.prepareStatement(retrieveID);
 			ResultSet idSet = retrieveStatement.executeQuery();
 			if(idSet.next()) {
 				if(idSet.getInt("maxTripID") != 0){
@@ -126,7 +147,8 @@ public class CMConnection {
 		Trip toReturn = temp.build(tripID);
 		try {
 			String insert = "insert into Trip values (?,?,?,?)";
-			PreparedStatement insertStatement = connector.prepareStatement(insert);
+			PreparedStatement insertStatement = 
+								connector.prepareStatement(insert);
 			insertStatement.setInt(1, tripID);
 			insertStatement.setInt(2, toReturn.SHIP.ID);
 			insertStatement.setDouble(3, toReturn.COSTS.get(Service.DRINKS));
@@ -138,15 +160,18 @@ public class CMConnection {
 				insertStatement = connector.prepareStatement(insert);
 				insertStatement.setString(1, toReturn.PORTS.get(i).location);
 				insertStatement.setInt(2, tripID);
-				if(i == 0) {
-					insertStatement.setInt(3,  0); //startEndFlag: 0 = starting port, 1 = ending port, 2 = other
+				if(i == 0) { 
+					//startEndFlag: 0 = starting port, 1 = ending port, 2 = other
+					insertStatement.setInt(3,  0); 
 				}else if(i == toReturn.PORTS.size() - 1) {
 					insertStatement.setInt(3, 1);
 				}else {
 					insertStatement.setInt(3, 2);
 				}
-				insertStatement.setDate(4, new java.sql.Date(toReturn.PORTS.get(i).arrival.getTime()));
-				insertStatement.setDate(5, new java.sql.Date(toReturn.PORTS.get(i).departure.getTime()));
+				insertStatement.setDate(4, new java.sql.Date(
+									toReturn.PORTS.get(i).arrival.getTime()));
+				insertStatement.setDate(5, new java.sql.Date(
+									toReturn.PORTS.get(i).departure.getTime()));
 				affectedRows = insertStatement.executeUpdate();
 			}
 
@@ -171,7 +196,8 @@ public class CMConnection {
 		int tripID;
 		try {
 			String retrieveTripDetails = "select * from Trip";	
-			PreparedStatement tripStatement = connector.prepareStatement(retrieveTripDetails);
+			PreparedStatement tripStatement = 
+								connector.prepareStatement(retrieveTripDetails);
 			ResultSet tripSet = tripStatement.executeQuery();
 			while(tripSet.next()) {
 				tripID = tripSet.getInt("tripID");
@@ -179,10 +205,14 @@ public class CMConnection {
 				double drinkFee = tripSet.getDouble("drinkFees");
 				double mealFee = tripSet.getDouble("mealFees");
 
-				String retrieveShipDetails = "select CruiseShip.*, TripID from CruiseShip natural join Trip where TripID = " + tripID;
-				PreparedStatement shipStatement = connector.prepareStatement(retrieveShipDetails);
+				String retrieveShipDetails = "select CruiseShip.*, TripID from " + 
+										"CruiseShip natural join Trip " + 
+										"where TripID = " + tripID;
+				PreparedStatement shipStatement = 
+										connector.prepareStatement(retrieveShipDetails);
 				ResultSet shipSet = shipStatement.executeQuery();
-				EnumMap<RoomType,Integer> roomCounts = new EnumMap<RoomType,Integer>(RoomType.class);
+				EnumMap<RoomType,Integer> roomCounts = 
+										new EnumMap<RoomType,Integer>(RoomType.class);
 				while(shipSet.next()){
 					roomCounts.put(RoomType.INTERIOR, shipSet.getInt("interiorRooms"));
 					roomCounts.put(RoomType.OUTSIDE, shipSet.getInt("outsideRooms"));
@@ -191,19 +221,28 @@ public class CMConnection {
 				}
 
 				TripBuilder builder = new TripBuilder(new Ship(shipId, roomCounts));
-				String retrieveRoomDetails = "select * from RoomInfo where TripID = " + tripID;
-				PreparedStatement roomStatement = connector.prepareStatement(retrieveRoomDetails);
+				String retrieveRoomDetails = "select * from RoomInfo " + 
+										"where TripID = " + tripID;
+				PreparedStatement roomStatement = 
+										connector.prepareStatement(retrieveRoomDetails);
 				ResultSet roomSet = roomStatement.executeQuery();
 				while(roomSet.next()){
-					builder.addCost(RoomType.valueOf(roomSet.getString("RoomType")), roomSet.getInt("fees"));
+					builder.addCost(RoomType.valueOf(roomSet.getString("RoomType")),
+									roomSet.getInt("fees"));
 				}
 
-				String retrievePortDetails = "select * from Port where TripID = " + tripID + " order by departureDate";
-				PreparedStatement portStatement = connector.prepareStatement(retrievePortDetails);
+				String retrievePortDetails = "select * from Port where TripID = " +
+										tripID + " order by departureDate";
+				PreparedStatement portStatement = 
+										connector.prepareStatement(retrievePortDetails);
 				ResultSet portSet = portStatement.executeQuery();
 				while(portSet.next()){
-					builder.addPort(new java.util.Date(portSet.getDate("arrivalDate").getTime()),new java.util.Date(portSet.getDate("departureDate").getTime()), 
-								portSet.getString("portName"), portSet.getString("portName"));
+					builder.addPort(new java.util.Date(
+								portSet.getDate("arrivalDate").getTime()),
+								new java.util.Date(
+								portSet.getDate("departureDate").getTime()), 
+								portSet.getString("portName"), 
+								portSet.getString("portName"));
 				}
 				builder.addCost(Service.MEALS, mealFee);
 				builder.addCost(Service.DRINKS, drinkFee);
@@ -216,13 +255,15 @@ public class CMConnection {
 		return tripList;
 	}
 
-	public String bookTrip(Trip tripIn, String customerName, boolean mealSelect, boolean drinkSelect, RoomType roomSelect){
+	public String bookTrip(Trip tripIn, String customerName, boolean mealSelect, 
+						boolean drinkSelect, RoomType roomSelect){
 		String toReturn;
 		int ticketID = 5000;
 		int roomNumber = tripIn.addPerson(roomSelect);
 		String retrieveID = "select MAX(TicketID) as maxTicketID from Ticket";
 		try {
-			PreparedStatement retrieveStatement = connector.prepareStatement(retrieveID);
+			PreparedStatement retrieveStatement = 
+											connector.prepareStatement(retrieveID);
 			ResultSet idSet = retrieveStatement.executeQuery();
 			if(idSet.next()) {
 				if(idSet.getInt("maxTicketID") != 0){
@@ -234,7 +275,8 @@ public class CMConnection {
 		}
 		try{
 			String createTicket = "insert into Ticket values(?, ?, ?, ?, ?, ?)";
-			PreparedStatement insertStatement	= connector.prepareStatement(createTicket);
+			PreparedStatement insertStatement = 
+										connector.prepareStatement(createTicket);
 			insertStatement.setInt(1, ticketID);
 			insertStatement.setInt(2, tripIn.ID);
 			insertStatement.setString(3, customerName);
