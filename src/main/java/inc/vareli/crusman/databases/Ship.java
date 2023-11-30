@@ -17,7 +17,6 @@ public class Ship {
 	 * of each type of room there is
 	 */
 	protected Ship(long ID, Map<RoomType,Integer> roomCounts) {
-
 		int size = roomCounts.values().stream().mapToInt(t->t).sum();
 		this.ID = ID;
 		this.rooms = new Room[size];
@@ -41,14 +40,14 @@ public class Ship {
 	 * @param maxOccupancy - the maximum people we can have in a room
 	 * @return if this operation succeeded or not
 	 */
-	public boolean addPerson(RoomType roomType, int maxOccupancy) {
-		for (Room r : rooms) {
-			if (r != null && r.type == roomType && r.count < maxOccupancy) {
-				r.count++;
-				return true;
+	public int addPerson(RoomType roomType, int maxOccupancy) {
+		for (int i = 0; i < rooms.length; i++) {
+			if (rooms[i] != null && rooms[i].type == roomType && rooms[i].count < maxOccupancy) {
+				rooms[i].count++;
+				return (roomType.ordinal()*100)+i;
 			}
 		}
-		return false;
+		return -1;
 	}
 
 	/**

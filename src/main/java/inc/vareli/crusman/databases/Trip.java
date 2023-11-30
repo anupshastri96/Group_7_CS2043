@@ -56,7 +56,7 @@ public class Trip {
 	 * @param type - the type of the room
 	 * @returns if there was space for them or not
 	 */
-	public boolean addPerson(RoomType type) {
+	public int addPerson(RoomType type) {
 		long days = this.getDuration();
 		return SHIP.addPerson(type, (days <= 2) ? 5 : 4);
 	}
